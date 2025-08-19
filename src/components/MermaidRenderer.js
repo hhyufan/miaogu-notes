@@ -1,7 +1,7 @@
 import { memo, useEffect, useRef, useState } from 'react'
 import mermaid from 'mermaid'
 import { Skeleton } from 'antd'
-
+import './MermaidRenderer.css'
 // 初始化mermaid配置
 mermaid.initialize({
   startOnLoad: false,

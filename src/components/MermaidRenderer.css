@@ -1,0 +1,19 @@
+html[data-theme="dark"] [id^="mermaid-"] .node path,
+html[data-theme="dark"] [id^="mermaid-"] rect,
+html[data-theme="dark"] [id^="mermaid-"] polygon {
+  fill: #333 !important;
+}
+
+html[data-theme="dark"] [id^="mermaid-"] .label p {
+  color: #FFFFFF;
+  background-color: #333 !important;
+}
+
+html[data-theme="dark"] [id^="mermaid-"] .relation,
+html[data-theme="dark"] [id^="mermaid-"] .flowchart-link {
+  stroke: #d8d7d7 !important;
+}
+
+html[data-theme="dark"] [id^="mermaid-"] .nodeLabel {
+  color: #fff !important;
+}
