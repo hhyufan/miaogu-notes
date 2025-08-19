@@ -107,11 +107,17 @@ const getMarkdownFiles = async () => {
   // 转换为数组并添加文件编号
   return Array.from(fileMap.values())
     .filter(file => file.name.endsWith('.md'))
-    .sort((a, b) => a.name.localeCompare(b.name))
-    .map((file, index) => ({
-      ...file,
-      fileNumber: index + 1
-    }));
+    .map(file => {
+      // 从文件名中提取数字编号
+      const numberMatch = file.name.match(/^(\d+)-/);
+      const fileNumber = numberMatch ? parseInt(numberMatch[1]) : 999;
+      
+      return {
+        ...file,
+        fileNumber: fileNumber
+      };
+    })
+    .sort((a, b) => a.fileNumber - b.fileNumber);
 };
 
 // 加载文件概要信息
