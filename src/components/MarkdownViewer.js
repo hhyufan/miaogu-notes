@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import ReactDOM from 'react-dom/client';
 import { Button, Spin, Typography, Tag, Image } from 'antd';
 import { ArrowLeftOutlined, DownloadOutlined, SunOutlined, MoonFilled } from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown';
@@ -10,6 +11,7 @@ import { toast } from '../plugins/toast.js';
 import { loadMarkdownFile } from '../utils/fileUtils';
 import { formatDisplayName } from '../utils/formatUtils';
 import { useTheme } from '../theme';
+import MermaidRenderer from './MermaidRenderer';
 
 const { Title, Text } = Typography;
 
@@ -120,12 +122,79 @@ const LANGUAGE_DISPLAY_MAP = {
   go: 'Go',
   rust: 'Rust',
   kotlin: 'Kotlin',
-  swift: 'Swift'
+  swift: 'Swift',
+  mermaid: 'Mermaid'
 };
 
 const MarkdownRenderer = ({ content }) => {
   const containerRef = useRef(null);
   const { theme, isDarkMode } = useTheme();
+  
+  // 存储React根节点的引用
+  const mermaidRootsRef = useRef(new Map());
+  // 防抖定时器引用
+  const copyDebounceRef = useRef(null);
+
+  const renderMermaidDiagrams = () => {
+    if (!containerRef?.current) return;
+
+    const currentRoots = new Map(mermaidRootsRef.current);
+    const processedIds = new Set();
+
+    const mermaidBlocks = containerRef.current.querySelectorAll('pre > code.language-mermaid');
+
+    mermaidBlocks.forEach((codeBlock, index) => {
+      const pre = codeBlock.parentElement;
+      if (!pre) return;
+
+      // 获取或生成唯一ID
+      let mermaidId = pre.getAttribute('data-mermaid-id');
+      const code = codeBlock.textContent;
+      if (!mermaidId) {
+        mermaidId = `mermaid-${index}`;
+        pre.setAttribute('data-mermaid-id', mermaidId);
+      }
+      processedIds.add(mermaidId);
+
+      // 通过ID查找现有容器
+      let mermaidContainer = document.querySelector(`[data-mermaid-container-id="${mermaidId}"]`);
+
+      // 如果容器不存在再创建
+      if (!mermaidContainer) {
+        mermaidContainer = document.createElement('div');
+        mermaidContainer.className = 'mermaid-container';
+        mermaidContainer.setAttribute('data-mermaid-container-id', mermaidId);
+        if (!document.querySelector(`[data-mermaid-container-id="${mermaidId}"]`)) {
+          pre.parentNode.insertBefore(mermaidContainer, pre.nextSibling);
+        }
+      }
+
+      pre.style.display = 'none';
+
+      // 获取或创建React根节点
+      let root = currentRoots.get(mermaidId);
+      if (!root) {
+        const existingRoot = mermaidContainer.querySelector('.mermaid-root');
+        if (existingRoot) {
+          // 复用现有DOM节点
+          root = ReactDOM.createRoot(existingRoot);
+        } else {
+          // 创建新的根节点
+          const mermaidRoot = document.createElement('div');
+          mermaidRoot.className = 'mermaid-root';
+          mermaidContainer.appendChild(mermaidRoot);
+          root = ReactDOM.createRoot(mermaidRoot);
+        }
+        currentRoots.set(mermaidId, root);
+      }
+
+      root.render(
+        <MermaidRenderer code={code} key={`${mermaidId}-${isDarkMode ? 'dark' : 'light'}`} />
+      );
+    });
+
+    mermaidRootsRef.current = currentRoots;
+  };
 
   // 动态加载Prism主题
   const loadPrismTheme = (isDark) => {
@@ -193,14 +262,15 @@ const MarkdownRenderer = ({ content }) => {
         top: '8px',
         right: '12px',
         color: theme.text.primary,
-        fontSize: '0.8em',
+        fontSize: '0.9em',
         border: `1px solid ${theme.border.primary}`,
         background: theme.background.card,
-        padding: '2px 8px',
-        borderRadius: '4px',
+        padding: '4px 12px',
+        borderRadius: '6px',
         cursor: 'pointer',
         zIndex: 1,
-        transition: 'all 0.2s ease'
+        transition: 'all 0.2s ease',
+        fontWeight: '500'
       });
 
       // 设置显示名称
@@ -233,8 +303,12 @@ const MarkdownRenderer = ({ content }) => {
     existingTags?.forEach((tag) => {
       Object.assign(tag.style, {
         color: theme.text.primary,
+        fontSize: '0.9em',
         border: `1px solid ${theme.border.primary}`,
-        background: theme.background.card
+        background: theme.background.card,
+        padding: '4px 12px',
+        borderRadius: '6px',
+        fontWeight: '500'
       });
 
       // 重新绑定悬停事件
@@ -253,18 +327,27 @@ const MarkdownRenderer = ({ content }) => {
   const highlightCode = () => {
     Prism.highlightAllUnder(containerRef.current);
     addLanguageLabels();
+    renderMermaidDiagrams();
   };
 
-  // 复制到剪贴板
+  // 复制到剪贴板（带防抖）
   const copyToClipboard = (text) => {
-    navigator.clipboard
-      .writeText(text)
-      .then(async () => {
-        await toast.success('内容已复制', { debounce: 3000, closable: true });
-      })
-      .catch((err) => {
-        console.error('Failed to copy text: ', err);
-      });
+    // 清除之前的定时器
+    if (copyDebounceRef.current) {
+      clearTimeout(copyDebounceRef.current);
+    }
+    
+    // 设置新的防抖定时器
+    copyDebounceRef.current = setTimeout(() => {
+      navigator.clipboard
+        .writeText(text)
+        .then(async () => {
+          await toast.success('内容已复制', { duration: 2 });
+        })
+        .catch((err) => {
+          console.error('Failed to copy text: ', err);
+        });
+    }, 300); // 300ms防抖延迟
   };
 
   useEffect(() => {
@@ -337,6 +420,7 @@ const MarkdownRenderer = ({ content }) => {
           },
           code({ className, children, ...props }) {
             const language = className?.replace('language-', '') || '';
+            
             return language ? (
               <pre
                 className={`language-${language}`}
@@ -380,7 +464,7 @@ const MarkdownRenderer = ({ content }) => {
   );
 };
 
-const MarkdownViewer = ({ fileName, onBack }) => {
+const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
   const [fileStats, setFileStats] = useState(null);
@@ -390,7 +474,7 @@ const MarkdownViewer = ({ fileName, onBack }) => {
     const loadFile = async () => {
       setLoading(true);
       try {
-        const fileContent = await loadMarkdownFile(fileName);
+        const fileContent = await loadMarkdownFile(fileName, currentFolder);
         setContent(fileContent);
 
         // 设置文件统计信息
@@ -443,19 +527,23 @@ const MarkdownViewer = ({ fileName, onBack }) => {
 
   return (
     <div style={{
-      padding: '16px',
       width: '100%',
       minHeight: '100vh',
       background: theme.background.primary
     }}>
-      {/* Header */}
+      {/* Fixed Header */}
       <div className="markdown-header" style={{
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: '24px',
-        paddingBottom: '16px',
-        borderBottom: `1px solid ${theme.border.primary}`
+        padding: '16px 24px',
+        background: theme.background.card,
+        boxShadow: theme.shadow.md,
+        borderBottom: `1px solid ${theme.border.primary}`,
+        position: 'sticky',
+        top: 0,
+        zIndex: 1000,
+        transition: 'all 0.3s ease'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <Button
@@ -517,11 +605,12 @@ const MarkdownViewer = ({ fileName, onBack }) => {
       <div style={{
         backgroundColor: theme.background.card,
         padding: '24px 32px',
+        margin: '24px 16px 16px 16px',
         borderRadius: '8px',
         boxShadow: theme.shadow.md,
         border: `1px solid ${theme.border.primary}`,
-        minHeight: 'calc(100vh - 200px)',
-        width: '100%'
+        minHeight: 'calc(100vh - 140px)',
+        width: 'calc(100% - 32px)'
       }}>
         <MarkdownRenderer content={content} />
       </div>

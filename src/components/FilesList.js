@@ -1,13 +1,13 @@
 import React from 'react';
 import { Card, List, Select, Space, Typography, Tag, Button, Skeleton } from 'antd';
-import { FileTextOutlined, CalendarOutlined, NumberOutlined, EyeOutlined } from '@ant-design/icons';
+import { FileTextOutlined, CalendarOutlined, NumberOutlined, EyeOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { formatDisplayName, getFileExtension, formatFileSize, formatDate } from '../utils/formatUtils';
 import { useTheme } from '../theme';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
 
-const FilesList = ({ fileStats, loading, sortBy, onSortChange, onFileClick }) => {
+const FilesList = ({ fileStats, loading, sortBy, onSortChange, onFileClick, onBackToFolders, currentFolder, folderSummaries }) => {
   const { theme } = useTheme();
   const getFileTypeColor = (fileName) => {
     const ext = getFileExtension(fileName);
@@ -33,8 +33,19 @@ const FilesList = ({ fileStats, loading, sortBy, onSortChange, onFileClick }) =>
       title={
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Space>
+            {currentFolder && (
+              <Button
+                type="text"
+                icon={<ArrowLeftOutlined />}
+                onClick={onBackToFolders}
+                style={{ color: theme.accent.primary }}
+              >
+              </Button>
+            )}
             <FileTextOutlined style={{ color: theme.accent.primary }} />
-            <Title level={4} style={{ margin: 0, color: theme.text.primary }}>文件列表</Title>
+            <Title level={4} style={{ margin: 0, color: theme.text.primary }}>
+              {currentFolder ? `${folderSummaries?.[currentFolder]?.title || currentFolder}` : '文件列表'}
+            </Title>
             <Tag color="blue">{fileStats.length} 个文件</Tag>
           </Space>
           <Select

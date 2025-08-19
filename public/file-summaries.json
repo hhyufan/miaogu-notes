@@ -6,7 +6,8 @@
       "环境变量",
       "开发工具",
       "安装配置"
-    ]
+    ],
+    "folder": "JavaFundamentals"
   },
   "1-IDEA开发与使用.md": {
     "summary": "IntelliJ IDEA开发工具的使用指南，包括项目创建、代码编写、调试技巧等",
@@ -15,7 +16,8 @@
       "项目管理",
       "代码编辑",
       "调试"
-    ]
+    ],
+    "folder": "JavaFundamentals"
   },
   "2-编码规范.md": {
     "summary": "Java编程的代码规范和最佳实践，包括命名规则、代码格式、注释规范等",
@@ -24,7 +26,8 @@
       "命名规则",
       "代码格式",
       "最佳实践"
-    ]
+    ],
+    "folder": "JavaFundamentals"
   },
   "3-基本错误分类.md": {
     "summary": "Java开发中常见错误类型的分类和解决方法，帮助快速定位和修复问题",
@@ -33,7 +36,8 @@
       "异常处理",
       "调试技巧",
       "问题解决"
-    ]
+    ],
+    "folder": "JavaFundamentals"
   },
   "4-变量和数据类型.md": {
     "summary": "Java中变量的声明、初始化以及各种数据类型的使用方法和特点",
@@ -42,7 +46,8 @@
       "数据类型",
       "基本类型",
       "引用类型"
-    ]
+    ],
+    "folder": "JavaFundamentals"
   },
   "5-运算符.md": {
     "summary": "Java中各种运算符的使用，包括算术、关系、逻辑、位运算等操作符",
@@ -51,7 +56,8 @@
       "算术运算",
       "逻辑运算",
       "位运算"
-    ]
+    ],
+    "folder": "JavaFundamentals"
   },
   "6-流程控制语句.md": {
     "summary": "Java程序流程控制，包括条件语句、循环语句、跳转语句等控制结构",
@@ -60,7 +66,8 @@
       "条件语句",
       "循环",
       "分支结构"
-    ]
+    ],
+    "folder": "JavaFundamentals"
   },
   "7-debug调试.md": {
     "summary": "Java程序调试技巧和方法，包括断点设置、变量监控、程序跟踪等",
@@ -69,7 +76,8 @@
       "断点",
       "程序跟踪",
       "错误排查"
-    ]
+    ],
+    "folder": "JavaFundamentals"
   },
   "8-数组.md": {
     "summary": "Java数组的声明、初始化、遍历和常用操作方法",
@@ -78,7 +86,8 @@
       "数组操作",
       "遍历",
       "多维数组"
-    ]
+    ],
+    "folder": "JavaFundamentals"
   },
   "9-面向对象编程.md": {
     "summary": "Java面向对象编程核心概念，包括类、对象、继承、封装、多态等",
@@ -89,7 +98,8 @@
       "封装",
       "多态",
       "泛型"
-    ]
+    ],
+    "folder": "JavaFundamentals"
   },
   "10-常用API.md": {
     "summary": "Java常用API的介绍和使用方法，包括字符串、集合、IO等核心类库",
@@ -98,7 +108,8 @@
       "字符串",
       "集合",
       "IO操作"
-    ]
+    ],
+    "folder": "JavaFundamentals"
   },
   "11-集合.md": {
     "summary": "Java集合框架详解，包括Collection接口、List、Set、Map等核心接口及其实现类的使用方法",
@@ -107,7 +118,8 @@
       "ArrayList",
       "HashMap",
       "Iterator"
-    ]
+    ],
+    "folder": "JavaFundamentals"
   },
   "12-函数式编程.md": {
     "summary": "Java 8引入的函数式编程特性，包括Lambda表达式、Stream API、方法引用等现代编程范式",
@@ -116,6 +128,227 @@
       "Stream API",
       "方法引用",
       "函数式接口"
-    ]
+    ],
+    "folder": "JavaFundamentals"
+  },
+  "1-基础语法.md": {
+    "summary": "Kotlin编程语言的基础语法，包括变量声明、数据类型、控制流程等核心概念",
+    "keywords": [
+      "基础语法",
+      "变量声明",
+      "数据类型",
+      "控制流程"
+    ],
+    "folder": "KotlinEssentials"
+  },
+  "2-面向对象.md": {
+    "summary": "Kotlin中的面向对象编程，包括类、对象、继承、封装等OOP核心概念",
+    "keywords": [
+      "面向对象",
+      "类和对象",
+      "继承",
+      "封装"
+    ],
+    "folder": "KotlinEssentials"
+  },
+  "3-ADT和模式匹配.md": {
+    "summary": "Kotlin中的代数数据类型(ADT)和模式匹配，包括sealed类、when表达式等高级特性",
+    "keywords": [
+      "ADT",
+      "模式匹配",
+      "sealed类",
+      "when表达式"
+    ],
+    "folder": "KotlinEssentials"
+  },
+  "4-类型系统.md": {
+    "summary": "Kotlin强大的类型系统，包括空安全、泛型、类型推断等特性",
+    "keywords": [
+      "类型系统",
+      "空安全",
+      "泛型",
+      "类型推断"
+    ],
+    "folder": "KotlinEssentials"
+  },
+  "5-Lambda和集合.md": {
+    "summary": "Kotlin中的Lambda表达式和集合操作，包括高阶函数、集合API等函数式编程特性",
+    "keywords": [
+      "Lambda表达式",
+      "集合操作",
+      "高阶函数",
+      "函数式编程"
+    ],
+    "folder": "KotlinEssentials"
+  },
+  "6-多态和扩展.md": {
+    "summary": "Kotlin中的多态性和扩展功能，包括接口、抽象类、扩展函数等高级特性",
+    "keywords": [
+      "多态",
+      "扩展函数",
+      "接口",
+      "抽象类"
+    ],
+    "folder": "KotlinEssentials"
+  },
+  "7-设计模式.md": {
+    "summary": "在Kotlin中实现常见的设计模式，包括单例、工厂、观察者等经典模式",
+    "keywords": [
+      "设计模式",
+      "单例模式",
+      "工厂模式",
+      "观察者模式"
+    ],
+    "folder": "KotlinEssentials"
+  },
+  "01-单例模式.md": {
+    "summary": "单例模式的实现方式和应用场景，确保一个类只有一个实例",
+    "keywords": ["单例模式", "设计模式", "创建型模式", "实例控制"],
+    "folder": "DesignPattern"
+  },
+  "02-工厂方法模式.md": {
+    "summary": "工厂方法模式的实现和应用，通过工厂方法创建对象",
+    "keywords": ["工厂方法", "创建型模式", "对象创建", "多态"],
+    "folder": "DesignPattern"
+  },
+  "03-抽象工厂模式.md": {
+    "summary": "抽象工厂模式提供创建相关对象族的接口",
+    "keywords": ["抽象工厂", "创建型模式", "对象族", "产品系列"],
+    "folder": "DesignPattern"
+  },
+  "04-建造者模式.md": {
+    "summary": "建造者模式用于构建复杂对象，分步骤创建",
+    "keywords": ["建造者模式", "创建型模式", "复杂对象", "分步构建"],
+    "folder": "DesignPattern"
+  },
+  "05-原型模式.md": {
+    "summary": "原型模式通过克隆现有实例来创建新对象",
+    "keywords": ["原型模式", "创建型模式", "对象克隆", "深拷贝"],
+    "folder": "DesignPattern"
+  },
+  "06-适配器模式.md": {
+    "summary": "适配器模式使不兼容的接口能够协同工作",
+    "keywords": ["适配器模式", "结构型模式", "接口适配", "兼容性"],
+    "folder": "DesignPattern"
+  },
+  "07-桥接模式.md": {
+    "summary": "桥接模式将抽象与实现分离，使它们可以独立变化",
+    "keywords": ["桥接模式", "结构型模式", "抽象分离", "独立变化"],
+    "folder": "DesignPattern"
+  },
+  "08-组合模式.md": {
+    "summary": "组合模式将对象组合成树形结构来表示部分-整体层次结构",
+    "keywords": ["组合模式", "结构型模式", "树形结构", "部分整体"],
+    "folder": "DesignPattern"
+  },
+  "09-装饰模式.md": {
+    "summary": "装饰模式动态地给对象添加新功能",
+    "keywords": ["装饰模式", "结构型模式", "功能扩展", "动态添加"],
+    "folder": "DesignPattern"
+  },
+  "10-外观模式.md": {
+    "summary": "外观模式为复杂子系统提供简化的接口",
+    "keywords": ["外观模式", "结构型模式", "简化接口", "子系统"],
+    "folder": "DesignPattern"
+  },
+  "11-享元模式.md": {
+    "summary": "享元模式通过共享技术有效支持大量细粒度对象",
+    "keywords": ["享元模式", "结构型模式", "对象共享", "内存优化"],
+    "folder": "DesignPattern"
+  },
+  "12-代理模式.md": {
+    "summary": "代理模式为其他对象提供代理以控制对它的访问",
+    "keywords": ["代理模式", "结构型模式", "访问控制", "间接访问"],
+    "folder": "DesignPattern"
+  },
+  "13-职责链模式.md": {
+    "summary": "职责链模式将请求沿着处理者链传递直到有对象处理它",
+    "keywords": ["职责链模式", "行为型模式", "请求传递", "处理链"],
+    "folder": "DesignPattern"
+  },
+  "14-命令模式.md": {
+    "summary": "命令模式将请求封装成对象，以便参数化和排队",
+    "keywords": ["命令模式", "行为型模式", "请求封装", "参数化"],
+    "folder": "DesignPattern"
+  },
+  "15-解释器模式.md": {
+    "summary": "解释器模式为语言创建解释器来解释语句",
+    "keywords": ["解释器模式", "行为型模式", "语言解释", "语法分析"],
+    "folder": "DesignPattern"
+  },
+  "16-迭代器模式.md": {
+    "summary": "迭代器模式提供顺序访问聚合对象元素的方法",
+    "keywords": ["迭代器模式", "行为型模式", "顺序访问", "聚合对象"],
+    "folder": "DesignPattern"
+  },
+  "17-中介模式.md": {
+    "summary": "中介模式定义对象间的交互方式，降低耦合度",
+    "keywords": ["中介模式", "行为型模式", "对象交互", "解耦"],
+    "folder": "DesignPattern"
+  },
+  "18-备忘录模式.md": {
+    "summary": "备忘录模式保存对象的内部状态以便后续恢复",
+    "keywords": ["备忘录模式", "行为型模式", "状态保存", "状态恢复"],
+    "folder": "DesignPattern"
+  },
+  "19-观察者模式.md": {
+    "summary": "观察者模式定义对象间一对多的依赖关系",
+    "keywords": ["观察者模式", "行为型模式", "一对多", "事件通知"],
+    "folder": "DesignPattern"
+  },
+  "20-状态模式.md": {
+    "summary": "状态模式允许对象在内部状态改变时改变其行为",
+    "keywords": ["状态模式", "行为型模式", "状态改变", "行为切换"],
+    "folder": "DesignPattern"
+  },
+  "21-策略模式.md": {
+    "summary": "策略模式定义算法族，使它们可以互相替换",
+    "keywords": ["策略模式", "行为型模式", "算法族", "算法替换"],
+    "folder": "DesignPattern"
+  },
+  "22-模板方法模式.md": {
+    "summary": "模板方法模式定义算法骨架，子类实现具体步骤",
+    "keywords": ["模板方法", "行为型模式", "算法骨架", "步骤实现"],
+    "folder": "DesignPattern"
+  },
+  "23-访问者模式.md": {
+    "summary": "访问者模式在不改变元素类的前提下定义新操作",
+    "keywords": ["访问者模式", "行为型模式", "操作分离", "双重分派"],
+    "folder": "DesignPattern"
+  },
+  "24-依赖注入模式.md": {
+    "summary": "依赖注入模式通过外部注入依赖来降低耦合",
+    "keywords": ["依赖注入", "现代模式", "控制反转", "解耦"],
+    "folder": "DesignPattern"
+  },
+  "25-事件总线模式.md": {
+    "summary": "事件总线模式提供发布-订阅机制进行组件通信",
+    "keywords": ["事件总线", "现代模式", "发布订阅", "组件通信"],
+    "folder": "DesignPattern"
+  },
+  "26-规格模式.md": {
+    "summary": "规格模式将业务规则封装成可组合的规格对象",
+    "keywords": ["规格模式", "现代模式", "业务规则", "规则组合"],
+    "folder": "DesignPattern"
+  },
+  "27-空对象模式.md": {
+    "summary": "空对象模式提供默认行为来避免空指针检查",
+    "keywords": ["空对象模式", "现代模式", "默认行为", "空指针"],
+    "folder": "DesignPattern"
+  },
+  "28-对象池模式.md": {
+    "summary": "对象池模式通过重用对象来提高性能",
+    "keywords": ["对象池模式", "现代模式", "对象重用", "性能优化"],
+    "folder": "DesignPattern"
+  },
+  "29-过滤器模式.md": {
+    "summary": "过滤器模式使用不同标准过滤对象集合",
+    "keywords": ["过滤器模式", "现代模式", "对象过滤", "条件筛选"],
+    "folder": "DesignPattern"
+  },
+  "30-生产者消费者模式.md": {
+    "summary": "生产者消费者模式解决生产和消费速度不匹配问题",
+    "keywords": ["生产者消费者", "现代模式", "并发控制", "缓冲区"],
+    "folder": "DesignPattern"
   }
 }

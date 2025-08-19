@@ -3,10 +3,11 @@ import { Row, Col, Card, Statistic, Skeleton } from 'antd';
 import { FileTextOutlined, NumberOutlined, CalendarOutlined } from '@ant-design/icons';
 import { statsCardTheme } from '../theme';
 
-const StatsGrid = ({ fileStats, totalChars, loading }) => {
+const StatsGrid = ({ fileStats, totalChars, loading, currentView, currentFolder, folderSummaries, allFileStats }) => {
   // 计算统计数据
-  const totalFiles = fileStats.length;
+  const totalFiles = currentView === 'folders' ? allFileStats.length : fileStats.length;
   const avgCharsPerFile = totalFiles > 0 ? Math.round(totalChars / totalFiles) : 0;
+  const totalFolders = Object.keys(folderSummaries || {}).length;
 
   // 获取最新修改时间
   const latestModifyTime = fileStats.length > 0
@@ -24,7 +25,32 @@ const StatsGrid = ({ fileStats, totalChars, loading }) => {
     });
   };
 
-  const statsData = [
+  const statsData = currentView === 'folders' ? [
+    {
+      title: '教程目录',
+      value: totalFolders,
+      icon: <FileTextOutlined style={{ color: statsCardTheme.iconColors[0] }} />,
+      gradient: statsCardTheme.gradients[0]
+    },
+    {
+      title: '文件总数',
+      value: totalFiles,
+      icon: <NumberOutlined style={{ color: statsCardTheme.iconColors[1] }} />,
+      gradient: statsCardTheme.gradients[1]
+    },
+    {
+      title: '总字符数',
+      value: totalChars,
+      icon: <NumberOutlined style={{ color: statsCardTheme.iconColors[2] }} />,
+      gradient: statsCardTheme.gradients[2]
+    },
+    {
+      title: '平均字符数',
+      value: avgCharsPerFile,
+      icon: <CalendarOutlined style={{ color: statsCardTheme.iconColors[3] }} />,
+      gradient: statsCardTheme.gradients[3],
+    }
+  ] : [
     {
       title: '文件总数',
       value: totalFiles,

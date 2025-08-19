@@ -1,0 +1,26 @@
+{
+  "JavaFundamentals": {
+    "title": "Java基础教程",
+    "description": "Java编程语言的基础知识教程，包含开发环境准备、语法基础、面向对象编程、常用API等核心内容",
+    "icon": "J",
+    "color": "#f89820",
+    "order": 1,
+    "path": "JavaFundamentals"
+  },
+  "KotlinEssentials": {
+    "title": "Kotlin核心编程",
+    "description": "Kotlin编程语言的核心知识教程，包含基础语法、面向对象、类型系统、函数式编程等内容",
+    "icon": "K",
+    "color": "#7c4dff",
+    "order": 2,
+    "path": "KotlinEssentials"
+  },
+  "DesignPattern": {
+    "title": "设计模式",
+    "description": "全面的设计模式教程，涵盖23种经典设计模式及现代扩展模式，包含创建型、结构型、行为型模式",
+    "icon": "D",
+    "color": "#ff5722",
+    "order": 3,
+    "path": "DesignPattern"
+  }
+}

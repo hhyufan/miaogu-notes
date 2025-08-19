@@ -3,8 +3,9 @@ import { Layout, ConfigProvider, theme } from 'antd';
 import Header from './components/Header';
 import StatsGrid from './components/StatsGrid';
 import FilesList from './components/FilesList';
+import FoldersList from './components/FoldersList';
 import MarkdownViewer from './components/MarkdownViewer';
-import { loadFileStats, loadFileSummaries } from './utils/fileUtils';
+import { loadFileStats, loadFileSummaries, loadFolderSummaries } from './utils/fileUtils';
 import { ThemeProvider, useTheme } from './theme';
 import './App.css';
 
@@ -19,6 +20,10 @@ function AppContent() {
   const [sortBy, setSortBy] = useState('number-asc');
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileSummaries, setFileSummaries] = useState({});
+  const [folderSummaries, setFolderSummaries] = useState({});
+  const [currentView, setCurrentView] = useState('folders'); // 'folders' or 'files'
+  const [currentFolder, setCurrentFolder] = useState(null);
+  const [allFileStats, setAllFileStats] = useState([]);
 
   // Ant Design主题配置
   const antdThemeConfig = {
@@ -38,12 +43,17 @@ function AppContent() {
     try {
       setLoading(true);
 
+      // 加载文件夹摘要信息
+      const folderSums = await loadFolderSummaries();
+      setFolderSummaries(folderSums);
+
       // 加载文件概要信息
       const summaries = await loadFileSummaries();
       setFileSummaries(summaries);
 
       // 加载文件统计
       const { fileStats: stats, totalChars: total } = await loadFileStats(summaries);
+      setAllFileStats(stats);
       setFileStats(stats);
       setTotalChars(total);
     } catch (error) {
@@ -93,6 +103,28 @@ function AppContent() {
     setSelectedFile(null);
   };
 
+  // 打开文件夹
+  const openFolder = (folderName) => {
+    setCurrentFolder(folderName);
+    setCurrentView('files');
+    // 过滤当前文件夹的文件
+    const folderFiles = allFileStats.filter(file => file.folder === folderName);
+    setFileStats(folderFiles);
+    // 计算当前文件夹的总字符数
+    const folderTotalChars = folderFiles.reduce((total, file) => total + file.charCount, 0);
+    setTotalChars(folderTotalChars);
+  };
+
+  // 返回文件夹列表
+  const backToFolders = () => {
+    setCurrentView('folders');
+    setCurrentFolder(null);
+    setFileStats(allFileStats);
+    // 恢复所有文件的总字符数
+    const allTotalChars = allFileStats.reduce((total, file) => total + file.charCount, 0);
+    setTotalChars(allTotalChars);
+  };
+
   // 初始化加载
   useEffect(() => {
     loadStats();
@@ -112,6 +144,7 @@ function AppContent() {
           <MarkdownViewer
             fileName={selectedFile.name}
             onBack={closeMarkdownViewer}
+            currentFolder={currentFolder}
           />
         ) : (
           <>
@@ -127,14 +160,30 @@ function AppContent() {
                   fileStats={fileStats}
                   totalChars={totalChars}
                   loading={loading}
+                  currentView={currentView}
+                  currentFolder={currentFolder}
+                  folderSummaries={folderSummaries}
+                  allFileStats={allFileStats}
                 />
-                <FilesList
-                  fileStats={fileStats}
-                  loading={loading}
-                  sortBy={sortBy}
-                  onSortChange={applySorting}
-                  onFileClick={openMarkdownFile}
-                />
+                {currentView === 'folders' ? (
+                  <FoldersList
+                    folderSummaries={folderSummaries}
+                    allFileStats={allFileStats}
+                    loading={loading}
+                    onFolderClick={openFolder}
+                  />
+                ) : (
+                  <FilesList
+                    fileStats={fileStats}
+                    loading={loading}
+                    sortBy={sortBy}
+                    onSortChange={applySorting}
+                    onFileClick={openMarkdownFile}
+                    onBackToFolders={backToFolders}
+                    currentFolder={currentFolder}
+                    folderSummaries={folderSummaries}
+                  />
+                )}
               </div>
             </Content>
           </>

@@ -16,7 +16,7 @@ const loadFileSummariesData = async () => {
 // 从文件系统获取markdown文件列表和统计信息
 const getFileSystemStats = async () => {
   const fileStats = [];
-  
+
   // 从file-summaries.json获取文件列表
   try {
     const summariesResponse = await fetch('/file-summaries.json');
@@ -24,39 +24,52 @@ const getFileSystemStats = async () => {
       throw new Error('无法获取文件摘要列表');
     }
     const summariesData = await summariesResponse.json();
-    
-    // 对每个文件，直接读取内容并计算统计信息
-    for (const fileName of Object.keys(summariesData)) {
+
+    // 获取文件夹列表
+    const folderResponse = await fetch('/folder-summaries.json');
+    const folderData = folderResponse.ok ? await folderResponse.json() : {};
+
+    // 对每个文件夹中的文件进行处理
+    for (const [folderKey, folderInfo] of Object.entries(folderData)) {
+      const folderPath = folderInfo.path || folderKey;
       try {
-        const fileResponse = await fetch(`/markdown-files/${fileName}`);
-        if (fileResponse.ok) {
-          const content = await fileResponse.text();
-          const lastModified = fileResponse.headers.get('last-modified');
-          
-          fileStats.push({
-            name: fileName,
-            lastWriteTime: lastModified ? new Date(lastModified).toLocaleString('zh-CN', {
-              year: 'numeric',
-              month: 'numeric', 
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-              second: '2-digit'
-            }) : new Date().toLocaleString('zh-CN'),
-            length: content.length,
-            path: `markdown-files/${fileName}`
-          });
-        } else {
-          console.warn(`无法读取文件: ${fileName}`);
+        // 从file-summaries.json中获取属于该文件夹的文件
+        for (const [fileName, fileInfo] of Object.entries(summariesData)) {
+          if (fileInfo.folder === folderKey) {
+            try {
+              const fileResponse = await fetch(`/markdown-files/${folderPath}/${fileName}`);
+              if (fileResponse.ok) {
+                const content = await fileResponse.text();
+                const lastModified = fileResponse.headers.get('last-modified');
+
+                fileStats.push({
+                  name: fileName,
+                  folder: folderKey,
+                  lastWriteTime: lastModified ? new Date(lastModified).toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: 'numeric',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                  }) : new Date().toLocaleString('zh-CN'),
+                  length: content.length,
+                  path: `markdown-files/${folderPath}/${fileName}`
+                });
+              }
+            } catch (error) {
+              console.warn(`读取文件 ${folderPath}/${fileName} 时出错:`, error);
+            }
+          }
         }
       } catch (error) {
-        console.warn(`读取文件 ${fileName} 时出错:`, error);
+        console.warn(`读取文件夹 ${folderPath} 时出错:`, error);
       }
     }
   } catch (error) {
     console.error('获取文件统计信息失败:', error);
   }
-  
+
   return fileStats;
 };
 
@@ -78,6 +91,7 @@ const getMarkdownFiles = async () => {
       name: file.name,
       modifyTime: file.lastWriteTime,
       charCount: file.length,
+      folder: file.folder,
       summary: '',
       keywords: []
     });
@@ -111,13 +125,26 @@ const getMarkdownFiles = async () => {
       // 从文件名中提取数字编号
       const numberMatch = file.name.match(/^(\d+)-/);
       const fileNumber = numberMatch ? parseInt(numberMatch[1]) : 999;
-      
+
       return {
         ...file,
         fileNumber: fileNumber
       };
     })
     .sort((a, b) => a.fileNumber - b.fileNumber);
+};
+
+// 加载文件夹概要信息
+export const loadFolderSummaries = async () => {
+  try {
+    const response = await fetch('/folder-summaries.json');
+    if (response.ok) {
+      return await response.json();
+    }
+  } catch (error) {
+    console.warn('无法加载文件夹概要信息:', error);
+  }
+  return {};
 };
 
 // 加载文件概要信息
@@ -168,12 +195,28 @@ export const loadFileStats = async (fileSummaries) => {
 };
 
 // 加载单个Markdown文件内容
-export const loadMarkdownFile = async (fileName) => {
+export const loadMarkdownFile = async (fileName, folderName = null) => {
   // 加载真实的Markdown文件内容
   return new Promise(async (resolve, reject) => {
     try {
-      // 构建文件路径
-      const filePath = `/markdown-files/${fileName}`;
+      let filePath;
+      if (folderName) {
+        // 获取folder-summaries.json中的路径配置
+        try {
+          const folderResponse = await fetch('/folder-summaries.json');
+          if (folderResponse.ok) {
+            const folderData = await folderResponse.json();
+            const folderPath = folderData[folderName]?.path || folderName;
+            filePath = `/markdown-files/${folderPath}/${fileName}`;
+          } else {
+            filePath = `/markdown-files/${folderName}/${fileName}`;
+          }
+        } catch (error) {
+          filePath = `/markdown-files/${folderName}/${fileName}`;
+        }
+      } else {
+        filePath = `/markdown-files/${fileName}`;
+      }
 
       // 尝试使用fetch加载文件
       const response = await fetch(filePath);
@@ -182,7 +225,7 @@ export const loadMarkdownFile = async (fileName) => {
         resolve(content);
       } else {
         // 如果无法加载真实文件，返回模拟内容
-        const fileData = getMarkdownFiles();
+        const fileData = await getMarkdownFiles();
         const file = fileData.find(f => f.name === fileName);
         if (file) {
           const content = generateMockMarkdownContent(file);
@@ -193,7 +236,7 @@ export const loadMarkdownFile = async (fileName) => {
       }
     } catch (error) {
       // 如果fetch失败，返回模拟内容
-      const fileData = getMarkdownFiles();
+      const fileData = await getMarkdownFiles();
       const file = fileData.find(f => f.name === fileName);
       if (file) {
         const content = generateMockMarkdownContent(file);
