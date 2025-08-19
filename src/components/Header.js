@@ -35,11 +35,12 @@ const Header = () => {
           level={3}
           style={{
             margin: 0,
+              marginLeft: 20,
             color: theme.text.primary,
             fontWeight: 600
           }}
         >
-          Markdown 文件统计
+            喵咕 の Markdown笔记
         </Title>
       </Space>
 

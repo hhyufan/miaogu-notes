@@ -20,9 +20,7 @@ const StatsGrid = ({ fileStats, totalChars, loading }) => {
     return date.toLocaleDateString('zh-CN', {
       year: 'numeric',
       month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
+      day: '2-digit'
     });
   };
 
@@ -50,15 +48,14 @@ const StatsGrid = ({ fileStats, totalChars, loading }) => {
       value: formatDate(latestModifyTime),
       icon: <CalendarOutlined style={{ color: statsCardTheme.iconColors[3] }} />,
       gradient: statsCardTheme.gradients[3],
-      valueStyle: { fontSize: '22px' }
     }
   ];
 
   return (
     <div style={{ marginBottom: '24px' }}>
-      <Row gutter={[16, 16]}>
+      <Row gutter={[8, 8]} className="stats-grid">
         {statsData.map((stat, index) => (
-          <Col xs={24} sm={12} lg={6} key={index}>
+          <Col xs={12} sm={12} md={8} lg={6} key={index}>
             <Card
               style={{
                 background: stat.gradient,

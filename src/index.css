@@ -178,3 +178,115 @@ code {
     height: 4px;
   }
 }
+
+/* 超小屏幕全局优化 (320px - 480px) */
+@media (max-width: 480px) {
+  /* 提升触摸体验 */
+  .ant-btn,
+  .ant-card,
+  .file-list-item {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    touch-action: manipulation;
+  }
+  
+  /* 按钮最小触摸区域 */
+  .ant-btn {
+    min-height: 28px !important;
+    min-width: 28px !important;
+    padding: 4px 8px !important;
+  }
+  
+  /* 卡片间距优化 */
+  .ant-card {
+    margin-bottom: 6px !important;
+    border-radius: 6px !important;
+  }
+  
+  .ant-card-body {
+    padding: 8px !important;
+  }
+  
+  /* 列表项优化 */
+  .ant-list-item {
+    padding: 6px 8px !important;
+  }
+  
+  /* 选择器优化 */
+  .ant-select {
+    font-size: 13px !important;
+  }
+  
+  .ant-select-selector {
+    min-height: 28px !important;
+    padding: 0 6px !important;
+  }
+  
+  /* 标签优化 */
+  .ant-tag {
+    font-size: 10px !important;
+    padding: 1px 4px !important;
+    margin: 1px !important;
+    border-radius: 3px !important;
+  }
+  
+  /* 文字优化 */
+  .ant-typography {
+    font-size: 13px !important;
+  }
+  
+  .ant-typography h1 {
+    font-size: 1.4rem !important;
+  }
+  
+  .ant-typography h2 {
+    font-size: 1.2rem !important;
+  }
+  
+  .ant-typography h3 {
+    font-size: 1.05rem !important;
+  }
+  
+  /* 统计数字优化 */
+  .ant-statistic-content {
+    font-size: 16px !important;
+  }
+  
+  .ant-statistic-title {
+    font-size: 11px !important;
+  }
+  
+  /* 滚动条进一步优化 */
+  ::-webkit-scrollbar {
+    width: 4px !important;
+    height: 4px !important;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    border-radius: 2px !important;
+  }
+  
+  /* 防止横向滚动 */
+  body {
+    overflow-x: hidden !important;
+  }
+  
+  /* 输入框优化 */
+  .ant-input {
+    font-size: 13px !important;
+    padding: 4px 8px !important;
+  }
+  
+  /* 间距系统优化 */
+  .ant-space-item {
+    margin-right: 4px !important;
+  }
+  
+  /* 布局优化 */
+  .ant-layout {
+    min-height: 100vh !important;
+  }
+  
+  .ant-layout-content {
+    padding: 8px !important;
+  }
+}
