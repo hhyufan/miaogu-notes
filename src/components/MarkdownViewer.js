@@ -449,7 +449,7 @@ const MarkdownViewer = ({ fileName, onBack }) => {
       background: theme.background.primary
     }}>
       {/* Header */}
-      <div style={{
+      <div className="markdown-header" style={{
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -480,7 +480,7 @@ const MarkdownViewer = ({ fileName, onBack }) => {
             )}
           </div>
         </div>
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+        <div className="markdown-header-buttons" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           <Button
             icon={<DownloadOutlined />}
             onClick={handleDownload}

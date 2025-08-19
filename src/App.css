@@ -20,6 +20,34 @@
   }
 }
 
+/* 移动端优化 */
+@media (max-width: 576px) {
+  .container {
+    padding: 0 8px;
+  }
+  
+  /* Header移动端优化 */
+  .ant-layout-header {
+    padding: 0 16px !important;
+    height: 56px !important;
+    line-height: 56px !important;
+  }
+  
+  .ant-layout-header .ant-typography {
+    font-size: 18px !important;
+  }
+  
+  .ant-layout-header .anticon {
+    font-size: 20px !important;
+  }
+  
+  /* 主题切换按钮移动端优化 */
+  .theme-toggle-btn {
+    width: 36px !important;
+    height: 36px !important;
+  }
+}
+
 /* 加载动画 */
 .loading-spinner {
   display: flex;
@@ -53,6 +81,31 @@
   box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
 }
 
+/* 文件列表项移动端优化 */
+@media (max-width: 768px) {
+  .file-list-item {
+    padding: 14px;
+    margin-bottom: 6px;
+  }
+}
+
+@media (max-width: 576px) {
+  .file-list-item {
+    padding: 12px;
+    margin-bottom: 4px;
+  }
+  
+  /* 移动端禁用hover效果 */
+  .file-list-item:hover {
+    transform: none;
+    box-shadow: none;
+  }
+  
+  [data-theme='dark'] .file-list-item:hover {
+    box-shadow: none;
+  }
+}
+
 /* 统计卡片样式 */
 .stats-card {
   text-align: center;
@@ -80,6 +133,40 @@
   opacity: 0.9;
 }
 
+/* 统计卡片移动端优化 */
+@media (max-width: 768px) {
+  .stats-card {
+    padding: 20px;
+  }
+  
+  .stats-card .stats-number {
+    font-size: 2rem;
+  }
+  
+  .stats-card .stats-label {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .stats-card {
+    padding: 16px;
+  }
+  
+  .stats-card .stats-number {
+    font-size: 1.8rem;
+  }
+  
+  .stats-card .stats-label {
+    font-size: 0.85rem;
+  }
+  
+  /* 移动端禁用hover效果 */
+  .stats-card:hover {
+    transform: none;
+  }
+}
+
 /* Markdown查看器样式 */
 .markdown-viewer {
   height: 100vh;
@@ -90,6 +177,51 @@
   height: calc(100vh - 64px);
   overflow-y: auto;
   padding: 24px;
+}
+
+/* Markdown查看器移动端优化 */
+@media (max-width: 768px) {
+  .markdown-content {
+    height: calc(100vh - 56px);
+    padding: 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  .markdown-content {
+    height: calc(100vh - 56px);
+    padding: 16px;
+  }
+  
+  /* Markdown内容移动端优化 */
+  .markdown-content h1 {
+    font-size: 1.6rem;
+  }
+  
+  .markdown-content h2 {
+    font-size: 1.3rem;
+  }
+  
+  .markdown-content h3 {
+    font-size: 1.1rem;
+  }
+  
+  .markdown-content pre {
+    padding: 12px;
+    margin: 12px 0;
+    overflow-x: auto;
+    font-size: 0.85rem;
+  }
+  
+  .markdown-content ul,
+  .markdown-content ol {
+    padding-left: 20px;
+  }
+  
+  .markdown-content blockquote {
+    margin: 12px 0;
+    padding: 0 12px;
+  }
 }
 
 .markdown-content h1,
@@ -200,5 +332,105 @@
 }
 
 .fade-in {
-  animation: fadeIn 0.5s ease-out;
+    animation: fadeIn 0.5s ease-out;
+  }
+
+/* MarkdownViewer Header 移动端优化 */
+@media (max-width: 768px) {
+  .markdown-viewer .ant-layout-header {
+    padding: 0 16px !important;
+  }
+  
+  .markdown-viewer .ant-layout-header .ant-typography {
+    font-size: 16px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .markdown-viewer .ant-layout-header {
+    padding: 0 12px !important;
+    height: 56px !important;
+    line-height: 56px !important;
+  }
+  
+  .markdown-viewer .ant-layout-header .ant-typography {
+    font-size: 14px !important;
+    margin: 0 !important;
+  }
+  
+  /* 按钮容器移动端优化 */
+  .markdown-viewer .ant-layout-header .ant-space {
+    gap: 4px !important;
+  }
+  
+  .markdown-viewer .ant-layout-header .ant-btn {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    padding: 0 !important;
+  }
+  
+  .markdown-viewer .ant-layout-header .ant-btn .anticon {
+    font-size: 14px !important;
+  }
+  
+  /* 返回按钮文字在移动端隐藏 */
+  .markdown-viewer .ant-layout-header .ant-btn span:not(.anticon) {
+    display: none;
+  }
+}
+
+/* MarkdownViewer 自定义Header移动端优化 */
+@media (max-width: 768px) {
+  .markdown-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start !important;
+    margin-bottom: 20px !important;
+    padding-bottom: 12px !important;
+  }
+  
+  .markdown-header-buttons {
+    gap: 6px !important;
+    align-self: flex-end;
+  }
+}
+
+@media (max-width: 576px) {
+  .markdown-header {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start !important;
+    margin-bottom: 16px !important;
+    padding-bottom: 8px !important;
+  }
+  
+  .markdown-header-buttons {
+    gap: 4px !important;
+    align-self: flex-end;
+  }
+  
+  .markdown-header .ant-btn {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    padding: 0 !important;
+  }
+  
+  .markdown-header .ant-btn .anticon {
+    font-size: 14px !important;
+  }
+  
+  .markdown-header .ant-typography {
+    font-size: 18px !important;
+    margin: 0 !important;
+  }
+  
+  .markdown-header .ant-typography + div {
+    margin-top: 4px !important;
+  }
+  
+  .markdown-header .ant-typography + div .ant-typography {
+    font-size: 12px !important;
+  }
 }
