@@ -108,5 +108,14 @@
       "HashMap",
       "Iterator"
     ]
+  },
+  "12-函数式编程.md": {
+    "summary": "Java 8引入的函数式编程特性，包括Lambda表达式、Stream API、方法引用等现代编程范式",
+    "keywords": [
+      "Lambda表达式",
+      "Stream API",
+      "方法引用",
+      "函数式接口"
+    ]
   }
 }
