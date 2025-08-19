@@ -1,0 +1,113 @@
+/* 全局样式重置 */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f5f5f5;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* 深色主题下的滚动条 */
+[data-theme='dark'] ::-webkit-scrollbar-track {
+  background: #2f2f2f;
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-thumb {
+  background: #555;
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
+  background: #777;
+}
+
+/* 代码高亮样式 */
+.hljs {
+  background: transparent !important;
+}
+
+/* 浅色主题代码高亮 */
+.hljs-keyword { color: #a626a4 !important; font-weight: bold !important; }
+.hljs-type { color: #0184bc !important; font-weight: bold !important; }
+.hljs-string { color: #50a14f !important; }
+.hljs-number { color: #986801 !important; }
+.hljs-comment { color: #a0a1a7 !important; font-style: italic !important; }
+.hljs-class .hljs-title { color: #c18401 !important; font-weight: bold !important; }
+.hljs-function .hljs-title { color: #4078f2 !important; }
+.hljs-variable { color: #e45649 !important; }
+.hljs-meta { color: #986801 !important; }
+
+/* 深色主题代码高亮 */
+[data-theme='dark'] .hljs-keyword { color: #c678dd !important; }
+[data-theme='dark'] .hljs-type { color: #61afef !important; }
+[data-theme='dark'] .hljs-string { color: #98c379 !important; }
+[data-theme='dark'] .hljs-number { color: #d19a66 !important; }
+[data-theme='dark'] .hljs-comment { color: #5c6370 !important; }
+[data-theme='dark'] .hljs-class .hljs-title { color: #e5c07b !important; }
+[data-theme='dark'] .hljs-function .hljs-title { color: #61afef !important; }
+[data-theme='dark'] .hljs-variable { color: #e06c75 !important; }
+[data-theme='dark'] .hljs-meta { color: #d19a66 !important; }
+
+/* 主题切换按钮动画样式 */
+.theme-toggle-btn {
+  transition: transform 0.3s ease;
+
+  .anticon {
+    font-size: 18px;
+  }
+
+  .anticon-sun {
+    color: #faad14;
+    animation: Rise 0.3s ease;
+  }
+
+  .anticon-moon {
+    color: #597ef7;
+    animation: Rise 0.3s ease;
+  }
+}
+
+@keyframes Rise {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
