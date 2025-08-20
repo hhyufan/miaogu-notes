@@ -7,7 +7,7 @@ mermaid.initialize({
   startOnLoad: false,
   theme: 'default',
   securityLevel: 'loose',
-  fontFamily: 'monospace',
+  fontFamily: 'JetBrains Mono, monospace',
   flowchart: {
     htmlLabels: true,
     curve: 'linear'

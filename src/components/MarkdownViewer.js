@@ -138,7 +138,7 @@ const MarkdownRenderer = React.memo(({ content }) => {
   const [isDarkMode, setIsDarkMode] = useState(
     document.documentElement.getAttribute('data-theme') === 'dark'
   );
-  
+
   // 使用useMemo来稳定content，避免不必要的重新渲染
   const memoizedContent = useMemo(() => content, [content]);
 
@@ -149,7 +149,7 @@ const MarkdownRenderer = React.memo(({ content }) => {
 
   const renderMermaidDiagrams = useCallback(() => {
 
-    
+
     if (!containerRef?.current) {
       return;
     }
@@ -216,7 +216,7 @@ const MarkdownRenderer = React.memo(({ content }) => {
   // 监听主题变化并更新样式
   useEffect(() => {
 
-    
+
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         if (mutation.attributeName === 'data-theme') {
@@ -235,7 +235,7 @@ const MarkdownRenderer = React.memo(({ content }) => {
     // 更新主题样式
     const updateTheme = () => {
 
-      
+
       // 移除现有的主题样式
       const existingStyle = document.getElementById('prism-theme');
       if (existingStyle) {
@@ -250,7 +250,7 @@ const MarkdownRenderer = React.memo(({ content }) => {
       link.type = 'text/css';
       link.href = isDarkMode ? '/prism-one-dark.css' : '/prism-one-light.css';
       document.head.appendChild(link);
-      
+
 
     };
 
@@ -276,7 +276,7 @@ const MarkdownRenderer = React.memo(({ content }) => {
   // 添加语言标签
   const addLanguageLabels = useCallback(() => {
 
-    
+
     cleanupLabels();
 
     const codeBlocks = containerRef.current?.querySelectorAll('code') || [];
@@ -350,11 +350,11 @@ const MarkdownRenderer = React.memo(({ content }) => {
   // 高亮核心逻辑
   const highlightCode = useCallback(() => {
     renderMermaidDiagrams();
-    
+
     if (containerRef?.current) {
       Prism.highlightAllUnder(containerRef?.current);
     }
-    
+
     addLanguageLabels();
   }, [isDarkMode, renderMermaidDiagrams, addLanguageLabels, token]);
 
@@ -375,7 +375,7 @@ const MarkdownRenderer = React.memo(({ content }) => {
     const debouncedHighlight = setTimeout(() => {
       highlightCode();
     }, 50);
-    
+
     return () => {
       clearTimeout(debouncedHighlight);
     };
@@ -386,7 +386,7 @@ const MarkdownRenderer = React.memo(({ content }) => {
     const timer = setTimeout(() => {
       renderMermaidDiagrams();
     }, 100);
-    
+
     return () => {
       clearTimeout(timer);
     };
@@ -460,16 +460,16 @@ const MarkdownRenderer = React.memo(({ content }) => {
             code: ({ className, children, inline, ...props }) => {
               // 使用闭包捕获isDarkMode，避免作为依赖项
               const language = className?.replace('language-', '') || '';
-              
 
-              
+
+
               return !inline && language ? (
                 <pre
                   className={`language-${language}`}
                   style={{
                     position: 'relative',
                     overflow: 'auto',
-                    fontSize: '0.8rem',
+                    fontSize: '1rem',
                     fontFamily: "'JetBrains Mono', monospace"
                   }}
                 >
@@ -484,7 +484,7 @@ const MarkdownRenderer = React.memo(({ content }) => {
                   padding: '3px 6px',
                   margin: '0 6px',
                   borderRadius: '4px',
-                  fontSize: '0.9em',
+                  fontSize: '1em',
                   fontFamily: "'Poppins', sans-serif",
                   fontWeight: '500',
                   border: `1px solid ${isDarkMode ? '#2563eb' : '#93c5fd'}`
@@ -506,7 +506,7 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
   const [fileStats, setFileStats] = useState(null);
-  
+
   // 使用防抖来减少content变化时的重新渲染
   const debouncedContent = useMemo(() => content, [content]);
   const { theme, isDarkMode, toggleTheme } = useTheme();

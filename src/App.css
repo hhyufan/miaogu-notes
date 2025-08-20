@@ -294,7 +294,7 @@
   padding: 2px 4px;
   border-radius: 4px;
   font-size: 0.9em;
-  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-family: 'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
 }
 
 [data-theme='dark'] .markdown-content code {
