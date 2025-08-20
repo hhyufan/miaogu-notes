@@ -1,12 +1,12 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import ReactDOM from 'react-dom/client';
-import { Button, Spin, Typography, Tag, Image } from 'antd';
+import { Button, Spin, Typography, Image } from 'antd';
 import { ArrowLeftOutlined, DownloadOutlined, SunOutlined, MoonFilled } from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Prism from 'prismjs';
 import 'prismjs/plugins/autoloader/prism-autoloader';
-// 动态导入Prism主题，不在这里静态导入
+import { theme } from 'antd';
 import { toast } from '../plugins/toast.js';
 import { loadMarkdownFile } from '../utils/fileUtils';
 import { formatDisplayName } from '../utils/formatUtils';
@@ -15,87 +15,91 @@ import { useAppDispatch, useReadingPosition } from '../store/hooks';
 import { saveReadingPosition } from '../store/appSlice';
 import MermaidRenderer from './MermaidRenderer';
 
+
 const { Title, Text } = Typography;
+const { useToken } = theme;
 
 // 配置必须在模块作用域
 Prism.plugins.autoloader.languages_path =
   'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/';
 Prism.languages.vue = Prism.languages.html; // 提前注册扩展语言
 
-// 基础样式函数，接收主题参数
-const getBaseStyle = (theme) => ({
-  color: theme.text.primary,
+// 导入本地主题样式
+
+// 基础样式函数，接收token参数
+const getBaseStyle = (token) => ({
+  color: token.colorText,
   fontFamily: "'Poppins', sans-serif"
 });
 
-const getTextStyle = (theme) => ({
-  ...getBaseStyle(theme),
+const getTextStyle = (token) => ({
+  ...getBaseStyle(token),
   fontSize: '1rem',
   lineHeight: 1.6
 });
 
-const getHeadingStyle = (theme) => ({
-  ...getBaseStyle(theme),
+const getHeadingStyle = (token) => ({
+  ...getBaseStyle(token),
   margin: '1.2em 0 0.6em',
   lineHeight: 1.2
 });
 
-const getQuoteStyle = (theme) => ({
-  ...getBaseStyle(theme),
-  borderLeft: `4px solid ${theme.border.accent}`,
+const getQuoteStyle = (token) => ({
+  ...getBaseStyle(token),
+  borderLeft: `4px solid ${token.colorPrimary}`,
   paddingLeft: '1rem',
   margin: '1rem 0',
   fontStyle: 'italic',
-  background: theme.background.secondary,
+  background: token.colorBgContainer,
   padding: '1rem',
   borderRadius: '4px'
 });
 
-const getListStyle = (theme) => ({
-  ...getBaseStyle(theme),
+const getListStyle = (token) => ({
+  ...getBaseStyle(token),
   paddingLeft: '1.5rem',
   margin: '1rem 0'
 });
 
-const getListItemStyle = (theme) => ({
-  ...getBaseStyle(theme),
+const getListItemStyle = (token) => ({
+  ...getBaseStyle(token),
   margin: '0.4rem 0'
 });
 
-const getLinkStyle = (theme) => ({
-  ...getBaseStyle(theme),
-  color: theme.accent.primary,
+const getLinkStyle = (token) => ({
+  ...getBaseStyle(token),
+  color: token.colorPrimary,
   textDecoration: 'underline'
 });
 
-const getHrStyle = (theme) => ({
-  ...getBaseStyle(theme),
+const getHrStyle = (token) => ({
+  ...getBaseStyle(token),
   border: 0,
-  borderTop: `1px solid ${theme.border.primary}`,
+  borderTop: `1px solid ${token.colorBorder}`,
   margin: '1.5rem 0'
 });
 
-const getTableStyle = (theme) => ({
-  ...getBaseStyle(theme),
+const getTableStyle = (token) => ({
+  ...getBaseStyle(token),
   borderCollapse: 'collapse',
   margin: '1rem 0',
-  border: `1px solid ${theme.border.primary}`
+  border: `1px solid ${token.colorBorder}`
 });
 
-const getTableHeadStyle = (theme) => ({
-  backgroundColor: theme.background.secondary
+const getTableHeadStyle = (token) => ({
+  backgroundColor: token.colorBgContainer
 });
 
-const getTableCellStyle = (theme) => ({
-  ...getBaseStyle(theme),
-  border: `1px solid ${theme.border.primary}`,
+const getTableCellStyle = (token) => ({
+  ...getBaseStyle(token),
+  border: `1px solid ${token.colorBorder}`,
   padding: '0.5rem'
 });
 
-const getTableHeaderStyle = (theme) => ({
-  ...getTableCellStyle(theme),
+const getTableHeaderStyle = (token) => ({
+  ...getTableCellStyle(token),
   fontWeight: 600,
-  backgroundColor: theme.background.secondary
+  backgroundColor: token.colorBgContainer
 });
 
 // 语言显示名称映射表
@@ -128,22 +132,33 @@ const LANGUAGE_DISPLAY_MAP = {
   mermaid: 'Mermaid'
 };
 
-const MarkdownRenderer = ({ content }) => {
+const MarkdownRenderer = React.memo(({ content }) => {
   const containerRef = useRef(null);
-  const { theme, isDarkMode } = useTheme();
+  const { token } = useToken();
+  const [isDarkMode, setIsDarkMode] = useState(
+    document.documentElement.getAttribute('data-theme') === 'dark'
+  );
   
+  // 使用useMemo来稳定content，避免不必要的重新渲染
+  const memoizedContent = useMemo(() => content, [content]);
+
+
+
   // 存储React根节点的引用
   const mermaidRootsRef = useRef(new Map());
-  // 防抖定时器引用
-  const copyDebounceRef = useRef(null);
 
-  const renderMermaidDiagrams = () => {
-    if (!containerRef?.current) return;
+  const renderMermaidDiagrams = useCallback(() => {
+
+    
+    if (!containerRef?.current) {
+      return;
+    }
 
     const currentRoots = new Map(mermaidRootsRef.current);
     const processedIds = new Set();
 
     const mermaidBlocks = containerRef.current.querySelectorAll('pre > code.language-mermaid');
+
 
     mermaidBlocks.forEach((codeBlock, index) => {
       const pre = codeBlock.parentElement;
@@ -196,29 +211,61 @@ const MarkdownRenderer = ({ content }) => {
     });
 
     mermaidRootsRef.current = currentRoots;
-  };
+  }, [isDarkMode]);
 
-  // 动态加载Prism主题
-  const loadPrismTheme = (isDark) => {
-    // 移除现有的Prism主题
-    const existingTheme = document.querySelector('link[data-prism-theme]');
-    if (existingTheme) {
-      existingTheme.remove();
-    }
+  // 监听主题变化并更新样式
+  useEffect(() => {
 
-    // 创建新的主题链接
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.setAttribute('data-prism-theme', 'true');
+    
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'data-theme') {
+          const newTheme = document.documentElement.getAttribute('data-theme');
 
-    if (isDark) {
-      link.href = 'https://cdnjs.cloudflare.com/ajax/libs/prism-themes/1.9.0/prism-one-dark.min.css';
-    } else {
-      link.href = 'https://cdnjs.cloudflare.com/ajax/libs/prism-themes/1.9.0/prism-one-light.min.css';
-    }
 
-    document.head.appendChild(link);
-  };
+          setIsDarkMode(newTheme === 'dark');
+        }
+      });
+    });
+
+    observer.observe(document.documentElement, { attributes: true });
+
+    // 样式标签将在updateTheme函数中创建
+
+    // 更新主题样式
+    const updateTheme = () => {
+
+      
+      // 移除现有的主题样式
+      const existingStyle = document.getElementById('prism-theme');
+      if (existingStyle) {
+
+        existingStyle.remove();
+      }
+
+      // 创建link元素来加载CSS文件
+      const link = document.createElement('link');
+      link.id = 'prism-theme';
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = isDarkMode ? '/prism-one-dark.css' : '/prism-one-light.css';
+      document.head.appendChild(link);
+      
+
+    };
+
+    updateTheme();
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [isDarkMode]);
+
+  // 优化主题切换处理
+  useEffect(() => {
+    const timer = setTimeout(renderMermaidDiagrams, 100);
+    return () => clearTimeout(timer);
+  }, [isDarkMode, renderMermaidDiagrams]);
 
   // 清理旧标签
   const cleanupLabels = () => {
@@ -227,10 +274,13 @@ const MarkdownRenderer = ({ content }) => {
   };
 
   // 添加语言标签
-  const addLanguageLabels = () => {
+  const addLanguageLabels = useCallback(() => {
+
+    
     cleanupLabels();
 
     const codeBlocks = containerRef.current?.querySelectorAll('code') || [];
+
 
     codeBlocks.forEach((code) => {
       const pre = code.closest('pre');
@@ -263,16 +313,14 @@ const MarkdownRenderer = ({ content }) => {
         position: 'absolute',
         top: '8px',
         right: '12px',
-        color: theme.text.primary,
-        fontSize: '0.9em',
-        border: `1px solid ${theme.border.primary}`,
-        background: theme.background.card,
-        padding: '4px 12px',
-        borderRadius: '6px',
+        color: token['colorText'],
+        fontSize: '0.8em',
+        border: 'none',
+        background: token['colorBgElevated'],
+        padding: '2px 8px',
+        borderRadius: '4px',
         cursor: 'pointer',
-        zIndex: 1,
-        transition: 'all 0.2s ease',
-        fontWeight: '500'
+        zIndex: 1
       });
 
       // 设置显示名称
@@ -283,12 +331,10 @@ const MarkdownRenderer = ({ content }) => {
 
       // 添加悬停效果
       tag.addEventListener('mouseover', () => {
-        tag.style.backgroundColor = theme.background.tertiary;
-        tag.style.borderColor = theme.border.accent;
+        tag.style.backgroundColor = token['colorBgElevated'];
       });
       tag.addEventListener('mouseout', () => {
-        tag.style.backgroundColor = theme.background.card;
-        tag.style.borderColor = theme.border.primary;
+        tag.style.backgroundColor = token['colorBgElevated'];
       });
 
       // 确保 pre 元素有定位上下文
@@ -297,186 +343,179 @@ const MarkdownRenderer = ({ content }) => {
       // 将标签添加到 pre 元素
       pre.parentElement.appendChild(tag);
     });
-  };
+  }, [token]);
 
-  // 更新现有语言标签的样式
-  const updateLanguageLabelsTheme = () => {
-    const existingTags = containerRef.current?.querySelectorAll('.lang-tag');
-    existingTags?.forEach((tag) => {
-      Object.assign(tag.style, {
-        color: theme.text.primary,
-        fontSize: '0.9em',
-        border: `1px solid ${theme.border.primary}`,
-        background: theme.background.card,
-        padding: '4px 12px',
-        borderRadius: '6px',
-        fontWeight: '500'
-      });
 
-      // 重新绑定悬停事件
-      tag.onmouseover = () => {
-        tag.style.backgroundColor = theme.background.tertiary;
-        tag.style.borderColor = theme.border.accent;
-      };
-      tag.onmouseout = () => {
-        tag.style.backgroundColor = theme.background.card;
-        tag.style.borderColor = theme.border.primary;
-      };
-    });
-  };
 
   // 高亮核心逻辑
-  const highlightCode = () => {
-    Prism.highlightAllUnder(containerRef.current);
-    addLanguageLabels();
+  const highlightCode = useCallback(() => {
     renderMermaidDiagrams();
-  };
-
-  // 复制到剪贴板（带防抖）
-  const copyToClipboard = (text) => {
-    // 清除之前的定时器
-    if (copyDebounceRef.current) {
-      clearTimeout(copyDebounceRef.current);
+    
+    if (containerRef?.current) {
+      Prism.highlightAllUnder(containerRef?.current);
     }
     
-    // 设置新的防抖定时器
-    copyDebounceRef.current = setTimeout(() => {
-      navigator.clipboard
-        .writeText(text)
-        .then(async () => {
-          await toast.success('内容已复制', { duration: 2 });
-        })
-        .catch((err) => {
-          console.error('Failed to copy text: ', err);
-        });
-    }, 300); // 300ms防抖延迟
+    addLanguageLabels();
+  }, [isDarkMode, renderMermaidDiagrams, addLanguageLabels, token]);
+
+  // 复制到剪贴板
+  const copyToClipboard = (text) => {
+    navigator.clipboard
+      .writeText(text)
+      .then(async () => {
+        await toast.success('内容已复制', { debounce: 3000, closable: true });
+      })
+      .catch((err) => {
+        console.error('Failed to copy text: ', err);
+      });
   };
 
+  // 修改 useEffect 依赖项
   useEffect(() => {
-    const debounceTimer = setTimeout(highlightCode, 50); // 延迟确保 DOM 更新
-    return () => clearTimeout(debounceTimer);
-  }, [content]);
+    const debouncedHighlight = setTimeout(() => {
+      highlightCode();
+    }, 50);
+    
+    return () => {
+      clearTimeout(debouncedHighlight);
+    };
+  }, [highlightCode]); // 只在 content 变化时执行
 
-  // 监听主题变化，更新语言标签样式和Prism主题
+  // 优化主题切换处理
   useEffect(() => {
-    loadPrismTheme(isDarkMode);
-    updateLanguageLabelsTheme();
-  }, [theme, isDarkMode]);
-
-  // 初始化时加载Prism主题
-  useEffect(() => {
-    loadPrismTheme(isDarkMode);
-  }, []);
+    const timer = setTimeout(() => {
+      renderMermaidDiagrams();
+    }, 100);
+    
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [renderMermaidDiagrams]);
 
   return (
     <div ref={containerRef}>
-      <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-        components={{
-          p: ({ children }) => <p style={getTextStyle(theme)}>{children}</p>,
-          h1: ({ children }) => <h1 style={{ ...getHeadingStyle(theme), fontSize: '2rem' }}>{children}</h1>,
-          h2: ({ children }) => <h2 style={{ ...getHeadingStyle(theme), fontSize: '1.8rem' }}>{children}</h2>,
-          h3: ({ children }) => <h3 style={{ ...getHeadingStyle(theme), fontSize: '1.6rem' }}>{children}</h3>,
-          h4: ({ children }) => <h4 style={{ ...getHeadingStyle(theme), fontSize: '1.4rem' }}>{children}</h4>,
-          h5: ({ children }) => <h5 style={{ ...getHeadingStyle(theme), fontSize: '1.2rem' }}>{children}</h5>,
-          h6: ({ children }) => <h6 style={{ ...getHeadingStyle(theme), fontSize: '1rem' }}>{children}</h6>,
-          blockquote: ({ children }) => <blockquote style={getQuoteStyle(theme)}>{children}</blockquote>,
-          ul: ({ children }) => <ul style={getListStyle(theme)}>{children}</ul>,
-          ol: ({ children }) => <ol style={getListStyle(theme)}>{children}</ol>,
-          li: ({ children }) => <li style={getListItemStyle(theme)}>{children}</li>,
-          a: ({ children, href }) => (
-            <a href={href} style={getLinkStyle(theme)}>
-              {children}
-            </a>
-          ),
-          em: ({ children }) => <em style={getTextStyle(theme)}>{children}</em>,
-          strong: ({ children }) => <strong style={{ ...getTextStyle(theme), fontWeight: 600 }}>{children}</strong>,
-          hr: () => <hr style={getHrStyle(theme)} />,
-          table: ({ children }) => <table style={getTableStyle(theme)}>{children}</table>,
-          thead: ({ children }) => <thead style={getTableHeadStyle(theme)}>{children}</thead>,
-          td: ({ children }) => <td style={getTableCellStyle(theme)}>{children}</td>,
-          th: ({ children }) => <th style={getTableHeaderStyle(theme)}>{children}</th>,
-          img: ({ src, alt, ...props }) => {
-            // 处理图片路径，将相对路径转换为绝对路径
-            const imageSrc = src?.startsWith('images/') ? `/${src}` : src;
-            return (
-              <Image
-                src={imageSrc}
-                alt={alt}
-                style={{
-                  maxWidth: '100%',
-                  height: 'auto',
+      {React.useMemo(() => (
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          skipHtml={false}
+          components={{
+            p: ({ children }) => <p style={getTextStyle(token)}>{children}</p>,
+            h1: ({ children }) => (
+              <h1 style={{
+                fontSize: '2rem',
+                fontWeight: 'bold',
+                marginBottom: '1rem',
+                color: isDarkMode ? '#f9fafb' : '#111827',
+                borderBottom: `2px solid ${isDarkMode ? '#374151' : '#e5e7eb'}`,
+                paddingBottom: '0.5rem'
+              }}>
+                {children}
+              </h1>
+            ),
+            h2: ({ children }) => <h2 style={{ ...getHeadingStyle(token), fontSize: '1.8rem' }}>{children}</h2>,
+            h3: ({ children }) => <h3 style={{ ...getHeadingStyle(token), fontSize: '1.6rem' }}>{children}</h3>,
+            h4: ({ children }) => <h4 style={{ ...getHeadingStyle(token), fontSize: '1.4rem' }}>{children}</h4>,
+            h5: ({ children }) => <h5 style={{ ...getHeadingStyle(token), fontSize: '1.2rem' }}>{children}</h5>,
+            h6: ({ children }) => <h6 style={{ ...getHeadingStyle(token), fontSize: '1rem' }}>{children}</h6>,
+            blockquote: ({ children }) => <blockquote style={getQuoteStyle(token)}>{children}</blockquote>,
+            ul: ({ children }) => <ul style={getListStyle(token)}>{children}</ul>,
+            ol: ({ children }) => <ol style={getListStyle(token)}>{children}</ol>,
+            li: ({ children }) => <li style={getListItemStyle(token)}>{children}</li>,
+            a: ({ children, href }) => (
+              <a href={href} style={getLinkStyle(token)}>
+                {children}
+              </a>
+            ),
+            em: ({ children }) => <em style={getTextStyle(token)}>{children}</em>,
+            strong: ({ children }) => <strong style={{ ...getTextStyle(token), fontWeight: 600 }}>{children}</strong>,
+            hr: () => <hr style={getHrStyle(token)} />,
+            table: ({ children }) => <table style={getTableStyle(token)}>{children}</table>,
+            thead: ({ children }) => <thead style={getTableHeadStyle(token)}>{children}</thead>,
+            td: ({ children }) => <td style={getTableCellStyle(token)}>{children}</td>,
+            th: ({ children }) => <th style={getTableHeaderStyle(token)}>{children}</th>,
+            img: ({ src, alt, ...props }) => {
+              // 处理图片路径，将相对路径转换为绝对路径
+              const imageSrc = src?.startsWith('images/') ? `/${src}` : src;
+              return (
+                <Image
+                  src={imageSrc}
+                  alt={alt}
+                  style={{
+                    maxWidth: '100%',
+                    height: 'auto',
+                    borderRadius: '4px',
+                    boxShadow: token.boxShadow,
+                    border: `1px solid ${token.colorBorder}`,
+                    margin: '1rem 0',
+                    display: 'block'
+                  }}
+                  preview={{
+                    mask: '点击预览',
+                    maskClassName: 'custom-mask'
+                  }}
+                  {...props}
+                />
+              );
+            },
+            code: ({ className, children, inline, ...props }) => {
+              // 使用闭包捕获isDarkMode，避免作为依赖项
+              const language = className?.replace('language-', '') || '';
+              
+
+              
+              return !inline && language ? (
+                <pre
+                  className={`language-${language}`}
+                  style={{
+                    position: 'relative',
+                    overflow: 'auto',
+                    fontSize: '0.8rem',
+                    fontFamily: "'JetBrains Mono', monospace"
+                  }}
+                >
+                  <code className={className} {...props} style={{ fontSize: '0.9rem' }}>
+                    {children}
+                  </code>
+                </pre>
+              ) : (
+                <code style={{
+                  backgroundColor: isDarkMode ? '#1e3a5f' : '#e6f3ff',
+                  color: isDarkMode ? '#d1d5db' : '#374151',
+                  padding: '3px 6px',
+                  margin: '0 6px',
                   borderRadius: '4px',
-                  boxShadow: theme.shadow.md,
-                  border: `1px solid ${theme.border.secondary}`,
-                  margin: '1rem 0',
-                  display: 'block'
-                }}
-                preview={{
-                  mask: '点击预览',
-                  maskClassName: 'custom-mask'
-                }}
-                {...props}
-              />
-            );
-          },
-          code({ className, children, ...props }) {
-            const language = className?.replace('language-', '') || '';
-            
-            return language ? (
-              <pre
-                className={`language-${language}`}
-                style={{
-                  position: 'relative',
-                  overflow: 'auto',
-                  fontSize: '1rem',
-                  fontFamily: "'JetBrains Mono', monospace",
-                  border: `1px solid ${theme.border.secondary}`,
-                  borderRadius: '6px',
-                  padding: '16px',
-                  margin: '16px 0',
-                  boxShadow: theme.shadow.sm
-                }}
-              >
-                <code className={className} {...props}>
+                  fontSize: '0.9em',
+                  fontFamily: "'Poppins', sans-serif",
+                  fontWeight: '500',
+                  border: `1px solid ${isDarkMode ? '#2563eb' : '#93c5fd'}`
+                }}{...props}>
                   {children}
                 </code>
-              </pre>
-            ) : (
-              <code style={{
-                backgroundColor: isDarkMode ? '#1e3a5f' : '#e6f3ff',
-                color: isDarkMode ? '#d1d5db' : '#374151',
-                padding: '3px 6px',
-                margin: '0 6px',
-                borderRadius: '4px',
-                fontSize: '0.9em',
-                fontFamily: "'Poppins', sans-serif",
-                fontWeight: '500',
-                border: `1px solid ${isDarkMode ? '#2563eb' : '#93c5fd'}`
-              }}{...props}>
-                {children}
-              </code>
-            );
-          },
-        }}
-      >
-        {content}
-      </ReactMarkdown>
+              );
+            }
+          }}
+        >
+          {memoizedContent}
+        </ReactMarkdown>
+      ), [memoizedContent, token, isDarkMode])}
     </div>
   );
-};
+});
 
 const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
   const [fileStats, setFileStats] = useState(null);
-  const { theme, isDarkMode, toggleTheme } = useTheme();
   
+  // 使用防抖来减少content变化时的重新渲染
+  const debouncedContent = useMemo(() => content, [content]);
+  const { theme, isDarkMode, toggleTheme } = useTheme();
+
   // Redux hooks
   const dispatch = useAppDispatch();
   const fileKey = currentFolder ? `${currentFolder}/${fileName}` : fileName;
   const readingPosition = useReadingPosition(fileKey);
-  
+
   // Refs
   const contentRef = useRef(null);
   const scrollTimeoutRef = useRef(null);
@@ -489,11 +528,11 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
     if (isRestoringRef.current) {
       return;
     }
-    
+
     if (scrollTimeoutRef.current) {
       clearTimeout(scrollTimeoutRef.current);
     }
-    
+
     // 防抖处理，避免频繁保存
     scrollTimeoutRef.current = setTimeout(() => {
       if (contentRef.current && !isRestoringRef.current) {
@@ -508,7 +547,7 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
     if (readingPosition && contentRef.current && !hasRestoredRef.current && !loading) {
       isRestoringRef.current = true;
       hasRestoredRef.current = true;
-      
+
       // 确保内容已完全渲染
       const restore = () => {
         if (contentRef.current && contentRef.current.scrollHeight > 0) {
@@ -519,7 +558,7 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
           }, 100);
         }
       };
-      
+
       // 使用requestAnimationFrame确保DOM更新完成
       requestAnimationFrame(() => {
         setTimeout(restore, 50);
@@ -532,7 +571,7 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
       setLoading(true);
       // 重置恢复标志位，允许新文件恢复滚动位置
       hasRestoredRef.current = false;
-      
+
       try {
         const fileContent = await loadMarkdownFile(fileName, currentFolder);
         setContent(fileContent);
@@ -543,7 +582,7 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
           size: fileContent.length,
           lastModified: new Date().toLocaleString()
         });
-        
+
         // 不在这里直接恢复滚动位置，而是通过单独的useEffect处理
       } catch (error) {
         console.error('加载文件失败:', error);
@@ -564,7 +603,7 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
       const timer = setTimeout(() => {
         restoreScrollPosition();
       }, 300); // 延迟确保内容完全渲染
-      
+
       return () => clearTimeout(timer);
     }
   }, [loading, content, restoreScrollPosition]);
@@ -684,7 +723,7 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
       </div>
 
       {/* Content */}
-      <div 
+      <div
         ref={contentRef}
         onScroll={handleScroll}
         style={{
@@ -699,7 +738,7 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
           overflowY: 'auto',
           maxHeight: 'calc(100vh - 140px)'
         }}>
-        <MarkdownRenderer content={content} />
+        <MarkdownRenderer content={debouncedContent} />
       </div>
     </div>
   );

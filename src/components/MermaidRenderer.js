@@ -51,43 +51,52 @@ const MermaidRenderer = memo(({ code }) => {
   const [errorContent, setErrorContent] = useState('')
 
   useEffect(() => {
-    if (!containerRef.current) return
 
-    console.log('MermaidRenderer: 开始渲染，代码:', code.substring(0, 50) + '...')
-    setIsLoading(true)
+    
+    if (!containerRef.current) {
+
+      return;
+    }
+
+
+    
+    setIsLoading(true);
 
     const timer = setTimeout(async () => {
       try {
-        console.log('MermaidRenderer: 调用mermaid.render，ID:', mermaidId)
+
+        
         // 渲染图表
-        const { svg } = await mermaid.render(mermaidId, code)
-        console.log('MermaidRenderer: 渲染成功，SVG长度:', svg.length)
+        const { svg } = await mermaid.render(mermaidId, code);
+        
+
 
         // 确保组件仍然挂载后再更新状态
         if (isMounted.current) {
-          setSvgContent(svg)
-          setErrorContent('')
-          setIsLoading(false)
+          setSvgContent(svg);
+          setErrorContent('');
+          setIsLoading(false);
         }
       } catch (error) {
-        console.error('Mermaid渲染错误:', error)
-        console.error('错误代码:', code)
+
+        
         // 确保组件仍然挂载后再更新状态
         if (isMounted.current) {
           setErrorContent(`<div style="color: red; padding: 10px; border: 1px solid red; border-radius: 4px;">
           <p><strong>Mermaid图表渲染错误</strong></p>
           <pre>${error.message}</pre>
           <pre>代码: ${code}</pre>
-        </div>`)
-          setSvgContent('')
-          setIsLoading(false)
+        </div>`);
+          setSvgContent('');
+          setIsLoading(false);
         }
       }
-    }, 500) // 0.5s delay
+    }, 500); // 0.5s delay
 
     return () => {
-      clearTimeout(timer)
-    }
+
+      clearTimeout(timer);
+    };
   }, [code, mermaidId])
 
   // 创建一个渲染内容的函数
