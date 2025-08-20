@@ -17,8 +17,8 @@ const FoldersList = ({ folderSummaries, allFileStats, loading, onFolderClick }) 
     };
   };
 
-  const folders = Object.keys(folderSummaries).map(folderName => {
-    const folderInfo = folderSummaries[folderName];
+  const folders = Object.keys(folderSummaries || {}).map(folderName => {
+    const folderInfo = (folderSummaries && folderSummaries[folderName]) || {};
     const stats = getFolderStats(folderName);
     return {
       name: folderName,
@@ -26,6 +26,33 @@ const FoldersList = ({ folderSummaries, allFileStats, loading, onFolderClick }) 
       ...stats
     };
   }).sort((a, b) => (a.order || 999) - (b.order || 999));
+
+  // 如果没有文件夹数据，显示加载状态
+  if (!folderSummaries || Object.keys(folderSummaries).length === 0) {
+    return (
+      <div style={{ marginTop: '24px' }}>
+        <Title level={3} style={{ color: currentTheme.text.primary, marginBottom: '24px' }}>
+          教程目录
+        </Title>
+        <Row gutter={[16, 16]}>
+          {loading ? (
+            // 显示加载骨架
+            [...Array(6)].map((_, index) => (
+              <Col xs={24} sm={12} md={8} lg={6} key={index}>
+                <Card loading={true} style={{ borderRadius: '12px' }} />
+              </Col>
+            ))
+          ) : (
+            <Col span={24}>
+              <div style={{ textAlign: 'center', padding: '40px', color: currentTheme.text.secondary }}>
+                暂无文件夹数据
+              </div>
+            </Col>
+          )}
+        </Row>
+      </div>
+    );
+  }
 
   return (
     <div style={{ marginTop: '24px' }}>

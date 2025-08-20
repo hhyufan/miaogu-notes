@@ -1,14 +1,99 @@
-import React from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { Card, List, Select, Space, Typography, Tag, Button, Skeleton } from 'antd';
 import { FileTextOutlined, CalendarOutlined, NumberOutlined, EyeOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { formatDisplayName, getFileExtension, formatFileSize, formatDate } from '../utils/formatUtils';
 import { useTheme } from '../theme';
+import { useSelector, useDispatch } from 'react-redux';
+import { saveFileListScrollPosition } from '../store/appSlice';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
 
 const FilesList = ({ fileStats, loading, sortBy, onSortChange, onFileClick, onBackToFolders, currentFolder, folderSummaries }) => {
   const { theme } = useTheme();
+  const dispatch = useDispatch();
+  const fileListScrollPositions = useSelector(state => state.app.fileListScrollPositions);
+  
+  // 滚动相关的refs
+  const listContainerRef = useRef(null);
+  const isRestoringRef = useRef(false);
+  const hasRestoredRef = useRef(false);
+  
+  // 防抖处理滚动事件
+  const handleScroll = useCallback(() => {
+    if (isRestoringRef.current) {
+      return; // 在恢复滚动位置时跳过保存
+    }
+    
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const folderKey = currentFolder || 'root';
+    
+    // 防抖保存滚动位置
+    clearTimeout(handleScroll.timeoutId);
+    handleScroll.timeoutId = setTimeout(() => {
+      dispatch(saveFileListScrollPosition({ folderKey, scrollTop }));
+    }, 300);
+  }, [dispatch, currentFolder]);
+  
+  // 恢复滚动位置
+  const restoreScrollPosition = useCallback(() => {
+    if (!listContainerRef.current || loading || hasRestoredRef.current) {
+      return;
+    }
+    
+    const folderKey = currentFolder || 'root';
+    const savedPosition = fileListScrollPositions[folderKey];
+    
+    if (savedPosition && savedPosition.scrollTop > 0) {
+      isRestoringRef.current = true;
+      
+      // 使用requestAnimationFrame确保DOM已更新
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          const maxScrollTop = document.documentElement.scrollHeight - window.innerHeight;
+          
+          if (maxScrollTop > 0) {
+            // 直接设置scrollTop，避免触发滚动事件
+            window.scrollTo(0, Math.min(savedPosition.scrollTop, maxScrollTop));
+            hasRestoredRef.current = true;
+          }
+          
+          // 重置恢复标志
+          setTimeout(() => {
+            isRestoringRef.current = false;
+          }, 100);
+        }, 100);
+      });
+    }
+  }, [fileListScrollPositions, currentFolder, loading]);
+  
+  // 在文件夹切换时重置恢复标志
+  useEffect(() => {
+    hasRestoredRef.current = false;
+  }, [currentFolder]);
+  
+  // 添加window滚动事件监听
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (handleScroll.timeoutId) {
+        clearTimeout(handleScroll.timeoutId);
+      }
+    };
+  }, [handleScroll]);
+  
+  // 禁用FilesList的滚动恢复，使用App.js的页面级滚动恢复
+  // useEffect(() => {
+  //   if (!loading && fileStats.length > 0 && !hasRestoredRef.current) {
+  //     const timer = setTimeout(() => {
+  //       restoreScrollPosition();
+  //     }, 300);
+  //     
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [loading, fileStats.length, restoreScrollPosition]);
   const getFileTypeColor = (fileName) => {
     const ext = getFileExtension(fileName);
     const colorMap = {
@@ -44,7 +129,11 @@ const FilesList = ({ fileStats, loading, sortBy, onSortChange, onFileClick, onBa
             )}
             <FileTextOutlined style={{ color: theme.accent.primary }} />
             <Title level={4} style={{ margin: 0, color: theme.text.primary }}>
-              {currentFolder ? `${folderSummaries?.[currentFolder]?.title || currentFolder}` : '文件列表'}
+              {currentFolder ? (
+                folderSummaries && typeof folderSummaries === 'object' && folderSummaries[currentFolder] && folderSummaries[currentFolder].title
+                  ? folderSummaries[currentFolder].title
+                  : currentFolder
+              ) : '文件列表'}
             </Title>
             <Tag color="blue">{fileStats.length} 个文件</Tag>
           </Space>
@@ -78,9 +167,12 @@ const FilesList = ({ fileStats, loading, sortBy, onSortChange, onFileClick, onBa
           ))}
         </div>
       ) : (
-        <List
-          dataSource={fileStats}
-          renderItem={(file) => (
+        <div
+          ref={listContainerRef}
+        >
+          <List
+            dataSource={fileStats}
+            renderItem={(file) => (
             <List.Item
               style={{
                 padding: '16px',
@@ -207,10 +299,11 @@ const FilesList = ({ fileStats, loading, sortBy, onSortChange, onFileClick, onBa
               />
             </List.Item>
           )}
-          locale={{
-            emptyText: '暂无文件数据'
-          }}
-        />
+            locale={{
+              emptyText: '暂无文件数据'
+            }}
+          />
+        </div>
       )}
     </Card>
   );

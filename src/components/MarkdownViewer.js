@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import ReactDOM from 'react-dom/client';
 import { Button, Spin, Typography, Tag, Image } from 'antd';
 import { ArrowLeftOutlined, DownloadOutlined, SunOutlined, MoonFilled } from '@ant-design/icons';
@@ -11,6 +11,8 @@ import { toast } from '../plugins/toast.js';
 import { loadMarkdownFile } from '../utils/fileUtils';
 import { formatDisplayName } from '../utils/formatUtils';
 import { useTheme } from '../theme';
+import { useAppDispatch, useReadingPosition } from '../store/hooks';
+import { saveReadingPosition } from '../store/appSlice';
 import MermaidRenderer from './MermaidRenderer';
 
 const { Title, Text } = Typography;
@@ -469,10 +471,68 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
   const [loading, setLoading] = useState(true);
   const [fileStats, setFileStats] = useState(null);
   const { theme, isDarkMode, toggleTheme } = useTheme();
+  
+  // Redux hooks
+  const dispatch = useAppDispatch();
+  const fileKey = currentFolder ? `${currentFolder}/${fileName}` : fileName;
+  const readingPosition = useReadingPosition(fileKey);
+  
+  // Refs
+  const contentRef = useRef(null);
+  const scrollTimeoutRef = useRef(null);
+  const isRestoringRef = useRef(false);
+  const hasRestoredRef = useRef(false);
+
+  // 滚动监听函数
+  const handleScroll = useCallback(() => {
+    // 如果正在恢复滚动位置，跳过处理
+    if (isRestoringRef.current) {
+      return;
+    }
+    
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+    }
+    
+    // 防抖处理，避免频繁保存
+    scrollTimeoutRef.current = setTimeout(() => {
+      if (contentRef.current && !isRestoringRef.current) {
+        const scrollTop = contentRef.current.scrollTop;
+        dispatch(saveReadingPosition({ fileKey, scrollTop }));
+      }
+    }, 500); // 500ms防抖
+  }, [dispatch, fileKey]);
+
+  // 恢复滚动位置
+  const restoreScrollPosition = useCallback(() => {
+    if (readingPosition && contentRef.current && !hasRestoredRef.current && !loading) {
+      isRestoringRef.current = true;
+      hasRestoredRef.current = true;
+      
+      // 确保内容已完全渲染
+      const restore = () => {
+        if (contentRef.current && contentRef.current.scrollHeight > 0) {
+          contentRef.current.scrollTop = readingPosition.scrollTop;
+          // 恢复完成后重置标志位
+          setTimeout(() => {
+            isRestoringRef.current = false;
+          }, 100);
+        }
+      };
+      
+      // 使用requestAnimationFrame确保DOM更新完成
+      requestAnimationFrame(() => {
+        setTimeout(restore, 50);
+      });
+    }
+  }, [readingPosition, loading]);
 
   useEffect(() => {
     const loadFile = async () => {
       setLoading(true);
+      // 重置恢复标志位，允许新文件恢复滚动位置
+      hasRestoredRef.current = false;
+      
       try {
         const fileContent = await loadMarkdownFile(fileName, currentFolder);
         setContent(fileContent);
@@ -483,6 +543,8 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
           size: fileContent.length,
           lastModified: new Date().toLocaleString()
         });
+        
+        // 不在这里直接恢复滚动位置，而是通过单独的useEffect处理
       } catch (error) {
         console.error('加载文件失败:', error);
         setContent('# 文件加载失败\n\n无法加载文件内容，请检查文件是否存在。');
@@ -494,7 +556,27 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
     if (fileName) {
       loadFile();
     }
-  }, [fileName]);
+  }, [fileName, currentFolder]);
+
+  // 内容加载完成后恢复滚动位置
+  useEffect(() => {
+    if (!loading && content && !hasRestoredRef.current) {
+      const timer = setTimeout(() => {
+        restoreScrollPosition();
+      }, 300); // 延迟确保内容完全渲染
+      
+      return () => clearTimeout(timer);
+    }
+  }, [loading, content, restoreScrollPosition]);
+
+  // 清理定时器
+  useEffect(() => {
+    return () => {
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleDownload = () => {
     const blob = new Blob([content], { type: 'text/markdown' });
@@ -602,16 +684,21 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
       </div>
 
       {/* Content */}
-      <div style={{
-        backgroundColor: theme.background.card,
-        padding: '24px 32px',
-        margin: '24px 16px 16px 16px',
-        borderRadius: '8px',
-        boxShadow: theme.shadow.md,
-        border: `1px solid ${theme.border.primary}`,
-        minHeight: 'calc(100vh - 140px)',
-        width: 'calc(100% - 32px)'
-      }}>
+      <div 
+        ref={contentRef}
+        onScroll={handleScroll}
+        style={{
+          backgroundColor: theme.background.card,
+          padding: '24px 32px',
+          margin: '24px 16px 16px 16px',
+          borderRadius: '8px',
+          boxShadow: theme.shadow.md,
+          border: `1px solid ${theme.border.primary}`,
+          minHeight: 'calc(100vh - 140px)',
+          width: 'calc(100% - 32px)',
+          overflowY: 'auto',
+          maxHeight: 'calc(100vh - 140px)'
+        }}>
         <MarkdownRenderer content={content} />
       </div>
     </div>
