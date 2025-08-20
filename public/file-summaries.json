@@ -29,17 +29,7 @@
     ],
     "folder": "JavaFundamentals"
   },
-  "3-基本错误分类.md": {
-    "summary": "Java开发中常见错误类型的分类和解决方法，帮助快速定位和修复问题",
-    "keywords": [
-      "错误分类",
-      "异常处理",
-      "调试技巧",
-      "问题解决"
-    ],
-    "folder": "JavaFundamentals"
-  },
-  "4-变量和数据类型.md": {
+  "3-变量和数据类型.md": {
     "summary": "Java中变量的声明、初始化以及各种数据类型的使用方法和特点",
     "keywords": [
       "变量",
@@ -49,7 +39,7 @@
     ],
     "folder": "JavaFundamentals"
   },
-  "5-运算符.md": {
+  "4-运算符.md": {
     "summary": "Java中各种运算符的使用，包括算术、关系、逻辑、位运算等操作符",
     "keywords": [
       "运算符",
@@ -59,7 +49,7 @@
     ],
     "folder": "JavaFundamentals"
   },
-  "6-流程控制语句.md": {
+  "5-流程控制语句.md": {
     "summary": "Java程序流程控制，包括条件语句、循环语句、跳转语句等控制结构",
     "keywords": [
       "流程控制",
@@ -69,17 +59,19 @@
     ],
     "folder": "JavaFundamentals"
   },
-  "7-debug调试.md": {
-    "summary": "Java程序调试技巧和方法，包括断点设置、变量监控、程序跟踪等",
+  "6-异常处理.md": {
+    "summary": "Java异常处理机制详解，包括异常体系结构、错误分类、处理方式、自定义异常、调试技巧和最佳实践",
     "keywords": [
+      "异常处理",
+      "错误分类",
+      "try-catch",
+      "自定义异常",
       "调试",
-      "断点",
-      "程序跟踪",
-      "错误排查"
+      "最佳实践"
     ],
     "folder": "JavaFundamentals"
   },
-  "8-数组.md": {
+  "7-数组.md": {
     "summary": "Java数组的声明、初始化、遍历和常用操作方法",
     "keywords": [
       "数组",
@@ -89,7 +81,7 @@
     ],
     "folder": "JavaFundamentals"
   },
-  "9-面向对象编程.md": {
+  "8-面向对象编程.md": {
     "summary": "Java面向对象编程核心概念，包括类、对象、继承、封装、多态等",
     "keywords": [
       "面向对象",
@@ -101,7 +93,7 @@
     ],
     "folder": "JavaFundamentals"
   },
-  "10-常用API.md": {
+  "9-常用API.md": {
     "summary": "Java常用API的介绍和使用方法，包括字符串、集合、IO等核心类库",
     "keywords": [
       "API",
@@ -111,7 +103,7 @@
     ],
     "folder": "JavaFundamentals"
   },
-  "11-集合.md": {
+  "10-集合.md": {
     "summary": "Java集合框架详解，包括Collection接口、List、Set、Map等核心接口及其实现类的使用方法",
     "keywords": [
       "集合框架",
@@ -121,7 +113,7 @@
     ],
     "folder": "JavaFundamentals"
   },
-  "12-函数式编程.md": {
+  "11-函数式编程.md": {
     "summary": "Java 8引入的函数式编程特性，包括Lambda表达式、Stream API、方法引用等现代编程范式",
     "keywords": [
       "Lambda表达式",
