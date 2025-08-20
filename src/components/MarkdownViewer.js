@@ -356,6 +356,7 @@ const MarkdownRenderer = React.memo(({ content }) => {
     }
 
     addLanguageLabels();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDarkMode, renderMermaidDiagrams, addLanguageLabels, token]);
 
   // 复制到剪贴板
@@ -470,10 +471,13 @@ const MarkdownRenderer = React.memo(({ content }) => {
                     position: 'relative',
                     overflow: 'auto',
                     fontSize: '1rem',
-                    fontFamily: "'JetBrains Mono', monospace"
+                    fontFamily: "'JetBrains Mono', 'Fira Code', 'Fira Mono', Consolas, Menlo, Courier, monospace !important"
                   }}
                 >
-                  <code className={className} {...props} style={{ fontSize: '0.9rem' }}>
+                  <code className={className} {...props} style={{ 
+                    fontSize: '0.9rem',
+                    fontFamily: "'JetBrains Mono', 'Fira Code', 'Fira Mono', Consolas, Menlo, Courier, monospace !important"
+                  }}>
                     {children}
                   </code>
                 </pre>
