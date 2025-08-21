@@ -1,4 +1,4 @@
-{
+﻿{
   "0-开发环境准备.md": {
     "summary": "Java开发环境的安装配置，包括JDK安装、环境变量设置、IDE选择等基础准备工作",
     "keywords": [
@@ -120,6 +120,18 @@
       "Stream API",
       "方法引用",
       "函数式接口"
+    ],
+    "folder": "JavaFundamentals"
+  },
+  "12-文件IO.md": {
+    "summary": "Java文件输入输出操作详解，包括File类的使用、文件和目录操作、路径处理、文件过滤等核心功能",
+    "keywords": [
+      "文件IO",
+      "File类",
+      "文件操作",
+      "目录操作",
+      "路径处理",
+      "文件过滤"
     ],
     "folder": "JavaFundamentals"
   },

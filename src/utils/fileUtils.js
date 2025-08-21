@@ -1,5 +1,25 @@
 // 文件处理工具函数
 
+// 环境检测：判断是否为生产环境（Vercel部署）
+const isProduction = () => {
+  return process.env.NODE_ENV === 'production' ||
+    process.env.VERCEL === '1' ||
+    window.location.hostname !== 'localhost';
+};
+
+// 从静态JSON文件加载文件统计数据（生产环境使用）
+const loadStaticFileStats = async () => {
+  try {
+    const response = await fetch('/file-stats.json');
+    if (response.ok) {
+      return await response.json();
+    }
+  } catch (error) {
+    console.warn('无法加载静态文件统计数据:', error);
+  }
+  return [];
+};
+
 // 从文件系统获取文件摘要数据
 const loadFileSummariesData = async () => {
   try {
@@ -77,6 +97,52 @@ const getFileSystemStats = async () => {
 
 // 获取真实的markdown文件列表
 const getMarkdownFiles = async () => {
+  // 根据环境选择数据源
+  if (isProduction()) {
+    console.log('🚀 生产环境：使用静态JSON数据');
+    return await getMarkdownFilesFromStatic();
+  } else {
+    console.log('🔧 开发环境：使用实时文件系统统计');
+    return await getMarkdownFilesFromFileSystem();
+  }
+};
+
+// 从静态JSON数据获取文件列表（生产环境）
+const getMarkdownFilesFromStatic = async () => {
+  const [fileSummariesData, staticFileStats] = await Promise.all([
+    loadFileSummariesData(),
+    loadStaticFileStats()
+  ]);
+
+  // 合并静态文件统计和摘要信息
+  const fileMap = new Map();
+
+  // 添加静态文件统计中的文件
+  staticFileStats.forEach(file => {
+    fileMap.set(file.name, {
+      name: file.name,
+      modifyTime: file.lastWriteTime,
+      charCount: file.length,
+      folder: extractFolderFromPath(file.path),
+      summary: '',
+      keywords: []
+    });
+  });
+
+  // 合并摘要信息
+  fileMap.forEach((file, fileName) => {
+    if (fileSummariesData[fileName]) {
+      file.summary = fileSummariesData[fileName].summary;
+      file.keywords = fileSummariesData[fileName].keywords;
+      file.folder = fileSummariesData[fileName].folder || file.folder;
+    }
+  });
+
+  return processFileList(fileMap);
+};
+
+// 从文件系统获取文件列表（开发环境）
+const getMarkdownFilesFromFileSystem = async () => {
   const [fileSummariesData, fileSystemStats] = await Promise.all([
     loadFileSummariesData(),
     getFileSystemStats()
@@ -117,6 +183,21 @@ const getMarkdownFiles = async () => {
       file.keywords = fileSummariesData[fileName].keywords;
     }
   });
+
+  return processFileList(fileMap);
+};
+
+// 从文件路径提取文件夹名称
+const extractFolderFromPath = (filePath) => {
+  const pathParts = filePath.split('/');
+  if (pathParts.length >= 2) {
+    return pathParts[pathParts.length - 2]; // 倒数第二个部分是文件夹名
+  }
+  return 'JavaFundamentals'; // 默认文件夹
+};
+
+// 处理文件列表：添加编号并排序
+const processFileList = (fileMap) => {
 
   // 转换为数组并添加文件编号
   return Array.from(fileMap.values())

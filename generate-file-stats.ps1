@@ -1,8 +1,9 @@
 # Generate file statistics PowerShell script
+# This script only generates file-stats.json
 
 # Set paths
 $markdownDir = "public\markdown-files"
-$outputFile = "public\file-stats.json"
+$fileStatsOutput = "public\file-stats.json"
 
 # Check if directory exists
 if (-not (Test-Path $markdownDir)) {
@@ -10,23 +11,35 @@ if (-not (Test-Path $markdownDir)) {
     exit 1
 }
 
-# Get statistics for all markdown files
+Write-Host "Generating file statistics..."
+
+# Generate file statistics
 $fileStats = @()
 
-Get-ChildItem -Path $markdownDir -Filter "*.md" | ForEach-Object {
+# Get all markdown files recursively
+Get-ChildItem -Path $markdownDir -Filter "*.md" -Recurse | ForEach-Object {
     $file = $_
+    $relativePath = $file.FullName.Replace((Get-Location).Path + "\", "").Replace("\", "/")
+    
+    # File stats
     $fileInfo = @{
         name = $file.Name
         lastWriteTime = $file.LastWriteTime.ToString("yyyy/M/d H:mm:ss")
         length = $file.Length
-        path = "markdown-files/$($file.Name)"
+        path = $relativePath
     }
     $fileStats += $fileInfo
+    
+
 }
 
-# Convert to JSON and save
-$jsonOutput = $fileStats | ConvertTo-Json -Depth 3
-$jsonOutput | Out-File -FilePath $outputFile -Encoding UTF8
 
-Write-Host "File statistics generated: $outputFile"
+
+# Convert to JSON and save
+Write-Host "Saving file statistics..."
+$fileStats | ConvertTo-Json -Depth 3 | Out-File -FilePath $fileStatsOutput -Encoding UTF8
+
+Write-Host "File statistics generation completed!"
 Write-Host "Processed $($fileStats.Count) files"
+Write-Host "Generated file: $fileStatsOutput"
+Write-Host "Ready for deployment!"
