@@ -132,7 +132,7 @@ const LANGUAGE_DISPLAY_MAP = {
   mermaid: 'Mermaid'
 };
 
-const MarkdownRenderer = React.memo(({ content }) => {
+const MarkdownRenderer = React.memo(({ content, copyToClipboard }) => {
   const containerRef = useRef(null);
   const { token } = useToken();
   const [isDarkMode, setIsDarkMode] = useState(
@@ -359,17 +359,7 @@ const MarkdownRenderer = React.memo(({ content }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDarkMode, renderMermaidDiagrams, addLanguageLabels, token]);
 
-  // 复制到剪贴板
-  const copyToClipboard = (text) => {
-    navigator.clipboard
-      .writeText(text)
-      .then(async () => {
-        await toast.success('内容已复制', { debounce: 3000, closable: true });
-      })
-      .catch((err) => {
-        console.error('Failed to copy text: ', err);
-      });
-  };
+
 
   // 修改 useEffect 依赖项
   useEffect(() => {
@@ -525,6 +515,27 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
   const scrollTimeoutRef = useRef(null);
   const isRestoringRef = useRef(false);
   const hasRestoredRef = useRef(false);
+  const copyDebounceRef = useRef(null);
+
+  // 复制到剪贴板（带防抖处理）
+  const copyToClipboard = (text) => {
+    // 清除之前的防抖定时器
+    if (copyDebounceRef.current) {
+      clearTimeout(copyDebounceRef.current);
+    }
+
+    navigator.clipboard
+      .writeText(text)
+      .then(async () => {
+        // 防抖处理：300ms内只显示一次提示
+        copyDebounceRef.current = setTimeout(async () => {
+          await toast.success('内容已复制', { duration: 2 });
+        }, 300);
+      })
+      .catch((err) => {
+        console.error('Failed to copy text: ', err);
+      });
+  };
 
   // 滚动监听函数
   const handleScroll = useCallback(() => {
@@ -742,7 +753,7 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
           overflowY: 'auto',
           maxHeight: 'calc(100vh - 140px)'
         }}>
-        <MarkdownRenderer content={debouncedContent} />
+        <MarkdownRenderer content={debouncedContent} copyToClipboard={copyToClipboard} />
       </div>
       
       {/* Back to Top Button */}
