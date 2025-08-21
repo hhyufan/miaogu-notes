@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, ConfigProvider, theme } from 'antd';
+import { Layout, ConfigProvider, theme, FloatButton } from 'antd';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './store';
@@ -266,6 +266,11 @@ function AppContent() {
             </Content>
           </>
         )}
+        {/* 返回顶部悬浮按钮 */}
+        <FloatButton.BackTop
+          tooltip="返回顶部"
+          visibilityHeight={10}
+        />
       </Layout>
     </ConfigProvider>
   );

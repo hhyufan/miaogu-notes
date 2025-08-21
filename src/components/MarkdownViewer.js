@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import ReactDOM from 'react-dom/client';
-import { Button, Spin, Typography, Image } from 'antd';
+import { Button, Spin, Typography, Image, FloatButton } from 'antd';
 import { ArrowLeftOutlined, DownloadOutlined, SunOutlined, MoonFilled } from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -744,6 +744,13 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
         }}>
         <MarkdownRenderer content={debouncedContent} />
       </div>
+      
+      {/* Back to Top Button */}
+      <FloatButton.BackTop
+        target={() => contentRef.current}
+        visibilityHeight={100}
+        tooltip="返回顶部"
+      />
     </div>
   );
 };
