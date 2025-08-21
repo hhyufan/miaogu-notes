@@ -53,9 +53,9 @@ const getFileSystemStats = async () => {
     for (const [folderKey, folderInfo] of Object.entries(folderData)) {
       const folderPath = folderInfo.path || folderKey;
       try {
-        // 从file-summaries.json中获取属于该文件夹的文件
+        // 从file-summaries.json中获取属于该文件夹的文件（只处理以数字加连字符开头的.md文件）
         for (const [fileName, fileInfo] of Object.entries(summariesData)) {
-          if (fileInfo.folder === folderKey) {
+          if (fileInfo.folder === folderKey && fileName.endsWith('.md') && /^\d+-/.test(fileName)) {
             try {
               const fileResponse = await fetch(`/markdown-files/${folderPath}/${fileName}`);
               if (fileResponse.ok) {
@@ -163,9 +163,9 @@ const getMarkdownFilesFromFileSystem = async () => {
     });
   });
 
-  // 然后添加摘要信息中的文件（如果文件系统中没有）
+  // 然后添加摘要信息中的文件（如果文件系统中没有，且以数字加连字符开头的.md文件）
   Object.keys(fileSummariesData).forEach(fileName => {
-    if (!fileMap.has(fileName)) {
+    if (!fileMap.has(fileName) && fileName.endsWith('.md') && /^\d+-/.test(fileName)) {
       fileMap.set(fileName, {
         name: fileName,
         modifyTime: '未知',
@@ -199,9 +199,12 @@ const extractFolderFromPath = (filePath) => {
 // 处理文件列表：添加编号并排序
 const processFileList = (fileMap) => {
 
-  // 转换为数组并添加文件编号
+  // 转换为数组并添加文件编号，只显示以数字加连字符开头的文件
   return Array.from(fileMap.values())
-    .filter(file => file.name.endsWith('.md'))
+    .filter(file => {
+      // 只显示.md文件且以数字加连字符开头的文件
+      return file.name.endsWith('.md') && /^\d+-/.test(file.name);
+    })
     .map(file => {
       // 从文件名中提取数字编号
       const numberMatch = file.name.match(/^(\d+)-/);

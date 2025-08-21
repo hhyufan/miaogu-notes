@@ -16,8 +16,10 @@ Write-Host "Generating file statistics..."
 # Generate file statistics
 $fileStats = @()
 
-# Get all markdown files recursively
-Get-ChildItem -Path $markdownDir -Filter "*.md" -Recurse | ForEach-Object {
+# Get all markdown files recursively (only files starting with number and dash)
+Get-ChildItem -Path $markdownDir -Filter "*.md" -Recurse | Where-Object {
+    $_.Name -match "^\d+-"
+} | ForEach-Object {
     $file = $_
     $relativePath = $file.FullName.Replace((Get-Location).Path + "\", "").Replace("\", "/")
     
@@ -29,8 +31,6 @@ Get-ChildItem -Path $markdownDir -Filter "*.md" -Recurse | ForEach-Object {
         path = $relativePath
     }
     $fileStats += $fileInfo
-    
-
 }
 
 
