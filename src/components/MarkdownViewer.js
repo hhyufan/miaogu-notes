@@ -915,7 +915,7 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
             <LeftOutlined 
               style={{ 
                 fontSize: 24,
-                color: 'rgba(255, 255, 255, 0.25)',
+                color: isDarkMode ? 'rgba(156, 163, 175, 0.6)' : 'rgba(255, 255, 255, 0.25)',
                 filter: 'drop-shadow(0 2px 6px rgba(0, 0, 0, 0.2)) blur(0.5px)',
                 transition: 'all 0.3s ease'
               }} 
@@ -960,7 +960,7 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
             <RightOutlined 
               style={{ 
                 fontSize: 24,
-                color: 'rgba(255, 255, 255, 0.25)',
+                color: isDarkMode ? 'rgba(156, 163, 175, 0.6)' : 'rgba(255, 255, 255, 0.25)',
                 filter: 'drop-shadow(0 2px 6px rgba(0, 0, 0, 0.2)) blur(0.5px)',
                 transition: 'all 0.3s ease'
               }} 
