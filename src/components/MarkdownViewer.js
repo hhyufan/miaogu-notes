@@ -356,7 +356,7 @@ const MarkdownRenderer = React.memo(({ content, copyToClipboard }) => {
     }
 
     addLanguageLabels();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDarkMode, renderMermaidDiagrams, addLanguageLabels, token]);
 
 
@@ -464,7 +464,7 @@ const MarkdownRenderer = React.memo(({ content, copyToClipboard }) => {
                     fontFamily: "'JetBrains Mono', 'Fira Code', 'Fira Mono', Consolas, Menlo, Courier, monospace !important"
                   }}
                 >
-                  <code className={className} {...props} style={{ 
+                  <code className={className} {...props} style={{
                     fontSize: '0.9rem',
                     fontFamily: "'JetBrains Mono', 'Fira Code', 'Fira Mono', Consolas, Menlo, Courier, monospace !important"
                   }}>
@@ -514,7 +514,7 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
   const readingPosition = useReadingPosition(fileKey);
 
   // 获取当前文件列表和索引
-  const currentFiles = currentFolder 
+  const currentFiles = currentFolder
     ? allFileStats.filter(file => file.folder === currentFolder)
     : allFileStats;
   const currentIndex = currentFiles.findIndex(file => file.name === fileName);
@@ -550,7 +550,7 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
       if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
         return;
       }
-      
+
       if (event.key === 'ArrowLeft' && hasPrevFile) {
         event.preventDefault();
         handlePrevFile();
@@ -591,10 +591,10 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
     const maxSwipeTime = 300; // 最大滑动时间
     const maxVerticalDistance = 100; // 最大垂直偏移
 
-    if (Math.abs(deltaX) > minSwipeDistance && 
-        Math.abs(deltaY) < maxVerticalDistance && 
-        deltaTime < maxSwipeTime) {
-      
+    if (Math.abs(deltaX) > minSwipeDistance &&
+      Math.abs(deltaY) < maxVerticalDistance &&
+      deltaTime < maxSwipeTime) {
+
       if (deltaX > 0 && hasPrevFile) {
         // 向右滑动，显示上一个文件
         handlePrevFile();
@@ -613,12 +613,12 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
     const { clientX } = event;
     const windowWidth = window.innerWidth;
     const halfWidth = windowWidth / 2;
-    
+
     // 鼠标在左半边时显示左箭头
     if (clientX <= halfWidth) {
       setShowLeftButton(true);
       setShowRightButton(false);
-    } 
+    }
     // 鼠标在右半边时显示右箭头
     else {
       setShowLeftButton(false);
@@ -633,7 +633,7 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
   }, []);
 
   // 复制到剪贴板功能（带防抖处理）
-   const copyToClipboard = (text) => {
+  const copyToClipboard = (text) => {
     // 清除之前的防抖定时器
     if (copyDebounceRef.current) {
       clearTimeout(copyDebounceRef.current);
@@ -777,7 +777,7 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
   }
 
   return (
-    <div 
+    <div
       style={{
         width: '100%',
         minHeight: '100vh',
@@ -877,7 +877,7 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
         }}>
         <MarkdownRenderer content={debouncedContent} copyToClipboard={copyToClipboard} />
       </div>
-      
+
       {/* 翻页按钮 */}
       {hasPrevFile && (
         <div
@@ -912,18 +912,18 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
             }}
             title="上一个文件"
           >
-            <LeftOutlined 
-              style={{ 
+            <LeftOutlined
+              style={{
                 fontSize: 24,
-                color: isDarkMode ? 'rgba(156, 163, 175, 0.6)' : 'rgba(255, 255, 255, 0.25)',
+                color: isDarkMode ? 'rgba(255, 255, 255, 0.25)' : 'rgba(128, 128, 128, 0.4)',
                 filter: 'drop-shadow(0 2px 6px rgba(0, 0, 0, 0.2)) blur(0.5px)',
                 transition: 'all 0.3s ease'
-              }} 
+              }}
             />
           </div>
         </div>
       )}
-      
+
       {hasNextFile && (
         <div
           style={{
@@ -957,18 +957,18 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
             }}
             title="下一个文件"
           >
-            <RightOutlined 
-              style={{ 
+            <RightOutlined
+              style={{
                 fontSize: 24,
-                color: isDarkMode ? 'rgba(156, 163, 175, 0.6)' : 'rgba(255, 255, 255, 0.25)',
+                color: isDarkMode ? 'rgba(255, 255, 255, 0.25)' : 'rgba(128, 128, 128, 0.4)',
                 filter: 'drop-shadow(0 2px 6px rgba(0, 0, 0, 0.2)) blur(0.5px)',
                 transition: 'all 0.3s ease'
-              }} 
+              }}
             />
           </div>
         </div>
       )}
-      
+
       {/* Back to Top Button */}
       <FloatButton.BackTop
         target={() => contentRef.current}
