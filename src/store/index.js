@@ -6,7 +6,7 @@ import appReducer from './appSlice';
 
 // 根级别的Redux Persist配置
 const persistConfig = {
-  key: 'react-md-stats',
+  key: 'miaogu-notes',
   storage
 };
 
@@ -17,7 +17,7 @@ const appPersistConfig = {
   // 指定需要持久化的状态字段
   whitelist: [
     'currentView',
-    'currentFolder', 
+    'currentFolder',
     'sortBy',
     'sidebarCollapsed',
     'lastUpdated',

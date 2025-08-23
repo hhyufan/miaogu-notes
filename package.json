@@ -1,7 +1,7 @@
 {
-  "name": "react-md-stats",
+  "name": "miaogu-notes",
   "version": "1.0.0",
-  "description": "基于React和Ant Design的Markdown文件统计系统",
+  "description": "喵咕学习笔记平台 - 专为学习者打造的现代化在线学习平台",
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
