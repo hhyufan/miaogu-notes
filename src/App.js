@@ -24,7 +24,9 @@ import {
   openMarkdownFile,
   closeMarkdownViewer,
   updateLastUpdated,
-  savePageScrollPosition
+  savePageScrollPosition,
+  navigateToNextFile,
+  navigateToPrevFile
 } from './store/appSlice';
 import './App.css';
 

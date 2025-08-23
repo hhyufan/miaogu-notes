@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import ReactDOM from 'react-dom/client';
 import { Button, Spin, Typography, Image, FloatButton } from 'antd';
-import { ArrowLeftOutlined, DownloadOutlined, SunOutlined, MoonFilled } from '@ant-design/icons';
+import { ArrowLeftOutlined, DownloadOutlined, SunOutlined, MoonFilled, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Prism from 'prismjs';
@@ -11,8 +11,8 @@ import { toast } from '../plugins/toast.js';
 import { loadMarkdownFile } from '../utils/fileUtils';
 import { formatDisplayName } from '../utils/formatUtils';
 import { useTheme } from '../theme';
-import { useAppDispatch, useReadingPosition } from '../store/hooks';
-import { saveReadingPosition } from '../store/appSlice';
+import { useAppDispatch, useAppSelector, useReadingPosition } from '../store/hooks';
+import { saveReadingPosition, navigateToNextFile, navigateToPrevFile } from '../store/appSlice';
 import MermaidRenderer from './MermaidRenderer';
 
 
@@ -500,6 +500,8 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
   const [fileStats, setFileStats] = useState(null);
+  const [showLeftButton, setShowLeftButton] = useState(false);
+  const [showRightButton, setShowRightButton] = useState(false);
 
   // 使用防抖来减少content变化时的重新渲染
   const debouncedContent = useMemo(() => content, [content]);
@@ -507,8 +509,17 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
 
   // Redux hooks
   const dispatch = useAppDispatch();
+  const { allFileStats } = useAppSelector(state => state.app);
   const fileKey = currentFolder ? `${currentFolder}/${fileName}` : fileName;
   const readingPosition = useReadingPosition(fileKey);
+
+  // 获取当前文件列表和索引
+  const currentFiles = currentFolder 
+    ? allFileStats.filter(file => file.folder === currentFolder)
+    : allFileStats;
+  const currentIndex = currentFiles.findIndex(file => file.name === fileName);
+  const hasPrevFile = currentIndex > 0;
+  const hasNextFile = currentIndex < currentFiles.length - 1;
 
   // Refs
   const contentRef = useRef(null);
@@ -516,9 +527,113 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
   const isRestoringRef = useRef(false);
   const hasRestoredRef = useRef(false);
   const copyDebounceRef = useRef(null);
+  const touchStartRef = useRef(null);
+  const touchEndRef = useRef(null);
 
-  // 复制到剪贴板（带防抖处理）
-  const copyToClipboard = (text) => {
+  // 翻页处理函数
+  const handlePrevFile = useCallback(() => {
+    if (hasPrevFile) {
+      dispatch(navigateToPrevFile());
+    }
+  }, [hasPrevFile, dispatch]);
+
+  const handleNextFile = useCallback(() => {
+    if (hasNextFile) {
+      dispatch(navigateToNextFile());
+    }
+  }, [hasNextFile, dispatch]);
+
+  // 键盘事件处理
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      // 只在没有输入框聚焦时响应键盘事件
+      if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
+        return;
+      }
+      
+      if (event.key === 'ArrowLeft' && hasPrevFile) {
+        event.preventDefault();
+        handlePrevFile();
+      } else if (event.key === 'ArrowRight' && hasNextFile) {
+        event.preventDefault();
+        handleNextFile();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handlePrevFile, handleNextFile, hasPrevFile, hasNextFile]);
+
+  // 触摸手势处理
+  const handleTouchStart = useCallback((event) => {
+    touchStartRef.current = {
+      x: event.touches[0].clientX,
+      y: event.touches[0].clientY,
+      time: Date.now()
+    };
+  }, []);
+
+  const handleTouchEnd = useCallback((event) => {
+    if (!touchStartRef.current) return;
+
+    touchEndRef.current = {
+      x: event.changedTouches[0].clientX,
+      y: event.changedTouches[0].clientY,
+      time: Date.now()
+    };
+
+    const deltaX = touchEndRef.current.x - touchStartRef.current.x;
+    const deltaY = touchEndRef.current.y - touchStartRef.current.y;
+    const deltaTime = touchEndRef.current.time - touchStartRef.current.time;
+
+    // 检查是否为有效的水平滑动
+    const minSwipeDistance = 50; // 最小滑动距离
+    const maxSwipeTime = 300; // 最大滑动时间
+    const maxVerticalDistance = 100; // 最大垂直偏移
+
+    if (Math.abs(deltaX) > minSwipeDistance && 
+        Math.abs(deltaY) < maxVerticalDistance && 
+        deltaTime < maxSwipeTime) {
+      
+      if (deltaX > 0 && hasPrevFile) {
+        // 向右滑动，显示上一个文件
+        handlePrevFile();
+      } else if (deltaX < 0 && hasNextFile) {
+        // 向左滑动，显示下一个文件
+        handleNextFile();
+      }
+    }
+
+    touchStartRef.current = null;
+    touchEndRef.current = null;
+  }, [handlePrevFile, handleNextFile, hasPrevFile, hasNextFile]);
+
+  // 鼠标移动事件处理，控制翻页按钮显示
+  const handleMouseMove = useCallback((event) => {
+    const { clientX } = event;
+    const windowWidth = window.innerWidth;
+    const halfWidth = windowWidth / 2;
+    
+    // 鼠标在左半边时显示左箭头
+    if (clientX <= halfWidth) {
+      setShowLeftButton(true);
+      setShowRightButton(false);
+    } 
+    // 鼠标在右半边时显示右箭头
+    else {
+      setShowLeftButton(false);
+      setShowRightButton(true);
+    }
+  }, []);
+
+  // 鼠标离开页面时隐藏按钮
+  const handleMouseLeave = useCallback(() => {
+    setShowLeftButton(false);
+    setShowRightButton(false);
+  }, []);
+
+  // 复制到剪贴板功能（带防抖处理）
+   const copyToClipboard = (text) => {
     // 清除之前的防抖定时器
     if (copyDebounceRef.current) {
       clearTimeout(copyDebounceRef.current);
@@ -662,11 +777,18 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
   }
 
   return (
-    <div style={{
-      width: '100%',
-      minHeight: '100vh',
-      background: theme.background.primary
-    }}>
+    <div 
+      style={{
+        width: '100%',
+        minHeight: '100vh',
+        background: theme.background.primary,
+        position: 'relative'
+      }}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
       {/* Fixed Header */}
       <div className="markdown-header" style={{
         display: 'flex',
@@ -755,6 +877,97 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
         }}>
         <MarkdownRenderer content={debouncedContent} copyToClipboard={copyToClipboard} />
       </div>
+      
+      {/* 翻页按钮 */}
+      {hasPrevFile && (
+        <div
+          style={{
+            position: 'fixed',
+            left: 20,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            zIndex: 1000,
+            opacity: showLeftButton ? 1 : 0,
+            visibility: showLeftButton ? 'visible' : 'hidden',
+            transition: 'opacity 0.3s ease, visibility 0.3s ease',
+            pointerEvents: showLeftButton ? 'auto' : 'none'
+          }}
+        >
+          <div
+            onClick={handlePrevFile}
+            style={{
+              width: 48,
+              height: 48,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = 'scale(1.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = 'scale(1)';
+            }}
+            title="上一个文件"
+          >
+            <LeftOutlined 
+              style={{ 
+                fontSize: 24,
+                color: 'rgba(255, 255, 255, 0.25)',
+                filter: 'drop-shadow(0 2px 6px rgba(0, 0, 0, 0.2)) blur(0.5px)',
+                transition: 'all 0.3s ease'
+              }} 
+            />
+          </div>
+        </div>
+      )}
+      
+      {hasNextFile && (
+        <div
+          style={{
+            position: 'fixed',
+            right: 20,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            zIndex: 1000,
+            opacity: showRightButton ? 1 : 0,
+            visibility: showRightButton ? 'visible' : 'hidden',
+            transition: 'opacity 0.3s ease, visibility 0.3s ease',
+            pointerEvents: showRightButton ? 'auto' : 'none'
+          }}
+        >
+          <div
+            onClick={handleNextFile}
+            style={{
+              width: 48,
+              height: 48,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = 'scale(1.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = 'scale(1)';
+            }}
+            title="下一个文件"
+          >
+            <RightOutlined 
+              style={{ 
+                fontSize: 24,
+                color: 'rgba(255, 255, 255, 0.25)',
+                filter: 'drop-shadow(0 2px 6px rgba(0, 0, 0, 0.2)) blur(0.5px)',
+                transition: 'all 0.3s ease'
+              }} 
+            />
+          </div>
+        </div>
+      )}
       
       {/* Back to Top Button */}
       <FloatButton.BackTop

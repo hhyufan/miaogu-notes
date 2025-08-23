@@ -221,6 +221,33 @@ const appSlice = createSlice({
       state.lastUpdated = new Date().toISOString();
     },
     
+    // 翻页相关actions
+    navigateToNextFile: (state) => {
+      if (!state.selectedFile) return;
+      
+      const currentFiles = state.currentFolder 
+        ? state.allFileStats.filter(file => file.folder === state.currentFolder)
+        : state.allFileStats;
+      
+      const currentIndex = currentFiles.findIndex(file => file.name === state.selectedFile.name);
+      if (currentIndex !== -1 && currentIndex < currentFiles.length - 1) {
+        state.selectedFile = currentFiles[currentIndex + 1];
+      }
+    },
+
+    navigateToPrevFile: (state) => {
+      if (!state.selectedFile) return;
+      
+      const currentFiles = state.currentFolder 
+        ? state.allFileStats.filter(file => file.folder === state.currentFolder)
+        : state.allFileStats;
+      
+      const currentIndex = currentFiles.findIndex(file => file.name === state.selectedFile.name);
+      if (currentIndex > 0) {
+        state.selectedFile = currentFiles[currentIndex - 1];
+      }
+    },
+    
     // 重置所有状态
     resetState: () => initialState
   }
@@ -252,6 +279,8 @@ export const {
   getPageScrollPosition,
   setSidebarCollapsed,
   updateLastUpdated,
+  navigateToNextFile,
+  navigateToPrevFile,
   resetState
 } = appSlice.actions;
 
