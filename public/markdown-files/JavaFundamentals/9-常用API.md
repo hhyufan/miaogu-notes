@@ -1,6 +1,5 @@
-# Java常用API
+# 常用API
 
-![Java常用API](images\Java常用API.png)
 
 #### 1. 查看API
 

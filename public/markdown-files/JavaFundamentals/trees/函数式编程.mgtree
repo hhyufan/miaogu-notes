@@ -1,0 +1,145 @@
+函数式接口
+	接口中有且只有一个抽象方法
+		实现该抽象方法，实现离开接口
+		理解：抽象方法就是接口的表示
+	@FunctionalInterface
+	常用函数式接口
+		Supplier<T>：无参数，返回一个结果（生产者）
+			T get()
+		Consumer<T>：接受一个参数，无返回值（消费者）
+			void accept(T t)
+			变种：BiConsumer<T, U> 接受两个参数
+		Function<T, R>：接受一个参数，返回一个结果（转换器）
+			R apply(T t)
+			变种
+				BiFunction<T, U, R>：接受两个参数
+				UnaryOperator<T>：单参数，返回类型相同，等同于Function<T, T>
+				BinaryOperator<T>：双参数，返回类型相同，等同于BiFunction<T, T, T>
+		Predicate<T>：接受一个参数，返回布尔值（断言）
+			boolean test(T t)
+			变种：BiPredicate<T, U> 接受两个参数
+			默认方法
+				and：逻辑且关系链接两个断言
+				or：逻辑或关系链接两个断言
+
+		Comparator<T>：比较两个对象（排序）
+			int compare(T o1, T o2)
+		Runnable：无参数，无返回值（多线程任务）
+			void run()
+		FileFilter：文件过滤
+			抽象方法：boolean accept(File pathname)
+		原始类型特化接口
+			为了减少装箱/拆箱开销，Java 提供了针对原始类型的函数式接口
+			Supplier族
+				IntSupplier
+					int getAsInt()
+				LongSupplier
+					long getAsLong()
+				DoubleSupplier
+					double getAsDouble()
+			Consumer族
+				IntConsumer
+				LongConsumer
+				DoubleConsumer
+				void accept(int/long/double)
+				变种：ObjIntConsumer<T>
+			Function族
+				IntFunction<R>
+				LongFunction<R>
+				DoubleFunction<R>
+				R apply(int/long/double)
+				变种
+					ToIntFunction<T>
+						int applyAsInt(T t)
+					ToDoubleFunction<T>
+						double applyAsDouble(T t)
+					IntToLongFunction
+						long applyAsLong(int x)
+						Int、Long、Double三者可转换
+			Predicate族
+				IntPredicate
+				LongPredicate
+				DoublePredicate
+				boolean test(int/long/double)
+			Operator族
+				IntUnaryOperator：单参数，返回类型相同都为Integer
+					int applyAsInt(int x)
+				IntBinaryOperator：双参数，返回类型相同都为Integer
+					int applyAsInt(int a, int b)
+	常用通用默认方法
+		FuncA.andThen(FuncB)：链接两个函数式接口，组合生成新的函数式接口
+Lambda表达式
+	是Java8新增的函数表示方式
+	根据语法称之为`箭头函数`，或者称为`闭包`
+	方法的表现方式，作为方法参数传递
+Stream流
+	流操作，对数据生成元素序列，进行数据操作
+	创建
+		Collection：对象.stream()
+		数组：Arrays.stream(arr)
+		Stream静态方法创建
+			Stream.empty()：创建空流
+			Stream.of("a", "b")：显式值创建流
+			Stream.generate().limit(5)：生成无限流
+			Stream.iterate(0, n -> n + 2).limit(10);：生成迭代流
+			IntStream.range(n, m)：生成在n-m范围的整数的流
+	数据处理
+		中间操作
+			完成后依旧返回Stream，可以链式操作
+			filter：过滤器，实现数据过滤
+			map：映射
+				通过指定规则映射为新数据
+				.mapToDouble(Double::doubleValue)
+					转换成Double元素
+				.mapToObj(IntFunction intfunc)
+					转换为指定类型
+			distinct：去重
+			limit：限制流长度（从头部取）
+			skip：跳步，跳过n个取到尾部
+		终端操作
+			完成后返回具体类型，而不是Stream。只能操作一次
+			forEach：遍历，无返回值
+			count：计数器，返回统计数量（Long）
+			reduce：合并流数据
+			allMatch、anyMatch、noneMatch
+				按照规则匹配成功返回true
+			findFirst
+				配合其他流的中间操作，查询结果的第一条数据
+			findAny
+				结果上和findFirst一致，使用并行流，效率更高
+			collect
+				收集，参数为Collector接口实现，从stream提取数据到Collection集合
+			average
+				计算平均数
+			sum
+				计算总和
+		Collectors
+			Collector的工具类，提供Collector接口的实例化
+			Collectors.toList()
+				收集数据到List
+			Collectors.toSet()
+				收集数据到Set
+			Collectors.toMap()
+				收集数据到Map
+			Collectors.groupingBy()
+				分组依据
+					按照属性分组
+						T::getProperty
+					按照元素自身分组
+						c -> c
+				下游收集器
+					简单计数
+						Collectors.counting()
+					引用类型属性计数
+						Collectors.summingDouble(Employee::getSalary)
+	转换成流
+		.chars()：将字符串转换成IntStream流
+方法引用
+	引用已有的方法，实现特定的方法
+	静态方法引用
+		Integer::compare
+	对象的实例方法引用
+		str::length
+	类的实例方法引用
+		String::compareToIgnoreCase
+	构造方法引用

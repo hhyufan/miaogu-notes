@@ -1,0 +1,57 @@
+java流程控制
+	顺序语句
+	分支语句/条件语句
+		if- else if -else
+		switch
+	循环语句
+		for
+		while
+获得键盘输入
+	Scanner sc = new Scanner(System.in) >java[2]
+	扫描类型
+		String：next()
+		byte：nextByte()
+		short: nextShort()
+		int：nextInt()
+		long：nextLong()
+		boolean: nextBoolean()
+		float：nextFloat()
+		double：nextDouble()
+		没有char，使用String
+	关闭扫描：sc.close()
+if
+	if - else if - else
+	if 可以相互嵌套 >java[1]
+	字符串判断时
+		判断内存地址：s1 == s2
+		判断内容：使用`s1.equals(s2)` >java[3]
+	布尔变量/表达式 可以直接使用： if(bool)
+	if 、 else if 、 else的花括号可省略
+	else 采用就近原则和if进行匹配
+switch
+	switch 用来判断变量 / 表达式的值
+	switch (变量) {case 常量: 表达式; break; case 常量2...... default: 表达式} >java[4]
+	小括号内的变量/表达式支持的类型：`byte`、`short`、`int`、`char`、`String`以及他们的包装类。还有枚举`enum`
+	case 后面必须是常量且唯一，开发时一般使用定义的常量标识符表示状态码 >java[4]
+	break表示语句的终止，如果没有break往下进行直到找到break，省略break可以用来做多值合并的分支。 >java[5]
+	default按需可省略
+	现代switch可以使用箭头语法：switch(表达式){ case 1 -> 表达式1;case2 ->表达式2;default ->表达式3} >java[6]
+while
+	while的意思是`当`，满足循环条件进入循环
+	while(循环条件) {语句块}; >java[7]
+	通常在不明确循环次数情况下使用
+	while中的条件可包括赋值语句：while((i /=2) = 5) >java[7]
+do-while
+	do是`做`的意思，while是`当`的意思。先执行一次循环体再进行循环条件判断
+	do {语句块} while(循环条件); >java[8]
+for
+	for(循环计次变量初始化; 循环条件; 循环计次变更) {语句块};
+	for是最常用的循环语句。
+	示例：for(int i = 0; i < 5; ++i) {} >java[9]
+	for 存在多种变体
+		变体1：int i = 0; for(;i < 5; i++) >java[9]
+		变体2： for(int i = 0;i < 5; ) {i++} >java[9]
+break / continue
+	break：终止本层循环 >java[10]
+	continue：终止本次循环 >java[10]
+	break 标志位：终止指定标志位的循环 >java[10]

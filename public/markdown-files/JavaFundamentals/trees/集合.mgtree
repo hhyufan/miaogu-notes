@@ -1,0 +1,105 @@
+集合和数组
+	共性：存放一组数据
+	数组
+		长度不变
+		元素为任意类型
+	集合
+		长度可变
+		元素必须是引用类型
+Collection (集合)
+	List：数据有序可重复
+		List<String> arr = new ArrayList()
+		通用方法
+			循环方式
+				下标循环
+				迭代器循环
+				增强for循环
+				forEach()
+			数组元素添加：arr.add(index, value)
+			数组元素设置：arr.set(index, value)
+			数组元素移除：arr.remove(index)
+		ArrayList：基于数组存放数据
+			优点
+				查询速度快
+			缺点
+				插入删除速度慢
+			内存地址连续
+		LinkedList：基于双向链表存放数据
+			优点
+				查询速度慢
+			缺点
+				插入删除速度快
+			内存地址不连续
+			首位添加：list.addFirst(e)
+			末尾添加：list.addLast(e)
+			取首位：list.getFirst()
+			取尾位：list.getLast()
+			移除首位：list.removeFirst()
+			移除尾位：list.removeLast()
+	Set：数据无序不可重复
+		HashSet：基于哈希码散列存放
+		TreeSet：基于红黑二叉树存放
+		Set没有任何新增方法，所有方法继承于Collection
+		不可重复性判读依据：set1 ==  set2 || set1.equals(set2)
+		无序指的是元素无下标
+	Collection<String> col = new HashMap()
+	Collection通用方法
+		大小：int col.size()
+		添加：boolean col.add(e)
+		添加其他集合：boolean col.addAll(col2)
+		删除：boolean col.remove(e)
+		删除其他集合：boolean col.removeAll(col2)
+		包含：boolean col.contains(e)
+		包含其他集合：
+			boolean col.containsAll(col2)
+		清空：col.clear()
+		判空：boolean col.isEmpty()
+		循环：forEach(Function func)
+Collections（集合工具类）
+	适用于Collection接口
+		集合最大值：Collection.max(col)
+		集合最小值：Collection.min(col)
+		指定集合中e元素出现次数：Collection.frequency(col, e)
+	适用于List
+		反转：Collections.reverse(list)
+		乱序：Collections.shuffle(list)
+		排序：Collections.sort(list)
+			需要元素实现Comparable接口
+		右移：Collections.rotate(list, n)
+		互换：Collections.swap(list, i,  j)
+		二分查找：Collections.binarySearch(list, e)
+		替换全部：Collections.replaceAll(list, a, b)
+Map（映射）
+	存放键值对/key-value的数据结构
+		key是数据的象征，不可重复。使用Set存储
+		value是具体的内容，是可重复的，使用List存储
+	HashMap：基于哈希码散列存放
+	TreeMap：基于红黑二叉树存放
+	通用方法
+		映射大小：map.size()
+		添加和修改：map.put(k, v)
+		查询：map.get(k)
+		删除：map.remove(k)
+		包含key：map.contains(k)
+		包含value：map.containsValue(v)
+		清空：map.clear()
+		判空：map.isEmpty()
+	遍历
+		KeySet
+		EntrySet
+		forEach((k, v) -> {return 0;})
+Iterator（迭代器）
+	用来遍历Collection集合
+	Iterator<Type> iterator = col.iterator();
+	iterator.hasNext()：判断后面是否有数据
+	iterator.next()：获得数据
+Comparator、Comparable（比较器）
+	Comparable 适用于排序规则固定
+	Comparator 适用于自定义排序规则
+		Collections.sort(List list[, Comparator c])
+		实现接口方式
+			类
+			内部类
+			匿名内部类
+			lambda
+			方法引用

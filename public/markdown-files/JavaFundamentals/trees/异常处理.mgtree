@@ -1,0 +1,78 @@
+概述
+	异常
+		编译或运行发生的错误事情
+	异常处理
+		程序发生异常的处理方式
+		打印信息到控制台，终止程序运行
+体系结构
+	Throwable
+		Error：系统硬件问题，代码无法解决
+		Exception：程序问题，代码可以解决
+			编译时异常
+				1.可以起到错误提示的作用
+				2.编译前必须处理，否则编译不通过
+				常见编译时异常
+					FileNotFoundException
+					IOException
+			运行时异常
+				编译可以通过，在运行时发生错误
+				称之为bug，往往不能简单处理，要解决这个bug
+				常见运行时异常
+					ArithmicException
+					NullPointerException
+					ArrayIndexOutOfBoundException
+					StringIndexOutOfBoundException
+					ClassCastException
+处理机制
+	抛出异常
+		throw
+		实例化该异常类型的对象，将异常对象抛给JVM，等候处理
+	捕获异常和处理异常
+		catch
+		JVM捕获异常对象
+			程序是否提供处理方案，提供按照程序方案执行
+			没有提供处理方案，默认控制打印异常信息，终止运行
+处理方式
+	try-catch-finally
+		try：存放可能出现异常的代码
+			try内部的代码会逐行扫描，效率低
+		catch：存放捕获异常后的处理
+			可以有多个catch
+			可以同时处理多个catch
+			多个catch，上面范围小
+		finally：无论是否发生异常，执行的代码
+	throws
+		throws称为方法抛出异常
+		方法内部不直接处理异常，而是将异常直接抛出到方法外
+		一个方法可以同时抛出多个异常
+	第三方处理
+		log4j
+		lombok
+常用方法
+	e.printStackTrace()
+		打印异常堆栈信息
+	e.getMessage()
+		获得异常信息
+自定义异常
+	使用场景往往是代码运行层面没问题，逻辑层面有问题
+	继承Exception，可直接使用Exception/RunTimeException
+	使用throw手动抛出自定义异常
+debug
+	 bug
+		中文“臭虫”, 编程中翻译成问题/错误
+	debug，翻译“调试”
+		break point(断点)：在debug运行模式下，程序碰到断点，就会暂停，等待下一步指令。
+	调试程序
+		step over: 下一步 F6
+		step into：进入方法内 F7
+		step out：跳出方法 Shift + F8
+		Resume Program：继续运行 F9
+Junit
+	Junit是进行单元测试的主流第三方库
+	主流版本：Junit4、Junit5
+	常用注解
+		@Test：标注单元测试的方法
+		@BeforeAll：所有单元测试之前执行的代码（只执行一次）
+		@BeforeEach：每个单元测试之前执行的代码
+		@AfterEach：每个单元测试之后执行的代码
+		@AfterAll：所有单元测试之后执行的代码（只执行一次）

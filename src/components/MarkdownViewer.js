@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import ReactDOM from 'react-dom/client';
-import { Button, Spin, Typography, Image, FloatButton } from 'antd';
-import { ArrowLeftOutlined, DownloadOutlined, SunOutlined, MoonFilled, LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { Button, Spin, Typography, Image, FloatButton, Card, Skeleton, Space, Tooltip } from 'antd';
+import { ArrowLeftOutlined, DownloadOutlined, SunOutlined, MoonFilled, LeftOutlined, RightOutlined, ExpandAltOutlined, ShrinkOutlined } from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Prism from 'prismjs';
@@ -14,6 +14,147 @@ import { useTheme } from '../theme';
 import { useAppDispatch, useAppSelector, useReadingPosition } from '../store/hooks';
 import { saveReadingPosition, navigateToNextFile, navigateToPrevFile } from '../store/appSlice';
 import MermaidRenderer from './MermaidRenderer';
+import TreeViewer from './TreeViewer';
+
+// AutoTreeH1 组件：自动检测并渲染对应的 TreeViewer
+const AutoTreeH1 = ({ titleText, isDarkMode, containerRef, children, currentFileName }) => {
+  const [treeFilePath, setTreeFilePath] = useState(null);
+  const [isCheckingFile, setIsCheckingFile] = useState(false);
+  
+  useEffect(() => {
+    const checkTreeFile = async () => {
+      // 提取并清理标题文本
+      const cleanTitle = titleText.trim();
+      
+      // 构建可能的 mgtree 文件路径
+       const possiblePaths = [
+         `trees/${cleanTitle}.mgtree`,
+         `${cleanTitle}.mgtree`
+       ];
+       
+       // 快速检查是否存在对应的 mgtree 文件
+       for (const path of possiblePaths) {
+         try {
+           const response = await fetch(`/markdown-files/JavaFundamentals/${path}`);
+           if (response.ok) {
+             // 检查响应内容类型和实际内容
+             const contentType = response.headers.get('content-type');
+             const text = await response.text();
+             
+             // 确保不是HTML错误页面，且有实际内容
+               if (!contentType?.includes('text/html') && text.trim().length > 0 && !text.includes('<!DOCTYPE')) {
+                 // 文件存在且有效，立即显示骨架屏
+                 setIsCheckingFile(true);
+                 // 如果文件在trees目录下，只传递文件名给TreeViewer
+                 const fileName = path.startsWith('trees/') ? path.replace('trees/', '') : path;
+                 // 短暂延迟后设置文件路径，模拟加载过程
+                 setTimeout(() => {
+                   setTreeFilePath(fileName);
+                   setIsCheckingFile(false);
+                 }, 300);
+                 return;
+               }
+           }
+         } catch (error) {
+            // 继续检查下一个路径
+          }
+       }
+      // 没有找到有效文件，不显示任何内容
+      setTreeFilePath(null);
+      setIsCheckingFile(false);
+    };
+    
+    if (titleText) {
+      checkTreeFile();
+    } else {
+      setTreeFilePath(null);
+      setIsCheckingFile(false);
+    }
+  }, [titleText]);
+  
+  const handleJumpToCode = useCallback((jumpLanguage, jumpIndex) => {
+    // 查找对应语言和索引的代码块
+    const codeBlocks = containerRef.current?.querySelectorAll(`pre.language-${jumpLanguage}`) || [];
+
+    if (codeBlocks.length >= jumpIndex && jumpIndex > 0) {
+      const targetPre = codeBlocks[jumpIndex - 1]; // 索引从1开始，数组从0开始
+
+      // 滚动到目标代码块
+      targetPre.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      });
+
+      // 添加高亮效果
+      targetPre.style.transition = 'all 0.3s ease';
+      targetPre.style.boxShadow = '0 0 20px rgba(24, 144, 255, 0.5)';
+
+      // 3秒后移除高亮效果
+      setTimeout(() => {
+        targetPre.style.boxShadow = '';
+      }, 3000);
+    } 
+  }, [containerRef, isDarkMode]);
+  
+  return (
+    <div>
+      <h1 style={{
+        fontSize: '2rem',
+        fontWeight: 'bold',
+        marginBottom: '1rem',
+        color: isDarkMode ? '#f9fafb' : '#111827',
+        borderBottom: `2px solid ${isDarkMode ? '#374151' : '#e5e7eb'}`,
+        paddingBottom: '0.5rem'
+      }}>
+        {children}
+      </h1>
+      {isCheckingFile && (
+        <div style={{ marginBottom: '1.5rem' }}>
+          <Card
+            className="tree-viewer-card loading"
+            title={
+              <div className="tree-header">
+                <Typography.Title level={4} style={{ margin: 0 }}>📊 知识点脉络</Typography.Title>
+                <Space>
+                  <Tooltip title="全部展开">
+                    <Button
+                      disabled
+                      size="small"
+                      icon={<ExpandAltOutlined />}
+                      type="text"
+                    />
+                  </Tooltip>
+                  <Tooltip title="全部折叠">
+                    <Button
+                      disabled
+                      size="small"
+                      icon={<ShrinkOutlined />}
+                      type="text"
+                    />
+                  </Tooltip>
+                </Space>
+              </div>
+            }
+            size="small"
+          >
+            <div className="tree-container">
+              <Skeleton
+                active
+                paragraph={{ rows: 8, width: ['100%', '90%', '95%', '85%', '92%', '88%', '96%', '82%'] }}
+                title={false}
+              />
+            </div>
+          </Card>
+        </div>
+      )}
+      {!isCheckingFile && treeFilePath && treeFilePath !== null && treeFilePath !== '' && (
+        <div style={{ marginBottom: '1.5rem' }}>
+          <TreeViewer treeFilePath={treeFilePath} onJumpToCode={handleJumpToCode} currentFileName={currentFileName} />
+        </div>
+      )}
+    </div>
+  );
+};
 
 
 const { Title, Text } = Typography;
@@ -132,7 +273,8 @@ const LANGUAGE_DISPLAY_MAP = {
   mermaid: 'Mermaid'
 };
 
-const MarkdownRenderer = React.memo(({ content, copyToClipboard }) => {
+const MarkdownRenderer = React.memo(({ content, copyToClipboard, currentFileName }) => {
+
   const containerRef = useRef(null);
   const { token } = useToken();
   const [isDarkMode, setIsDarkMode] = useState(
@@ -383,6 +525,37 @@ const MarkdownRenderer = React.memo(({ content, copyToClipboard }) => {
     };
   }, [renderMermaidDiagrams]);
 
+  // 存储@tree()引用的映射
+  const treeRefsRef = useRef(new Map());
+  
+  // 预处理markdown内容，处理@tree()语法
+  const preprocessContent = useCallback((content) => {
+    
+    const treeRefs = new Map();
+    let counter = 0;
+    
+    // 匹配@tree()语法，支持单独一行的情况
+    const processedContent = content.replace(/^@tree\(([^)]+)\)$/gm, (match, treeName) => {
+      
+      // 如果没有扩展名，自动添加.mgtree
+      const fileName = treeName.trim().includes('.') ? treeName.trim() : `${treeName.trim()}.mgtree`;
+      const placeholder = `{{TREE_REF_${counter}}}`;
+      treeRefs.set(placeholder, fileName);
+      
+
+      counter++;
+      return placeholder;
+    });
+    
+    treeRefsRef.current = treeRefs;
+    
+    
+    
+    return processedContent;
+  }, []);
+
+  const processedContent = useMemo(() => preprocessContent(memoizedContent), [memoizedContent, preprocessContent]);
+
   return (
     <div ref={containerRef}>
       {React.useMemo(() => (
@@ -390,19 +563,218 @@ const MarkdownRenderer = React.memo(({ content, copyToClipboard }) => {
           remarkPlugins={[remarkGfm]}
           skipHtml={false}
           components={{
-            p: ({ children }) => <p style={getTextStyle(token)}>{children}</p>,
-            h1: ({ children }) => (
-              <h1 style={{
-                fontSize: '2rem',
-                fontWeight: 'bold',
-                marginBottom: '1rem',
-                color: isDarkMode ? '#f9fafb' : '#111827',
-                borderBottom: `2px solid ${isDarkMode ? '#374151' : '#e5e7eb'}`,
-                paddingBottom: '0.5rem'
-              }}>
-                {children}
-              </h1>
-            ),
+            // 添加根组件处理器来捕获所有可能的占位符
+              // 添加多种组件处理器来捕获占位符
+              span: ({ children }) => {
+               
+               if (typeof children === 'string' && children.includes('{{TREE_REF_')) {
+                   
+                   const treeRefMatch = children.match(/^{{TREE_REF_(\d+)}}$/);
+                 if (treeRefMatch) {
+                   const placeholder = children;
+                   const treeFilePath = treeRefsRef.current.get(placeholder);
+                   if (treeFilePath) {
+                     const handleJumpToCode = (jumpLanguage, jumpIndex) => {
+                       
+                       // 查找对应语言和索引的代码块
+                       const codeBlocks = containerRef.current?.querySelectorAll(`pre.language-${jumpLanguage}`) || [];
+                       
+
+                       if (codeBlocks.length >= jumpIndex && jumpIndex > 0) {
+                      const targetPre = codeBlocks[jumpIndex - 1]; // 索引从1开始，数组从0开始
+
+                      // 滚动到目标代码块
+                      targetPre.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                      });
+
+                      // 添加高亮效果
+                      targetPre.style.transition = 'all 0.3s ease';
+                      targetPre.style.boxShadow = '0 0 20px rgba(24, 144, 255, 0.5)';
+
+                      // 3秒后移除高亮效果
+                      setTimeout(() => {
+                        targetPre.style.boxShadow = '';
+                      }, 3000);
+
+                      // 跳转成功，不显示提示
+                    } else {
+                         toast.error(`未找到${jumpLanguage}代码示例#${jumpIndex}`);
+                       }
+                     };
+                     return <TreeViewer treeFilePath={treeFilePath} onJumpToCode={handleJumpToCode} currentFileName={currentFileName} />;
+                   }
+                 }
+               }
+               return <span>{children}</span>;
+             },
+             div: ({ children }) => {
+              
+              // 检查是否包含占位符
+              if (typeof children === 'string' && children.includes('{{TREE_REF_')) {
+                 
+                 const treeRefMatch = children.match(/^{{TREE_REF_(\d+)}}$/);
+                if (treeRefMatch) {
+                  const placeholder = children;
+                  const treeFilePath = treeRefsRef.current.get(placeholder);
+                  if (treeFilePath) {
+                    const handleJumpToCode = (jumpLanguage, jumpIndex) => {
+                      
+                      // 查找对应语言和索引的代码块
+                      const codeBlocks = containerRef.current?.querySelectorAll(`pre.language-${jumpLanguage}`) || [];
+                      
+
+                      if (codeBlocks.length >= jumpIndex && jumpIndex > 0) {
+                         const targetPre = codeBlocks[jumpIndex - 1]; // 索引从1开始，数组从0开始
+
+                         // 滚动到目标代码块
+                         targetPre.scrollIntoView({
+                           behavior: 'smooth',
+                           block: 'center'
+                         });
+
+                         // 添加高亮效果
+                         targetPre.style.transition = 'all 0.3s ease';
+                         targetPre.style.boxShadow = '0 0 20px rgba(24, 144, 255, 0.5)';
+
+                         // 3秒后移除高亮效果
+                         setTimeout(() => {
+                           targetPre.style.boxShadow = '';
+                         }, 3000);
+
+                         // 跳转成功，不显示提示
+                       } else {
+                        toast.error(`未找到${jumpLanguage}代码示例#${jumpIndex}`);
+                      }
+                    };
+                    return <TreeViewer treeFilePath={treeFilePath} onJumpToCode={handleJumpToCode} currentFileName={currentFileName} />;
+                  }
+                }
+              }
+              return <div>{children}</div>;
+            },
+            p: ({ children }) => {
+              // 检查段落中是否包含tree引用占位符
+              const checkForTreeRef = (child) => {
+                 if (typeof child === 'string' && child.includes('{{TREE_REF_')) {
+                  const treeRefMatch = child.match(/^{{TREE_REF_(\d+)}}$/);
+                   if (treeRefMatch) {
+                     const placeholder = child;
+                     const treeFilePath = treeRefsRef.current.get(placeholder);
+                     
+                     if (treeFilePath) {
+                      // 处理跳转到代码的回调函数
+                      const handleJumpToCode = (jumpLanguage, jumpIndex) => {
+                        
+                        // 查找对应语言和索引的代码块
+                        const codeBlocks = containerRef.current?.querySelectorAll(`pre.language-${jumpLanguage}`) || [];
+                        
+                        
+
+                        if (codeBlocks.length >= jumpIndex && jumpIndex > 0) {
+                          const targetPre = codeBlocks[jumpIndex - 1]; // 索引从1开始，数组从0开始
+
+                          // 滚动到目标代码块
+                          targetPre.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                          });
+
+                          // 添加高亮效果
+                          targetPre.style.transition = 'all 0.3s ease';
+                          targetPre.style.boxShadow = '0 0 20px rgba(24, 144, 255, 0.5)';
+
+                          // 3秒后移除高亮效果
+                          setTimeout(() => {
+                            targetPre.style.boxShadow = '';
+                          }, 3000);
+
+                          // 跳转成功，不显示提示
+                        } else {
+                          toast.error(`未找到${jumpLanguage}代码示例#${jumpIndex}`);
+                        }
+                      };
+                      
+                      return <TreeViewer treeFilePath={treeFilePath} onJumpToCode={handleJumpToCode} />;
+                    }
+                  }
+                }
+                return null;
+              };
+              
+              // 处理单个字符串children
+              if (typeof children === 'string') {
+                const treeComponent = checkForTreeRef(children);
+                if (treeComponent) return treeComponent;
+              }
+              
+              // 处理数组children
+              if (Array.isArray(children)) {
+                for (const child of children) {
+                  const treeComponent = checkForTreeRef(child);
+                  if (treeComponent) return treeComponent;
+                }
+              }
+              
+              return <p style={getTextStyle(token)}>{children}</p>;
+             },
+             text: ({ children }) => {
+               // 检查文本节点中是否包含tree引用占位符
+               
+               if (typeof children === 'string' && children.includes('{{TREE_REF_')) {
+                
+                const treeRefMatch = children.match(/^{{TREE_REF_(\d+)}}$/);
+                 if (treeRefMatch) {
+                   const placeholder = children;
+                   const treeFilePath = treeRefsRef.current.get(placeholder);
+                   
+                   if (treeFilePath) {
+                     // 处理跳转到代码的回调函数
+                     const handleJumpToCode = (jumpLanguage, jumpIndex) => {
+                       
+                       // 查找对应语言和索引的代码块
+                       const codeBlocks = containerRef.current?.querySelectorAll(`pre.language-${jumpLanguage}`) || [];
+                       
+
+                       if (codeBlocks.length >= jumpIndex && jumpIndex > 0) {
+                         const targetPre = codeBlocks[jumpIndex - 1]; // 索引从1开始，数组从0开始
+
+                         // 滚动到目标代码块
+                         targetPre.scrollIntoView({
+                           behavior: 'smooth',
+                           block: 'center'
+                         });
+
+                         // 添加高亮效果
+                         targetPre.style.transition = 'all 0.3s ease';
+                         targetPre.style.boxShadow = '0 0 20px rgba(24, 144, 255, 0.5)';
+
+                         // 3秒后移除高亮效果
+                         setTimeout(() => {
+                           targetPre.style.boxShadow = '';
+                         }, 3000);
+
+                         // 跳转成功，不显示提示
+                       } else {
+                         toast.error(`未找到${jumpLanguage}代码示例#${jumpIndex}`);
+                       }
+                     };
+                     
+                     return <TreeViewer treeFilePath={treeFilePath} onJumpToCode={handleJumpToCode} />;
+                   }
+                 }
+               }
+               return children;
+             },
+            h1: ({ children }) => {
+              // 提取 h1 标题文本
+              const titleText = typeof children === 'string' ? children : 
+                Array.isArray(children) ? children.join('') : 
+                children?.props?.children || '';
+              
+              return <AutoTreeH1 titleText={titleText} isDarkMode={isDarkMode} containerRef={containerRef} currentFileName={currentFileName}>{children}</AutoTreeH1>;
+            },
             h2: ({ children }) => <h2 style={{ ...getHeadingStyle(token), fontSize: '1.8rem' }}>{children}</h2>,
             h3: ({ children }) => <h3 style={{ ...getHeadingStyle(token), fontSize: '1.6rem' }}>{children}</h3>,
             h4: ({ children }) => <h4 style={{ ...getHeadingStyle(token), fontSize: '1.4rem' }}>{children}</h4>,
@@ -418,7 +790,50 @@ const MarkdownRenderer = React.memo(({ content, copyToClipboard }) => {
               </a>
             ),
             em: ({ children }) => <em style={getTextStyle(token)}>{children}</em>,
-            strong: ({ children }) => <strong style={{ ...getTextStyle(token), fontWeight: 600 }}>{children}</strong>,
+            strong: ({ children }) => {
+              
+              if (typeof children === 'string' && children.includes('{{TREE_REF_')) {
+                
+                const treeRefMatch = children.match(/^{{TREE_REF_(\d+)}}$/);
+                if (treeRefMatch) {
+                  const placeholder = children;
+                  const treeFilePath = treeRefsRef.current.get(placeholder);
+                  if (treeFilePath) {
+                    const handleJumpToCode = (jumpLanguage, jumpIndex) => {
+                      
+                      // 查找对应语言和索引的代码块
+                      const codeBlocks = containerRef.current?.querySelectorAll(`pre.language-${jumpLanguage}`) || [];
+                      
+
+                      if (codeBlocks.length >= jumpIndex && jumpIndex > 0) {
+                         const targetPre = codeBlocks[jumpIndex - 1]; // 索引从1开始，数组从0开始
+
+                         // 滚动到目标代码块
+                         targetPre.scrollIntoView({
+                           behavior: 'smooth',
+                           block: 'center'
+                         });
+
+                         // 添加高亮效果
+                         targetPre.style.transition = 'all 0.3s ease';
+                         targetPre.style.boxShadow = '0 0 20px rgba(24, 144, 255, 0.5)';
+
+                         // 3秒后移除高亮效果
+                         setTimeout(() => {
+                           targetPre.style.boxShadow = '';
+                         }, 3000);
+
+                         // 跳转成功，不显示提示
+                       } else {
+                        toast.error(`未找到${jumpLanguage}代码示例#${jumpIndex}`);
+                      }
+                    };
+                    return <TreeViewer treeFilePath={treeFilePath} onJumpToCode={handleJumpToCode} />;
+                  }
+                }
+              }
+              return <strong style={{ ...getTextStyle(token), fontWeight: 600 }}>{children}</strong>;
+            },
             hr: () => <hr style={getHrStyle(token)} />,
             table: ({ children }) => <table style={getTableStyle(token)}>{children}</table>,
             thead: ({ children }) => <thead style={getTableHeadStyle(token)}>{children}</thead>,
@@ -452,7 +867,62 @@ const MarkdownRenderer = React.memo(({ content, copyToClipboard }) => {
               // 使用闭包捕获isDarkMode，避免作为依赖项
               const language = className?.replace('language-', '') || '';
 
+              // 处理树状图
+              if (!inline && language === 'tree') {
+                const treeContent = String(children).replace(/\n$/, '');
 
+                // 创建跳转到代码块的回调函数
+                const handleJumpToCode = (jumpLanguage, jumpIndex) => {
+                  
+                  // 查找对应语言和索引的代码块
+                  const codeBlocks = containerRef.current?.querySelectorAll(`pre.language-${jumpLanguage}`) || [];
+                  
+                  
+
+                  if (codeBlocks.length >= jumpIndex && jumpIndex > 0) {
+                    const targetCodeBlock = codeBlocks[jumpIndex - 1]; // 索引从1开始，数组从0开始
+                    const targetPre = targetCodeBlock.closest('pre');
+
+                    if (targetPre) {
+                      // 滚动到目标代码块
+                      targetPre.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                      });
+
+                      // 添加高亮效果
+                      targetPre.style.transition = 'all 0.3s ease';
+                      targetPre.style.boxShadow = '0 0 20px rgba(24, 144, 255, 0.5)';
+
+                      // 3秒后移除高亮效果
+                      setTimeout(() => {
+                        targetPre.style.boxShadow = '';
+                      }, 3000);
+
+                      // 跳转成功，不显示提示
+                    }
+                  } else {
+                    toast.error(`未找到${jumpLanguage}代码示例#${jumpIndex}`);
+                  }
+                };
+
+                const trimmedContent = treeContent.trim();
+                
+                // 检查是否是@tree()引用语法
+                const refMatch = trimmedContent.match(/^@tree\((.+)\)$/);
+                if (refMatch) {
+                  // @tree()语法支持外部文件引用
+                  let refPath = refMatch[1].trim();
+                  // 如果没有扩展名，自动添加.mgtree
+                  if (!refPath.includes('.')) {
+                    refPath += '.mgtree';
+                  }
+                  return <TreeViewer treeFilePath={refPath} onJumpToCode={handleJumpToCode} currentFileName={currentFileName} />;
+                } else {
+                  // ```tree代码块只支持内容渲染
+                  return <TreeViewer treeContent={treeContent} onJumpToCode={handleJumpToCode} currentFileName={currentFileName} />;
+                }
+              }
 
               return !inline && language ? (
                 <pre
@@ -489,14 +959,15 @@ const MarkdownRenderer = React.memo(({ content, copyToClipboard }) => {
             }
           }}
         >
-          {memoizedContent}
+          {processedContent}
         </ReactMarkdown>
-      ), [memoizedContent, token, isDarkMode])}
+      ), [processedContent, token, isDarkMode])}
     </div>
   );
 });
 
 const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
+
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
   const [fileStats, setFileStats] = useState(null);
@@ -875,7 +1346,7 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
           overflowY: 'auto',
           maxHeight: 'calc(100vh - 140px)'
         }}>
-        <MarkdownRenderer content={debouncedContent} copyToClipboard={copyToClipboard} />
+        <MarkdownRenderer content={debouncedContent} copyToClipboard={copyToClipboard} currentFileName={fileName} />
       </div>
 
       {/* 翻页按钮 */}

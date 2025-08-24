@@ -1,0 +1,522 @@
+/* TreeViewer 组件样式 */
+.tree-viewer-card {
+  margin: 16px 0;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+  border: 1px solid #f0f0f0;
+}
+
+.tree-viewer-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.tree-viewer-card.loading,
+.tree-viewer-card.error {
+  text-align: center;
+  padding: 24px;
+}
+
+.tree-loading {
+  color: #1890ff;
+  font-size: 14px;
+}
+
+.tree-error {
+  color: #ff4d4f;
+  font-size: 14px;
+}
+
+/* 树形组件头部 */
+.tree-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 0;
+  padding: 0;
+}
+
+.tree-header h4 {
+  color: #1890ff;
+  font-weight: 600;
+  margin: 0 !important;
+  padding: 0;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.tree-header .ant-space {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tree-header .ant-space .ant-space-item {
+  display: flex;
+  align-items: center;
+}
+
+.tree-header .ant-btn {
+  height: 24px;
+  width: 24px;
+  min-width: 24px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  box-shadow: none;
+  font-size: 12px;
+}
+
+.tree-header .ant-btn:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.tree-header .ant-btn:focus {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.tree-header .ant-btn .anticon {
+  font-size: 12px;
+}
+
+/* 树形容器 */
+.tree-container {
+  max-height: 600px;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+/* 自定义滚动条 */
+.tree-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tree-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.tree-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.tree-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* 树节点内容 */
+.tree-node-content {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  min-height: 32px;
+}
+
+.tree-node-content:hover {
+  background-color: #f5f5f5;
+}
+
+/* 树节点图标 */
+.tree-icon {
+  font-size: 14px;
+  margin-right: 6px;
+}
+
+.tree-icon.folder-icon {
+  color: #faad14;
+}
+
+.tree-icon.file-icon {
+  color: #52c41a;
+}
+
+/* 树节点文本 */
+.tree-node-text {
+  font-size: 14px;
+  line-height: 1.4;
+  color: #262626;
+  font-weight: 500;
+}
+
+.tree-node-text.has-code {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 600;
+}
+
+/* 树节点内容容器 */
+.tree-node-content {
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+/* 可点击节点样式 */
+.tree-node-content.tree-node-clickable {
+  cursor: pointer;
+  color: #1890ff;
+  border-radius: 6px;
+  padding: 4px 8px;
+  transform: translateY(0);
+}
+
+.tree-node-content.tree-node-clickable:hover {
+  transform: translateY(-1px);
+}
+
+/* 代码指示器 */
+.code-indicator {
+  font-size: 14px;
+  opacity: 0.9;
+  animation: pulse 2s infinite;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+
+  100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+}
+
+/* Ant Design Tree 组件自定义样式 */
+.tree-container .ant-tree {
+  background: transparent;
+}
+
+.tree-container .ant-tree .ant-tree-treenode {
+  padding: 2px 0;
+  display: flex;
+  align-items: center;
+  min-height: 24px;
+}
+
+.tree-container .ant-tree .ant-tree-switcher {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  width: 24px;
+  align-self: center;
+  vertical-align: middle;
+  margin-right: -4px;
+}
+
+.tree-container .ant-tree .ant-tree-switcher:hover,
+.tree-container .ant-tree .ant-tree-switcher:focus,
+.tree-container .ant-tree .ant-tree-switcher:active,
+.tree-container .ant-tree .ant-tree-switcher.ant-tree-switcher_open:hover,
+.tree-container .ant-tree .ant-tree-switcher.ant-tree-switcher_close:hover {
+  background-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+  outline: none !important;
+}
+
+/* 覆盖所有可能的Ant Design内置hover样式 */
+.tree-container .ant-tree .ant-tree-switcher::before,
+.tree-container .ant-tree .ant-tree-switcher::after {
+  display: none !important;
+}
+
+.tree-container .ant-tree .ant-tree-switcher {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* 自定义switcher样式和动画 */
+.custom-switcher {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.custom-switcher.collapsed {
+  transform: rotate(90deg);
+}
+
+.custom-switcher.expanded {
+  transform: rotate(90deg);
+}
+
+.custom-switcher svg {
+  display: block;
+  color: inherit;
+}
+
+.tree-container .ant-tree .ant-tree-node-content-wrapper {
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.tree-container .ant-tree .ant-tree-node-content-wrapper:hover {
+  background-color: transparent;
+}
+
+.tree-container .ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected {
+  background-color: #e6f7ff;
+  border: 1px solid #91d5ff;
+}
+
+.tree-container .ant-tree .ant-tree-title {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.tree-container .ant-tree .tree-node-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.tree-container .ant-tree .ant-space {
+  display: flex;
+  align-items: center;
+}
+
+/* 树形线条样式 - 亮色和暗色主题统一使用相同颜色 */
+.tree-container .ant-tree.ant-tree-show-line .ant-tree-indent-unit::before {
+  border-left: 1px solid #30363d !important;
+  opacity: 1 !important;
+  position: absolute;
+  top: 0;
+  bottom: -8px;
+  content: "";
+  transform: scaleX(0.5);
+  transform-origin: left;
+}
+
+/* 确保最后一个子节点也显示延伸线条 */
+.tree-container .ant-tree.ant-tree-show-line .ant-tree-treenode:last-child .ant-tree-indent-unit::before {
+  border-left: 1px solid #30363d !important;
+  opacity: 1 !important;
+  position: absolute;
+  top: 0;
+  bottom: -8px;
+  content: "";
+  transform: scaleX(0.5);
+  transform-origin: left;
+}
+
+/* 覆盖所有可能的Ant Design连接线样式 */
+.tree-container .ant-tree .ant-tree-indent-unit::before {
+  border-left: 1px solid #30363d !important;
+  opacity: 1 !important;
+  position: absolute !important;
+  top: 0 !important;
+  bottom: -8px !important;
+  content: "" !important;
+  transform: scaleX(0.5) !important;
+  transform-origin: left !important;
+}
+
+.tree-container .ant-tree .ant-tree-treenode .ant-tree-indent-unit::before {
+  border-left: 1px solid #30363d !important;
+  opacity: 1 !important;
+  position: absolute !important;
+  top: 0 !important;
+  bottom: -8px !important;
+  content: "" !important;
+  transform: scaleX(0.5) !important;
+  transform-origin: left !important;
+}
+
+.tree-container .ant-tree .ant-tree-child-tree::before {
+  border-left: 1px solid #30363d !important;
+}
+
+/* 强制覆盖所有可能的连接线样式 - 亮色模式 */
+.tree-container .ant-tree-show-line .ant-tree-indent-unit::before,
+.tree-container .ant-tree-show-line .ant-tree-treenode .ant-tree-indent-unit::before,
+.tree-container .ant-tree-show-line .ant-tree-treenode:last-child .ant-tree-indent-unit::before {
+  border-left: 1px solid #d9d9d9 !important;
+  border-inline-end: 1px solid #d9d9d9 !important;
+  opacity: 1 !important;
+}
+
+/* 覆盖 Ant Design 的 CSS-in-JS 样式 - 亮色模式 */
+.tree-container :where(.css-dev-only-do-not-override-i1fefw).ant-tree-show-line .ant-tree-indent-unit:before,
+.tree-container .ant-tree-show-line .ant-tree-indent-unit:before {
+  border-inline-end: 1px solid #d9d9d9 !important;
+  border-left: 1px solid #d9d9d9 !important;
+}
+
+/* 强制覆盖所有可能的连接线样式 - 暗色模式 */
+[data-theme='dark'] .tree-container .ant-tree-show-line .ant-tree-indent-unit::before,
+[data-theme='dark'] .tree-container .ant-tree-show-line .ant-tree-treenode .ant-tree-indent-unit::before,
+[data-theme='dark'] .tree-container .ant-tree-show-line .ant-tree-treenode:last-child .ant-tree-indent-unit::before {
+  border-left: 1px solid #30363d !important;
+  border-inline-end: 1px solid #30363d !important;
+  opacity: 1 !important;
+}
+
+/* 覆盖 Ant Design 的 CSS-in-JS 样式 - 暗色模式 */
+[data-theme='dark'] .tree-container :where(.css-dev-only-do-not-override-i1fefw).ant-tree-show-line .ant-tree-indent-unit:before,
+[data-theme='dark'] .tree-container .ant-tree-show-line .ant-tree-indent-unit:before {
+  border-inline-end: 1px solid #30363d !important;
+  border-left: 1px solid #30363d !important;
+}
+
+.tree-container .ant-tree.ant-tree-show-line .ant-tree-switcher {
+  background: transparent;
+}
+
+/* 展开/折叠图标 */
+.tree-container .ant-tree-switcher {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-right: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.tree-container .ant-tree-switcher:hover {
+  background-color: #f0f0f0;
+}
+
+.tree-container .ant-tree-switcher .anticon {
+  font-size: 12px;
+  color: #8c8c8c;
+}
+
+/* 深色主题适配 */
+[data-theme='dark'] .tree-viewer-card {
+  background-color: #1f1f1f;
+  border-color: #303030;
+}
+
+[data-theme='dark'] .tree-viewer-card:hover {
+  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .tree-node-content:hover {
+  background-color: #262626;
+}
+
+[data-theme='dark'] .tree-node-text {
+  color: #f0f0f0;
+}
+
+[data-theme='dark'] .tree-container .ant-tree-node-content-wrapper.ant-tree-node-selected {
+  background-color: #111b26;
+  border-color: #1890ff;
+}
+
+[data-theme='dark'] .tree-container .ant-tree-switcher:hover {
+  background-color: #303030;
+}
+
+[data-theme='dark'] .tree-container .ant-tree.ant-tree-show-line .ant-tree-indent-unit::before {
+  border-left: 1px solid #30363d;
+  opacity: 1;
+  position: absolute;
+  top: 0;
+  bottom: -8px;
+  content: "";
+  transform: scaleX(0.5);
+  transform-origin: left;
+}
+
+/* 深色主题下确保最后一个子节点也显示延伸线条 */
+[data-theme='dark'] .tree-container .ant-tree.ant-tree-show-line .ant-tree-treenode:last-child .ant-tree-indent-unit::before {
+  border-left: 1px solid #30363d;
+  opacity: 1;
+  position: absolute;
+  top: 0;
+  bottom: -8px;
+  content: "";
+  transform: scaleX(0.5);
+  transform-origin: left;
+}
+
+[data-theme='dark'] .tree-container::-webkit-scrollbar-track {
+  background: #2f2f2f;
+}
+
+[data-theme='dark'] .tree-container::-webkit-scrollbar-thumb {
+  background: #555;
+}
+
+[data-theme='dark'] .tree-container::-webkit-scrollbar-thumb:hover {
+  background: #777;
+}
+
+/* 深色主题下的可点击节点样式 */
+[data-theme='dark'] .tree-node-content.tree-node-clickable {
+  color: #40a9ff;
+}
+
+[data-theme='dark'] .tree-node-content.tree-node-clickable:hover {}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .tree-viewer-card {
+    margin: 12px 0;
+  }
+
+  .tree-header {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .tree-container {
+    max-height: 400px;
+  }
+
+  .tree-node-text {
+    font-size: 13px;
+  }
+}
+
+/* 打印样式 */
+@media print {
+  .tree-viewer-card {
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+
+  .tree-header button {
+    display: none;
+  }
+
+  .tree-container {
+    max-height: none;
+    overflow: visible;
+  }
+}
