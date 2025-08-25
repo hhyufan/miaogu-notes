@@ -23,8 +23,7 @@ const initialState = {
     theme: 'light'
   },
   
-  // 文件是否已修改
-  isModified: false,
+
   
   // 最近打开的文件列表
   recentFiles: []
@@ -96,10 +95,7 @@ const editorSlice = createSlice({
       }
     },
     
-    // 设置文件修改状态
-    setIsModified: (state, action) => {
-      state.isModified = action.payload;
-    },
+
     
     // 更新编辑器设置
     updateEditorSettings: (state, action) => {
@@ -114,7 +110,6 @@ const editorSlice = createSlice({
       state.currentFile = null;
       state.treeData = [];
       state.selectedKeys = [];
-      state.isModified = false;
       // 保留展开状态、未保存内容和设置
     },
     
@@ -133,7 +128,6 @@ export const {
   removeExpandedSection,
   setUnsavedContent,
   clearUnsavedContent,
-  setIsModified,
   updateEditorSettings,
   resetEditorState,
   resetAllState
@@ -148,6 +142,6 @@ export const selectTreeData = (state) => state.editor.treeData;
 export const selectSelectedKeys = (state) => state.editor.selectedKeys;
 export const selectExpandedSections = (state) => state.editor.expandedSections;
 export const selectUnsavedContent = (state) => state.editor.unsavedContent;
-export const selectIsModified = (state) => state.editor.isModified;
+
 export const selectEditorSettings = (state) => state.editor.editorSettings;
 export const selectRecentFiles = (state) => state.editor.recentFiles;

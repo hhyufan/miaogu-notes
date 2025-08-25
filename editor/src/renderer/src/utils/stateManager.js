@@ -4,6 +4,11 @@
 class StateManager {
   constructor() {
     this.isElectron = window.api && window.api.storeGet;
+    console.log('StateManager初始化:', {
+      hasWindowApi: !!window.api,
+      hasStoreGet: !!(window.api && window.api.storeGet),
+      isElectron: this.isElectron
+    });
   }
 
   // 保存状态到electron-store
@@ -85,29 +90,32 @@ class StateManager {
     }
   }
 
-  // 保存编辑器完整状态
-  async saveEditorState(editorState) {
-    const stateToSave = {
-      currentFile: editorState.currentFile,
-      treeData: editorState.treeData,
-      expandedSections: editorState.expandedSections,
-      isModified: editorState.isModified,
-      lastSaved: Date.now()
-    };
-
-    return await this.saveState('editorState', stateToSave);
+  // 保存展开状态
+  async saveExpandedSections(expandedSections) {
+    console.log('保存展开状态:', expandedSections, 'isElectron:', this.isElectron);
+    return await this.saveState('expandedSections', expandedSections);
   }
 
-  // 恢复编辑器完整状态
-  async loadEditorState() {
-    const defaultState = {
-      currentFile: null,
-      treeData: [],
-      expandedSections: [],
-      isModified: false
-    };
+  // 恢复展开状态
+  async loadExpandedSections() {
+    console.log('加载展开状态, isElectron:', this.isElectron);
+    const result = await this.loadState('expandedSections', []);
+    console.log('加载到的展开状态:', result);
+    return result;
+  }
 
-    return await this.loadState('editorState', defaultState);
+  // 保存当前文件
+  async saveCurrentFile(currentFile) {
+    console.log('保存当前文件:', currentFile, 'isElectron:', this.isElectron);
+    return await this.saveState('currentFile', currentFile);
+  }
+
+  // 恢复当前文件
+  async loadCurrentFile() {
+    console.log('加载当前文件, isElectron:', this.isElectron);
+    const result = await this.loadState('currentFile', null);
+    console.log('加载到的当前文件:', result);
+    return result;
   }
 }
 

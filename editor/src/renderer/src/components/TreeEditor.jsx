@@ -12,7 +12,6 @@ import {
 import {
   PlusOutlined,
   DeleteOutlined,
-  SaveOutlined,
   FolderOpenOutlined,
   FolderOutlined,
   FileTextOutlined,
@@ -25,8 +24,8 @@ import {
 } from "@ant-design/icons";
 import { useTheme } from "../theme/ThemeContext";
 import AppHeader from "./AppHeader";
-import { useAppDispatch, useCurrentFile, useTreeData, useExpandedSections, useSelectedKeys, useIsModified, useUnsavedContent } from "../store/hooks";
-import { setCurrentFile, setTreeData, setExpandedSections, setSelectedKeys, setIsModified, setUnsavedContent } from "../store/slices/editorSlice";
+import { useAppDispatch, useCurrentFile, useTreeData, useExpandedSections, useSelectedKeys, useUnsavedContent } from "../store/hooks";
+import { setCurrentFile, setTreeData, setExpandedSections, setSelectedKeys } from "../store/slices/editorSlice";
 import stateManager from "../utils/stateManager";
 import "./TreeEditor.scss";
 
@@ -171,7 +170,6 @@ const TreeEditor = () => {
   const treeData = useTreeData();
   const expandedSections = useExpandedSections();
   const selectedKeys = useSelectedKeys();
-  const isModified = useIsModified();
   const unsavedContent = useUnsavedContent();
 
   // 本地状态
@@ -207,7 +205,7 @@ const TreeEditor = () => {
   };
 
   // 保存编辑
-  const saveEdit = () => {
+  const saveEdit = async () => {
     if (!editingNode) return;
 
     const value = editValue.trim();
@@ -274,17 +272,21 @@ const TreeEditor = () => {
       });
     };
 
-    dispatch(setTreeData(updateNodeRecursive(treeData)));
+    const newTreeData = updateNodeRecursive(treeData);
+    dispatch(setTreeData(newTreeData));
     setEditingNode(null);
     setEditValue("");
-    dispatch(setIsModified(true));
+    
+    // 实时保存到文件系统
+    await saveToFileSystem(newTreeData);
+    
     message.success("节点更新成功");
   };
 
   // 取消编辑（自动保存）
-  const cancelEdit = () => {
+  const cancelEdit = async () => {
     if (editingNode && editValue.trim()) {
-      saveEdit();
+      await saveEdit();
     } else {
       setEditingNode(null);
       setEditValue("");
@@ -292,7 +294,7 @@ const TreeEditor = () => {
   };
 
   // 添加子节点
-  const handleAddNode = (parentKey) => {
+  const handleAddNode = async (parentKey) => {
     const newNodeKey = generateNodeKey();
     const newNode = {
       key: newNodeKey,
@@ -322,10 +324,13 @@ const TreeEditor = () => {
       });
     };
 
+    let newTreeData;
     if (parentKey === "root") {
-      dispatch(setTreeData([...treeData, newNode]));
+      newTreeData = [...treeData, newNode];
+      dispatch(setTreeData(newTreeData));
     } else {
-      dispatch(setTreeData(addNodeRecursive(treeData)));
+      newTreeData = addNodeRecursive(treeData);
+      dispatch(setTreeData(newTreeData));
     }
 
     // 展开父节点
@@ -336,25 +341,36 @@ const TreeEditor = () => {
     // 立即开始编辑新节点
     setEditingNode(newNodeKey);
     setEditValue("");
-    dispatch(setIsModified(true));
+    
+    // 实时保存到文件系统
+    await saveToFileSystem(newTreeData);
   };
 
   // 删除节点
-  const handleDeleteNode = (nodeKey) => {
+  const handleDeleteNode = async (nodeKey) => {
     const deleteNodeRecursive = (nodes) => {
       return nodes.filter((node) => {
         if (node.key === nodeKey) {
           return false;
         }
-        if (node.children) {
-          node.children = deleteNodeRecursive(node.children);
-        }
         return true;
+      }).map((node) => {
+        if (node.children) {
+          return {
+            ...node,
+            children: deleteNodeRecursive(node.children)
+          };
+        }
+        return node;
       });
     };
 
-    dispatch(setTreeData(deleteNodeRecursive(treeData)));
-    dispatch(setIsModified(true));
+    const newTreeData = deleteNodeRecursive(treeData);
+    dispatch(setTreeData(newTreeData));
+    
+    // 实时保存到文件系统
+    await saveToFileSystem(newTreeData);
+    
     message.success("节点删除成功");
   };
 
@@ -587,7 +603,11 @@ const TreeEditor = () => {
         const parsedData = parseTreeText(content);
         dispatch(setTreeData(parsedData));
         dispatch(setCurrentFile(filePath));
-        dispatch(setIsModified(false));
+        // 新文件打开时重置为全折叠状态
+        dispatch(setExpandedSections([]));
+        // 保存新的折叠状态
+        await stateManager.saveExpandedSections([]);
+        setIsNewFileLoad(true);
         message.success("文件加载成功");
       }
     } catch (error) {
@@ -602,7 +622,11 @@ const TreeEditor = () => {
       const parsedData = parseTreeText(content);
       dispatch(setTreeData(parsedData));
       dispatch(setCurrentFile(filePath));
-      dispatch(setIsModified(false));
+      // 新文件打开时重置为全折叠状态
+      dispatch(setExpandedSections([]));
+      // 保存新的折叠状态
+      await stateManager.saveExpandedSections([]);
+      setIsNewFileLoad(true);
       message.success(`文件加载成功: ${filePath}`);
       return true;
     } catch (error) {
@@ -621,65 +645,146 @@ const TreeEditor = () => {
     };
   }, []);
 
-  // 状态恢复：当currentFile存在且treeData为空时，自动加载文件
+  // 状态恢复：仅在初始化时或文件切换时加载文件内容
+  const [hasInitialized, setHasInitialized] = useState(false);
+  const [lastLoadedFile, setLastLoadedFile] = useState(null);
+  const [isNewFileLoad, setIsNewFileLoad] = useState(false); // 标记是否为新文件加载
+  
   useEffect(() => {
     const restoreFileContent = async () => {
-      if (currentFile && (!treeData || treeData.length === 0)) {
+      // 只在以下情况下加载文件：
+      // 1. 组件首次初始化且有currentFile
+      // 2. currentFile发生变化（文件切换）
+      const isFileChanged = currentFile !== lastLoadedFile;
+      
+      if (currentFile && (!hasInitialized || isFileChanged)) {
         try {
           const content = await window.api.readFile(currentFile);
           const parsedData = parseTreeText(content);
           dispatch(setTreeData(parsedData));
-          dispatch(setIsModified(false));
+          setHasInitialized(true);
+          setLastLoadedFile(currentFile);
           console.log(`状态恢复：成功加载文件 ${currentFile}`);
         } catch (error) {
           console.warn(`状态恢复失败：无法加载文件 ${currentFile}:`, error.message);
           // 如果文件不存在，清除当前文件状态
           dispatch(setCurrentFile(null));
+          setHasInitialized(true);
+          setLastLoadedFile(null);
         }
       }
     };
 
     restoreFileContent();
-  }, [currentFile, treeData, dispatch]);
+  }, [currentFile, dispatch]); // 移除treeData依赖，避免删除后重新加载
 
-  // 自动保存状态到electron-store
+  // 初始化时恢复状态
   useEffect(() => {
-    const saveStateToStore = async () => {
+    const restoreInitialState = async () => {
       try {
-        await stateManager.saveEditorState({
-          currentFile,
-          treeData,
-          expandedSections,
-          isModified
-        });
+        // 恢复当前文件
+        const savedCurrentFile = await stateManager.loadCurrentFile();
+        if (savedCurrentFile) {
+          dispatch(setCurrentFile(savedCurrentFile));
+          console.log('当前文件已恢复:', savedCurrentFile);
+          
+          // 只有在应用重启恢复文件时才恢复展开状态
+          // 这里标记为应用重启恢复，而不是新文件加载
+          const savedExpandedSections = await stateManager.loadExpandedSections();
+          if (savedExpandedSections && savedExpandedSections.length > 0) {
+            dispatch(setExpandedSections(savedExpandedSections));
+            console.log('展开状态已恢复:', savedExpandedSections);
+          }
+        }
       } catch (error) {
-        console.error('保存状态到electron-store失败:', error);
+        console.error('恢复初始状态失败:', error);
+      }
+    };
+
+    restoreInitialState();
+  }, []); // 只在组件初始化时执行一次
+
+  // 文件监听和外部更改同步
+  useEffect(() => {
+    if (!currentFile) return;
+
+    // 开始监听当前文件
+    const startWatching = async () => {
+      try {
+        await window.api.watchFile(currentFile);
+        console.log(`开始监听文件: ${currentFile}`);
+      } catch (error) {
+        console.error('启动文件监听失败:', error);
+      }
+    };
+
+    // 设置文件更改监听器
+    const removeFileChangeListener = window.api.onFileChanged(async (changedFilePath) => {
+      if (changedFilePath === currentFile) {
+        console.log(`检测到外部文件更改: ${changedFilePath}`);
+        try {
+          // 重新读取文件内容
+          const content = await window.api.readFile(currentFile);
+          const parsedData = parseTreeText(content);
+          dispatch(setTreeData(parsedData));
+          message.info('文件已同步外部更改');
+        } catch (error) {
+          console.error('同步外部文件更改失败:', error);
+          message.error('同步外部文件更改失败');
+        }
+      }
+    });
+
+    startWatching();
+
+    // 清理函数
+    return () => {
+      removeFileChangeListener();
+    };
+  }, [currentFile, dispatch]);
+
+  // 自动保存当前文件到electron-store
+  useEffect(() => {
+    const saveCurrentFileState = async () => {
+      try {
+        await stateManager.saveCurrentFile(currentFile);
+        console.log('当前文件已保存:', currentFile);
+      } catch (error) {
+        console.error('保存当前文件失败:', error);
       }
     };
 
     // 防抖保存，避免频繁写入
-    const timeoutId = setTimeout(saveStateToStore, 500);
+    const timeoutId = setTimeout(saveCurrentFileState, 300);
     return () => clearTimeout(timeoutId);
-  }, [currentFile, treeData, expandedSections, isModified]);
+  }, [currentFile]);
 
-  // 处理文件保存
-  const handleSaveFile = async () => {
-    try {
-      const content = treeToText(treeData);
-      if (currentFile) {
-        await window.api.writeFile(currentFile, content);
-        message.success("文件保存成功");
-      } else {
-        const result = await window.api.saveFileDialog();
-        if (result && !result.canceled && result.filePath) {
-          await window.api.writeFile(result.filePath, content);
-          dispatch(setCurrentFile(result.filePath));
-          message.success("文件保存成功");
-        }
+  // 自动保存展开状态到electron-store
+  useEffect(() => {
+    const saveExpandedState = async () => {
+      try {
+        await stateManager.saveExpandedSections(expandedSections);
+      } catch (error) {
+        console.error('保存展开状态失败:', error);
       }
-      dispatch(setIsModified(false));
+    };
+
+    // 防抖保存，避免频繁写入
+    const timeoutId = setTimeout(saveExpandedState, 500);
+    return () => clearTimeout(timeoutId);
+  }, [expandedSections]);
+
+  // 实时保存到文件系统
+  const saveToFileSystem = async (newTreeData = treeData) => {
+    if (!currentFile) return;
+    
+    try {
+      const content = treeToText(newTreeData);
+      await window.api.writeFile(currentFile, content);
+      console.log('文件已自动保存到:', currentFile);
     } catch (error) {
-      message.error("文件保存失败: " + error.message);
+      console.error('自动保存失败:', error);
+      message.error('自动保存失败: ' + error.message);
     }
   };
 
@@ -713,10 +818,9 @@ const TreeEditor = () => {
         onOpenFile={handleLoadFile}
         onExpandAll={handleExpandAll}
         onCollapseAll={handleCollapseAll}
-        onSaveFile={handleSaveFile}
         isDarkMode={isDarkMode}
         onToggleTheme={toggleTheme}
-        onAddRootNode={() => handleAddNode("root")}
+        onAddRootNode={async () => await handleAddNode("root")}
       />
       <div className="editor-content">
         <Card
@@ -751,17 +855,10 @@ const TreeEditor = () => {
                     type="text"
                   />
                 </Tooltip>
-                <Tooltip title="保存到文件">
-                  <Button
-                    onClick={handleSaveFile}
-                    size="small"
-                    icon={<FileTextOutlined />}
-                    type="text"
-                  />
-                </Tooltip>
+
                 <Tooltip title="添加根节点">
                   <Button
-                    onClick={() => handleAddNode("root")}
+                    onClick={async () => await handleAddNode("root")}
                     size="small"
                     icon={<PlusOutlined />}
                     type="text"

@@ -273,13 +273,26 @@ const StatusBar = ({ currentFile }) => {
   // 处理面包屑项点击
   const handleBreadcrumbClick = useCallback(
     async (index) => {
-      const dirPath = buildFullPath(index);
-      if (!dirPath) return;
+      const fullPath = buildFullPath(index);
+      if (!fullPath) return;
+
+      // 检查是否是最后一个路径段（可能是文件）
+      const isLastSegment = index === pathSegments.length - 1;
+      let dirPath = fullPath;
+      
+      // 如果是最后一个路径段且当前文件存在，则获取父目录
+      if (isLastSegment && currentFile && fullPath.endsWith('.mgtree')) {
+        // 获取父目录路径
+        const lastSeparator = Math.max(fullPath.lastIndexOf('/'), fullPath.lastIndexOf('\\'));
+        if (lastSeparator > 0) {
+          dirPath = fullPath.substring(0, lastSeparator);
+        }
+      }
 
       const contents = await getDirectoryContents(dirPath);
       setDirectoryContents({ [index]: contents });
     },
-    [buildFullPath, getDirectoryContents],
+    [buildFullPath, getDirectoryContents, pathSegments.length, currentFile],
   );
 
   // 处理文件或目录点击

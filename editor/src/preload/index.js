@@ -17,7 +17,15 @@ const api = {
   storeSet: (key, value) => ipcRenderer.invoke('store-set', key, value),
   storeDelete: (key) => ipcRenderer.invoke('store-delete', key),
   storeClear: () => ipcRenderer.invoke('store-clear'),
-  storeGetAll: () => ipcRenderer.invoke('store-get-all')
+  storeGetAll: () => ipcRenderer.invoke('store-get-all'),
+  // 文件监听 APIs
+  watchFile: (filePath) => ipcRenderer.invoke('watch-file', filePath),
+  stopWatchFile: () => ipcRenderer.invoke('stop-watch-file'),
+  onFileChanged: (callback) => {
+    const listener = (event, filePath) => callback(filePath)
+    ipcRenderer.on('file-changed', listener)
+    return () => ipcRenderer.removeListener('file-changed', listener)
+  }
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

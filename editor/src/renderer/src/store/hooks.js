@@ -10,6 +10,6 @@ export const useTreeData = () => useAppSelector(state => state.editor.treeData);
 export const useSelectedKeys = () => useAppSelector(state => state.editor.selectedKeys);
 export const useExpandedSections = () => useAppSelector(state => state.editor.expandedSections);
 export const useUnsavedContent = () => useAppSelector(state => state.editor.unsavedContent);
-export const useIsModified = () => useAppSelector(state => state.editor.isModified);
+
 export const useEditorSettings = () => useAppSelector(state => state.editor.editorSettings);
 export const useRecentFiles = () => useAppSelector(state => state.editor.recentFiles);

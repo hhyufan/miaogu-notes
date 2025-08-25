@@ -1,10 +1,12 @@
 import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join } from 'path'
 import { readFile, writeFile, readdir, stat } from 'fs/promises'
+import { watch } from 'fs'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 
 let mainWindow
 let store
+let fileWatcher = null
 
 // 动态导入electron-store
 async function initStore() {
@@ -191,6 +193,46 @@ app.whenReady().then(async () => {
 
   ipcMain.handle('store-get-all', () => {
     return store.store
+  })
+
+  // 文件监听 IPC 处理程序
+  ipcMain.handle('watch-file', (event, filePath) => {
+    try {
+      // 如果已经有监听器，先关闭它
+      if (fileWatcher) {
+        fileWatcher.close()
+        fileWatcher = null
+      }
+
+      // 创建新的文件监听器
+      fileWatcher = watch(filePath, (eventType, filename) => {
+        if (eventType === 'change') {
+          console.log(`文件已更改: ${filePath}`)
+          // 通知渲染进程文件已更改
+          mainWindow.webContents.send('file-changed', filePath)
+        }
+      })
+
+      console.log(`开始监听文件: ${filePath}`)
+      return true
+    } catch (error) {
+      console.error('文件监听失败:', error)
+      return false
+    }
+  })
+
+  ipcMain.handle('stop-watch-file', () => {
+    try {
+      if (fileWatcher) {
+        fileWatcher.close()
+        fileWatcher = null
+        console.log('停止文件监听')
+      }
+      return true
+    } catch (error) {
+      console.error('停止文件监听失败:', error)
+      return false
+    }
   })
 
   // IPC test
