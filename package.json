@@ -1,6 +1,6 @@
 {
   "name": "miaogu-notes",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "喵咕学习笔记平台 - 专为学习者打造的现代化在线学习平台",
   "private": true,
   "dependencies": {
