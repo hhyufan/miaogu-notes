@@ -1,5 +1,5 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {Button, Card, Skeleton, Space, Tooltip, Tree, Typography} from 'antd';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Button, Card, Skeleton, Space, Tooltip, Tree, Typography } from 'antd';
 import {
   CodeOutlined,
   ExpandAltOutlined,
@@ -8,7 +8,7 @@ import {
   FolderOutlined,
   ShrinkOutlined
 } from '@ant-design/icons';
-import {useTheme} from '../theme';
+import { useTheme } from '../theme';
 import './TreeViewer.css';
 
 const { Text, Title } = Typography;
@@ -19,7 +19,7 @@ const parseTreeText = (text) => {
   const root = { key: 'root', title: '知识点脉络', children: [], level: -1 };
   const stack = [root];
   let keyCounter = 0;
-  
+
   // 跟踪每种语言的最后一个跳转索引
   const lastJumpIndex = {};
 
@@ -33,7 +33,7 @@ const parseTreeText = (text) => {
     // 检查是否包含跳转信息
     // 先清理可能存在的回车符和换行符
     const cleanLine = trimmedLine.replace(/[\r\n]/g, '');
-    
+
     // 支持多种跳转语法：
     // 1. >java[1] - 指定索引
     // 2. >java++ - 递增（上一个+1）
@@ -43,11 +43,11 @@ const parseTreeText = (text) => {
     const jumpMatchIncrement = cleanLine.match(/>([a-zA-Z]+)\+\+/);
     const jumpMatchJump = cleanLine.match(/>([a-zA-Z]+)\+=(\d+)/);
     const jumpMatchSame = cleanLine.match(/>([a-zA-Z]+)(?!\[|\+)/);
-    
+
     let hasJump = false;
     let jumpLanguage = null;
     let jumpIndex = null;
-    
+
     if (jumpMatchExplicit) {
       // 显式指定索引：>java[1]
       hasJump = true;

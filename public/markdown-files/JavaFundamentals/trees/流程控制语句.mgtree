@@ -32,7 +32,7 @@ switch
 	switch 用来判断变量 / 表达式的值
 	switch (变量) {case 常量: 表达式; break; case 常量2...... default: 表达式} >java[4]
 	小括号内的变量/表达式支持的类型：`byte`、`short`、`int`、`char`、`String`以及他们的包装类。还有枚举`enum`
-	case 后面必须是常量且唯一，开发时一般使用定义的常量标识符表示状态码 >java[4]
+	case 后面必须是常量且唯一，开发时一般使用定义的常量标识符表示状态码 >java++
 	break表示语句的终止，如果没有break往下进行直到找到break，省略break可以用来做多值合并的分支。 >java[5]
 	default按需可省略
 	现代switch可以使用箭头语法：switch(表达式){ case 1 -> 表达式1;case2 ->表达式2;default ->表达式3} >java[6]

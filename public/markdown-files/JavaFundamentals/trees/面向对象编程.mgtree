@@ -125,10 +125,10 @@
 			高内聚：同一个模块的功能越完善越好
 		封装性：不允许外部直接操作属性，在类的内部提供操作属性的方法。（实现高内聚）
 		实现
-			将属性/成员变量私有化（private修饰符） >java++
-			setter / getter
-				对于普通成员变量，使用get + 成员名称 / set + 成员名称(getName，setName) >java
-				对于布尔值类型属性，使用 成员名称 / set + 成员名称(isMale，setIsMale) >java
+			将属性/成员变量私有化（private修饰符）
+			setter / getter>java++
+				对于普通成员变量，使用get + 成员名称 / set + 成员名称(getName，setName)
+				对于布尔值类型属性，使用 成员名称 / set + 成员名称(isMale，setIsMale)
 		注意事项
 			对单个对象操作的其他方法可定义在类内部
 			类外（Util/ Service类）
@@ -169,7 +169,7 @@
 				没有泛型前需要定义Object对象实现不同参数类型支持 >java[23]
 				缺点：每次使用需要类型判断和强制转换，系统处理也麻烦
 			实现泛型
-				java的泛型只能代表引用类型 >java++
+				java的泛型只能代表引用类型
 				常用的泛型名称
 					T：type 类型
 					E：element 元素
@@ -178,7 +178,7 @@
 					V：value 值
 				泛型类型可以在其定义下的任意位置使用
 				泛型类
-					class Identifier <T, I, ...args> {} >java
+					class Identifier <T, I, ...args> {} >java++
 				泛型接口：interface Identifier <T, I, ...args> {} >java++
 				泛型方法：<R> R process(R input) >java++
 			类型变量的限定
