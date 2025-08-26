@@ -193,6 +193,7 @@ const TreeEditor = () => {
   const [editValue, setEditValue] = useState("");
   const [isInternalOperation, setIsInternalOperation] = useState(false);
   const [hoveredNode, setHoveredNode] = useState(null);
+  const [isComposing, setIsComposing] = useState(false);
   const inputRef = useRef(null);
 
   // 生成新的节点key
@@ -215,18 +216,10 @@ const TreeEditor = () => {
 
   // 主题已由ThemeContext管理，无需额外处理
 
-  // 处理输入变化，保持光标位置
+  // 使用非受控组件方式，避免受控组件与输入法的冲突
   const handleInputChange = (e) => {
-    const input = e.target;
-    const cursorPosition = input.selectionStart;
-    setEditValue(e.target.value);
-    
-    // 在下一个渲染周期恢复光标位置
-    setTimeout(() => {
-      if (inputRef.current) {
-        inputRef.current.setSelectionRange(cursorPosition, cursorPosition);
-      }
-    }, 0);
+    // 不更新state，让浏览器原生处理输入
+    // setEditValue(e.target.value);
   };
 
   // 开始编辑节点
@@ -245,7 +238,8 @@ const TreeEditor = () => {
   const saveEdit = async () => {
     if (!editingNode) return;
 
-    const value = editValue.trim();
+    // 从DOM直接获取当前输入值，避免受控组件状态问题
+    const value = (inputRef.current?.input?.value || inputRef.current?.value || '').trim();
     if (!value) {
       message.error("节点内容不能为空");
       return;
@@ -332,7 +326,9 @@ const TreeEditor = () => {
 
   // 取消编辑（自动保存）
   const cancelEdit = async () => {
-    if (editingNode && editValue.trim()) {
+    // 从DOM获取当前输入值
+    const currentValue = (inputRef.current?.input?.value || inputRef.current?.value || '').trim();
+    if (editingNode && currentValue) {
       await saveEdit();
     } else {
       setEditingNode(null);
@@ -488,7 +484,7 @@ const TreeEditor = () => {
               )}
               <Input
                 ref={inputRef}
-                value={editValue}
+                defaultValue={editValue}
                 onChange={handleInputChange}
                 onPressEnter={saveEdit}
                 onBlur={cancelEdit}
@@ -496,16 +492,9 @@ const TreeEditor = () => {
                   // 阻止事件冒泡，防止被全局键盘监听器捕获
                   e.stopPropagation();
                 }}
-                onCompositionStart={(e) => {
-                  // 阻止事件冒泡
-                  e.stopPropagation();
-                }}
-                onCompositionEnd={(e) => {
-                  // 阻止事件冒泡
-                  e.stopPropagation();
-                }}
-                // 禁用autoFocus，避免焦点定位问题
-                tabIndex={-1}
+                onCompositionStart={() => setIsComposing(true)}
+                onCompositionEnd={() => setIsComposing(false)}
+                autoFocus
                 size="small"
                 placeholder="输入节点内容，支持跳转语法：标题 >language[index]"
               />
@@ -681,7 +670,7 @@ const TreeEditor = () => {
         children: node.children?.map((child) => renderTreeNode(child)),
       };
     },
-    [editingNode, expandedSections, isDarkMode, setHoveredNode, handleInputChange, inputRef],
+    [editingNode, expandedSections, isDarkMode, setHoveredNode, handleInputChange, inputRef, isComposing],
   );
 
   // 处理文件加载
@@ -738,8 +727,7 @@ const TreeEditor = () => {
 
   // 移除复杂的焦点管理逻辑，使用Input组件的autoFocus属性即可
 
-  // 输入法状态跟踪
-  const [isComposing, setIsComposing] = useState(false);
+  // 输入法状态跟踪已在上方定义
 
   // 键盘快捷键监听器
   useEffect(() => {
@@ -775,24 +763,12 @@ const TreeEditor = () => {
       }
     };
 
-    const handleCompositionStart = () => {
-      setIsComposing(true);
-    };
-
-    const handleCompositionEnd = () => {
-      setIsComposing(false);
-    };
-
     // 添加事件监听器
     document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('compositionstart', handleCompositionStart);
-    document.addEventListener('compositionend', handleCompositionEnd);
 
     // 清理函数
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('compositionstart', handleCompositionStart);
-      document.removeEventListener('compositionend', handleCompositionEnd);
     };
   }, [editingNode, hoveredNode, handleDeleteNode, handleAddNode, isComposing]);
 
