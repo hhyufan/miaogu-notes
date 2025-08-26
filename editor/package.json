@@ -21,7 +21,8 @@
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
     "@reduxjs/toolkit": "^2.0.1",
-    "antd": "^5.22.6",
+    "antd": "^5.27.1",
+    "electron": "^37.3.1",
     "electron-store": "^10.1.0"
   },
   "devDependencies": {

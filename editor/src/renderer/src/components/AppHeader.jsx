@@ -48,41 +48,45 @@ const AppHeader = ({ isDarkMode, onToggleTheme }) => {
   };
 
   return (
-    <div className="app-header">
-      <div className="header-left">
-        <Space size="small" className="operation-buttons">
-          <Tooltip title={isDarkMode ? "切换到亮色模式" : "切换到暗色模式"}>
+    <div className="app-header" tabIndex={-1}>
+      <div className="header-left" tabIndex={-1}>
+        <Space size="small" className="operation-buttons" tabIndex={-1}>
+          <Tooltip title={isDarkMode ? "切换到亮色模式" : "切换到暗色模式"} tabIndex={-1}>
             <Button
               type="text"
               size="small"
               icon={isDarkMode ? <MoonFilled /> : <SunOutlined />}
               onClick={onToggleTheme}
               className="operation-btn theme-btn"
+              tabIndex={-1}
             />
           </Tooltip>
         </Space>
       </div>
 
-      <div className="header-center drag-region">{/* 可拖拽区域 */}</div>
+      <div className="header-center drag-region" tabIndex={-1}>{/* 可拖拽区域 */}</div>
 
-      <div className="window-controls">
+      <div className="window-controls" tabIndex={-1}>
         <Button
           type="text"
           icon={<MinusOutlined />}
           onClick={handleMinimize}
           className="window-control-btn"
+          tabIndex={-1}
         />
         <Button
           type="text"
           icon={isMaximized ? <FullscreenExitOutlined /> : <BorderOutlined />}
           onClick={handleMaximize}
           className="window-control-btn"
+          tabIndex={-1}
         />
         <Button
           type="text"
           icon={<CloseOutlined />}
           onClick={handleClose}
           className="window-control-btn close-btn"
+          tabIndex={-1}
         />
       </div>
     </div>

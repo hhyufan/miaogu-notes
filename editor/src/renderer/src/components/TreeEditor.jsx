@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useMemo } from "react";
+import React, { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import {
   Tree,
   Button,
@@ -192,6 +192,8 @@ const TreeEditor = () => {
   const [editingNode, setEditingNode] = useState(null);
   const [editValue, setEditValue] = useState("");
   const [isInternalOperation, setIsInternalOperation] = useState(false);
+  const [hoveredNode, setHoveredNode] = useState(null);
+  const inputRef = useRef(null);
 
   // 生成新的节点key
   const generateNodeKey = () => {
@@ -212,6 +214,20 @@ const TreeEditor = () => {
   };
 
   // 主题已由ThemeContext管理，无需额外处理
+
+  // 处理输入变化，保持光标位置
+  const handleInputChange = (e) => {
+    const input = e.target;
+    const cursorPosition = input.selectionStart;
+    setEditValue(e.target.value);
+    
+    // 在下一个渲染周期恢复光标位置
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.setSelectionRange(cursorPosition, cursorPosition);
+      }
+    }, 0);
+  };
 
   // 开始编辑节点
   const startEditNode = (node) => {
@@ -309,9 +325,8 @@ const TreeEditor = () => {
       console.error("保存编辑失败:", error);
       message.error("保存编辑失败");
     } finally {
-      setTimeout(() => {
-        setIsInternalOperation(false);
-      }, 100);
+      // 立即重置标志，无需延迟
+      setIsInternalOperation(false);
     }
   };
 
@@ -375,7 +390,7 @@ const TreeEditor = () => {
         );
       }
 
-      // 立即开始编辑新节点
+      // 立即设置编辑状态，无需延迟
       setEditingNode(newNodeKey);
       setEditValue("");
 
@@ -385,9 +400,8 @@ const TreeEditor = () => {
       console.error("添加节点失败:", error);
       message.error("添加节点失败");
     } finally {
-      setTimeout(() => {
-        setIsInternalOperation(false);
-      }, 100);
+      // 立即重置标志，无需延迟
+      setIsInternalOperation(false);
     }
   };
 
@@ -427,10 +441,8 @@ const TreeEditor = () => {
       console.error("删除节点失败:", error);
       message.error("删除节点失败");
     } finally {
-      // 延迟重置标志，确保文件保存完成
-      setTimeout(() => {
-        setIsInternalOperation(false);
-      }, 100);
+      // 立即重置标志，无需延迟
+      setIsInternalOperation(false);
     }
   };
 
@@ -447,7 +459,7 @@ const TreeEditor = () => {
         return {
           key: node.key,
           title: (
-            <div className="tree-node-editing">
+            <div className="tree-node-editing" tabIndex={-1}>
               {hasChildren ? (
                 isExpanded ? (
                   <FolderOpenOutlined
@@ -475,11 +487,25 @@ const TreeEditor = () => {
                 <FileTextOutlined className="tree-icon file-icon" />
               )}
               <Input
+                ref={inputRef}
                 value={editValue}
-                onChange={(e) => setEditValue(e.target.value)}
+                onChange={handleInputChange}
                 onPressEnter={saveEdit}
                 onBlur={cancelEdit}
-                autoFocus
+                onKeyDown={(e) => {
+                  // 阻止事件冒泡，防止被全局键盘监听器捕获
+                  e.stopPropagation();
+                }}
+                onCompositionStart={(e) => {
+                  // 阻止事件冒泡
+                  e.stopPropagation();
+                }}
+                onCompositionEnd={(e) => {
+                  // 阻止事件冒泡
+                  e.stopPropagation();
+                }}
+                // 禁用autoFocus，避免焦点定位问题
+                tabIndex={-1}
                 size="small"
                 placeholder="输入节点内容，支持跳转语法：标题 >language[index]"
               />
@@ -498,8 +524,11 @@ const TreeEditor = () => {
         title: (
           <div
             className={`tree-node-content ${isClickable ? "tree-node-clickable" : ""}`}
+            tabIndex={-1}
+            onMouseEnter={() => setHoveredNode(node.key)}
+            onMouseLeave={() => setHoveredNode(null)}
           >
-            <Space size="small">
+            <Space size="small" tabIndex={-1}>
               {hasChildren ? (
                 isExpanded ? (
                   <FolderOpenOutlined
@@ -620,24 +649,26 @@ const TreeEditor = () => {
                 })()}
               </span>
             </Space>
-            <Space className="node-actions">
-              <Tooltip title="添加子节点">
+            <Space className="node-actions" tabIndex={-1}>
+              <Tooltip title="添加子节点" tabIndex={-1}>
                 <Button
                   type="text"
                   size="small"
                   icon={<PlusOutlined />}
+                  tabIndex={-1}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleAddNode(node.key);
                   }}
                 />
               </Tooltip>
-              <Tooltip title="删除节点">
+              <Tooltip title="删除节点" tabIndex={-1}>
                 <Button
                   type="text"
                   size="small"
                   danger
                   icon={<CloseCircleOutlined />}
+                  tabIndex={-1}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleDeleteNode(node.key);
@@ -650,7 +681,7 @@ const TreeEditor = () => {
         children: node.children?.map((child) => renderTreeNode(child)),
       };
     },
-    [editingNode, editValue, expandedSections, isDarkMode],
+    [editingNode, expandedSections, isDarkMode, setHoveredNode, handleInputChange, inputRef],
   );
 
   // 处理文件加载
@@ -704,6 +735,66 @@ const TreeEditor = () => {
       delete window.treeEditor;
     };
   }, []);
+
+  // 移除复杂的焦点管理逻辑，使用Input组件的autoFocus属性即可
+
+  // 输入法状态跟踪
+  const [isComposing, setIsComposing] = useState(false);
+
+  // 键盘快捷键监听器
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      // 如果正在编辑节点，不处理快捷键
+      if (editingNode) {
+        return;
+      }
+
+      // 如果正在使用输入法，不处理快捷键
+      if (isComposing) {
+        return;
+      }
+
+      // 如果焦点在输入框或文本区域，不处理快捷键
+      const activeElement = document.activeElement;
+      if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.contentEditable === 'true')) {
+        return;
+      }
+
+      // Delete键：删除当前hover的节点
+      if (event.key === 'Delete' && hoveredNode) {
+        event.preventDefault();
+        handleDeleteNode(hoveredNode);
+      }
+
+      // Tab键：阻止默认的焦点切换行为，只保留添加节点功能
+      if (event.key === 'Tab') {
+        event.preventDefault(); // 始终阻止Tab键的默认行为
+        if (hoveredNode) {
+          handleAddNode(hoveredNode);
+        }
+      }
+    };
+
+    const handleCompositionStart = () => {
+      setIsComposing(true);
+    };
+
+    const handleCompositionEnd = () => {
+      setIsComposing(false);
+    };
+
+    // 添加事件监听器
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('compositionstart', handleCompositionStart);
+    document.addEventListener('compositionend', handleCompositionEnd);
+
+    // 清理函数
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('compositionstart', handleCompositionStart);
+      document.removeEventListener('compositionend', handleCompositionEnd);
+    };
+  }, [editingNode, hoveredNode, handleDeleteNode, handleAddNode, isComposing]);
 
   // 状态恢复：仅在初始化时或文件切换时加载文件内容
   const [hasInitialized, setHasInitialized] = useState(false);
@@ -827,7 +918,7 @@ const TreeEditor = () => {
     };
 
     // 防抖保存，避免频繁写入
-    const timeoutId = setTimeout(saveCurrentFileState, 300);
+    const timeoutId = setTimeout(saveCurrentFileState, 100);
     return () => clearTimeout(timeoutId);
   }, [currentFile]);
 
@@ -842,7 +933,7 @@ const TreeEditor = () => {
     };
 
     // 防抖保存，避免频繁写入
-    const timeoutId = setTimeout(saveExpandedState, 500);
+    const timeoutId = setTimeout(saveExpandedState, 200);
     return () => clearTimeout(timeoutId);
   }, [expandedSections]);
 
@@ -879,13 +970,55 @@ const TreeEditor = () => {
     dispatch(setExpandedSections([]));
   };
 
+  // 处理节点展开/折叠
+  const handleExpand = (keys, { expanded, node }) => {
+    if (!expanded) {
+      // 节点被折叠时，清除该节点所有子节点的展开状态
+      const getAllChildKeys = (nodeData) => {
+        let childKeys = [];
+        if (nodeData.children) {
+          nodeData.children.forEach(child => {
+            childKeys.push(child.key);
+            childKeys = childKeys.concat(getAllChildKeys(child));
+          });
+        }
+        return childKeys;
+      };
+
+      // 找到被折叠的节点数据
+      const findNodeInTree = (nodes, targetKey) => {
+        for (const n of nodes) {
+          if (n.key === targetKey) return n;
+          if (n.children) {
+            const found = findNodeInTree(n.children, targetKey);
+            if (found) return found;
+          }
+        }
+        return null;
+      };
+
+      const collapsedNode = findNodeInTree(treeData, node.key);
+      if (collapsedNode) {
+        const childKeysToRemove = getAllChildKeys(collapsedNode);
+        // 从展开列表中移除所有子节点
+        const filteredKeys = keys.filter(key => !childKeysToRemove.includes(key));
+        dispatch(setExpandedSections(filteredKeys));
+      } else {
+        dispatch(setExpandedSections(keys));
+      }
+    } else {
+      // 节点被展开时，正常处理
+      dispatch(setExpandedSections(keys));
+    }
+  };
+
   // 树形数据
   const treeNodes = useMemo(() => {
     return treeData.map((node) => renderTreeNode(node));
   }, [treeData, renderTreeNode]);
 
   return (
-    <div className={`tree-editor ${isDarkMode ? "dark" : "light"}`}>
+    <div className={`tree-editor ${isDarkMode ? "dark" : "light"}`} tabIndex={-1}>
       <AppHeader
         onOpenFile={handleLoadFile}
         onExpandAll={handleExpandAll}
@@ -894,46 +1027,51 @@ const TreeEditor = () => {
         onToggleTheme={toggleTheme}
         onAddRootNode={async () => await handleAddNode("root")}
       />
-      <div className="editor-content">
+      <div className="editor-content" tabIndex={-1}>
         <Card
           className={`tree-viewer-card ${isDarkMode ? "dark" : "light"}`}
+          tabIndex={-1}
           title={
-            <div className="tree-header">
-              <Title level={4} style={{ margin: 0 }}>
+            <div className="tree-header" tabIndex={-1}>
+              <Title level={4} style={{ margin: 0 }} tabIndex={-1}>
                 📝 树形编辑器
               </Title>
-              <Space>
-                <Tooltip title="展开所有">
+              <Space tabIndex={-1}>
+                <Tooltip title="展开所有" tabIndex={-1}>
                   <Button
                     onClick={handleExpandAll}
                     size="small"
                     icon={<ExpandAltOutlined />}
                     type="text"
+                    tabIndex={-1}
                   />
                 </Tooltip>
-                <Tooltip title="折叠所有">
+                <Tooltip title="折叠所有" tabIndex={-1}>
                   <Button
                     onClick={handleCollapseAll}
                     size="small"
                     icon={<ShrinkOutlined />}
                     type="text"
+                    tabIndex={-1}
                   />
                 </Tooltip>
-                <Tooltip title="从文件加载">
+                <Tooltip title="从文件加载" tabIndex={-1}>
                   <Button
                     onClick={handleLoadFile}
                     size="small"
                     icon={<FolderOpenOutlined />}
                     type="text"
+                    tabIndex={-1}
                   />
                 </Tooltip>
 
-                <Tooltip title="添加根节点">
+                <Tooltip title="添加根节点" tabIndex={-1}>
                   <Button
                     onClick={async () => await handleAddNode("root")}
                     size="small"
                     icon={<PlusOutlined />}
                     type="text"
+                    tabIndex={-1}
                   />
                 </Tooltip>
               </Space>
@@ -941,21 +1079,23 @@ const TreeEditor = () => {
           }
           size="small"
         >
-          <div className="tree-container">
+          <div className="tree-container" tabIndex={-1}>
             {treeNodes.length > 0 ? (
               <Tree
                 treeData={treeNodes}
                 expandedKeys={expandedSections}
                 selectedKeys={selectedKeys}
-                onExpand={(keys) => dispatch(setExpandedSections(keys))}
+                onExpand={handleExpand}
                 onSelect={(keys) => dispatch(setSelectedKeys(keys))}
                 showLine={{ showLeafIcon: false }}
                 showIcon={false}
                 className="editable-tree"
                 blockNode
+                tabIndex={-1}
                 switcherIcon={({ expanded }) => (
                   <div
                     className={`custom-switcher ${expanded ? "expanded" : "collapsed"}`}
+                    tabIndex={-1}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -974,7 +1114,7 @@ const TreeEditor = () => {
                 )}
               />
             ) : (
-              <div className="empty-tree">
+              <div className="empty-tree" tabIndex={-1}>
                 <FileTextOutlined
                   style={{ fontSize: 48, color: "#434343", marginBottom: 16 }}
                 />
