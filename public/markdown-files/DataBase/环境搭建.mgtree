@@ -1,0 +1,34 @@
+概述
+  数据库（Database）
+    数据存储的仓库，以特定规则在磁盘上存储数据
+    关系型数据库
+      以表形式存储数据
+      采用SQL语言开发
+      称为SQL数据库
+      MySQL、Oracle、SQL Server
+    非关系型数据库
+      称为NoSQL(not only)数据库
+      Redis、MongoDB
+  数据库管理系统（DBMS）
+  SQL
+    全称 `Structured Query Language` - 结构化查询语言
+  MySQL
+    5.x: 5.5、5.6、5.7
+    8.x：企业主流版本
+    9.x：最新版本
+  下载和安装
+    官网地址：https://dev.mysql.com/downloads/mysql
+    mysql字符编码
+      UTF-8/utf8mb3
+        一个字符占用三个字节存储
+      utf8mb4
+        一个字符占用四个字节存储
+        支持繁体字
+  可视化客户端工具
+    Navicat
+      付费，支持多种数据库
+    SQLyog
+      免费，只支持MySQL
+    DataGrip
+      拥有强大的查询分析功能、全面的数据库管理功能和协作支持
+      收费，使用门槛高

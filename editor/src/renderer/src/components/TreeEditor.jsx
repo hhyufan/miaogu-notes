@@ -21,6 +21,7 @@ import {
   MoonFilled,
   SunOutlined,
   CodeOutlined,
+  CameraOutlined,
 } from "@ant-design/icons";
 import { useTheme } from "../theme/ThemeContext";
 import AppHeader from "./AppHeader";
@@ -39,6 +40,7 @@ import {
   setSelectedKeys,
 } from "../store/slices/editorSlice";
 import stateManager from "../utils/stateManager";
+import { exportWithHtml2Canvas } from "../utils/exportUtils";
 import "./TreeEditor.scss";
 
 const { Text, Title } = Typography;
@@ -178,7 +180,7 @@ const treeToText = (nodes, level = 0) => {
 };
 
 const TreeEditor = () => {
-  const { isDarkMode, toggleTheme } = useTheme();
+  const { isDarkMode, toggleTheme, theme } = useTheme();
   const dispatch = useAppDispatch();
 
   // Redux状态
@@ -946,6 +948,91 @@ const TreeEditor = () => {
     dispatch(setExpandedSections([]));
   };
 
+  // 导出树状图为PNG
+  const handleExportToPNG = async () => {
+    // 保存当前展开状态
+    const originalExpandedSections = [...expandedSections];
+    
+    try {
+      message.info('正在导出PNG...');
+      
+      // 临时展开所有节点
+      const getAllKeys = (nodes) => {
+        let keys = [];
+        nodes.forEach((node) => {
+          keys.push(node.key);
+          if (node.children) {
+            keys = keys.concat(getAllKeys(node.children));
+          }
+        });
+        return keys;
+      };
+      
+      // 展开所有节点
+      const allKeys = getAllKeys(treeData);
+      dispatch(setExpandedSections(allKeys));
+      
+      // 等待DOM更新
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      // 查找树容器元素
+      const treeContainer = document.querySelector('.tree-container');
+      if (!treeContainer) {
+        message.error('未找到树状图容器');
+        return;
+      }
+      
+      // 保存原始样式
+      const originalPaddingBottom = treeContainer.style.paddingBottom;
+      
+      // 添加导出样式类
+      treeContainer.classList.add('exporting');
+      
+      // 添加底部空间防止文字截断
+      treeContainer.style.paddingBottom = '40px';
+      
+      // 等待样式应用
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // 生成默认文件名（基于mgtree名称）
+      const defaultFilename = currentFile 
+        ? `${currentFile.replace(/\.mgtree$/, '').split(/[\\/]/).pop()}.png`
+        : 'tree-export.png';
+      
+      // 根据当前主题设置背景色
+      const backgroundColor = theme.background.primary;
+      
+      // 导出为PNG
+      const result = await exportWithHtml2Canvas(treeContainer, { 
+        filename: defaultFilename,
+        backgroundColor 
+      });
+      
+      if (result.success) {
+        message.success('PNG导出成功！');
+      } else if (result.message === '用户取消了保存') {
+        // 用户取消保存，不显示错误消息
+      } else {
+        message.error(`导出失败: ${result.message}`);
+      }
+      
+    } catch (error) {
+      console.error('导出失败:', error);
+      message.error('导出失败: ' + error.message);
+    } finally {
+      // 确保清理样式和恢复状态
+      const treeContainer = document.querySelector('.tree-container');
+      if (treeContainer) {
+        treeContainer.classList.remove('exporting');
+        // 恢复原始的底部padding
+        treeContainer.style.paddingBottom = originalPaddingBottom || '';
+      }
+      
+      // 恢复原始展开状态
+      dispatch(setExpandedSections(originalExpandedSections));
+    }
+  };
+
   // 处理节点展开/折叠
   const handleExpand = (keys, { expanded, node }) => {
     if (!expanded) {
@@ -1046,6 +1133,15 @@ const TreeEditor = () => {
                     onClick={async () => await handleAddNode("root")}
                     size="small"
                     icon={<PlusOutlined />}
+                    type="text"
+                    tabIndex={-1}
+                  />
+                </Tooltip>
+                <Tooltip title="导出为PNG" tabIndex={-1}>
+                  <Button
+                    onClick={handleExportToPNG}
+                    size="small"
+                    icon={<CameraOutlined />}
                     type="text"
                     tabIndex={-1}
                   />

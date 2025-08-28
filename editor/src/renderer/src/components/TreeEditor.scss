@@ -1034,3 +1034,19 @@
 .tree-editor.dark .editable-tree::-webkit-scrollbar-thumb:hover {
   background: #777;
 }
+
+/* ==================== PNG导出样式优化 ==================== */
+
+/* 导出时隐藏操作按钮和滚动条，保持其他样式不变 */
+.tree-container.exporting {
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.tree-container.exporting .node-actions {
+  display: none !important;
+}
+
+.tree-container.exporting::-webkit-scrollbar {
+  display: none !important;
+}

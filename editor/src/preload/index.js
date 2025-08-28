@@ -5,8 +5,10 @@ import { electronAPI } from '@electron-toolkit/preload'
 const api = {
   openFileDialog: () => ipcRenderer.invoke('open-file-dialog'),
   saveFileDialog: () => ipcRenderer.invoke('save-file-dialog'),
+  savePngDialog: (defaultName) => ipcRenderer.invoke('save-png-dialog', defaultName),
   readFile: (filePath) => ipcRenderer.invoke('read-file', filePath),
   writeFile: (filePath, content) => ipcRenderer.invoke('write-file', filePath, content),
+  writeBinaryFile: (filePath, buffer) => ipcRenderer.invoke('write-binary-file', filePath, buffer),
   readDirectory: (dirPath) => ipcRenderer.invoke('read-directory', dirPath),
   windowMinimize: () => ipcRenderer.invoke('window-minimize'),
   windowMaximize: () => ipcRenderer.invoke('window-maximize'),

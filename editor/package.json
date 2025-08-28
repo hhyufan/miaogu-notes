@@ -18,11 +18,14 @@
     "build:linux": "npm run build && electron-builder --linux"
   },
   "dependencies": {
+    "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
     "@reduxjs/toolkit": "^2.0.1",
     "antd": "^5.27.1",
     "electron-store": "^10.1.0",
+    "file-saver": "^2.0.5",
+    "html2canvas": "^1.4.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },

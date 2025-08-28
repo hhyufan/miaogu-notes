@@ -64,7 +64,7 @@ app.whenReady().then(async () => {
   await initStore()
   
   // Set app user model id for windows
-  electronApp.setAppUserModelId('com.electron')
+  electronApp.setAppUserModelId('top.miaogu.md.editor')
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
@@ -97,6 +97,17 @@ app.whenReady().then(async () => {
     return result
   })
 
+  ipcMain.handle('save-png-dialog', async (event, defaultName) => {
+    const result = await dialog.showSaveDialog(mainWindow, {
+      defaultPath: defaultName,
+      filters: [
+        { name: 'PNG Images', extensions: ['png'] },
+        { name: 'All Files', extensions: ['*'] }
+      ]
+    })
+    return result
+  })
+
   ipcMain.handle('read-file', async (event, filePath) => {
     try {
       const content = await readFile(filePath, 'utf-8')
@@ -112,6 +123,15 @@ app.whenReady().then(async () => {
       return true
     } catch (error) {
       throw new Error(`Failed to write file: ${error.message}`)
+    }
+  })
+
+  ipcMain.handle('write-binary-file', async (event, filePath, buffer) => {
+    try {
+      await writeFile(filePath, Buffer.from(buffer))
+      return true
+    } catch (error) {
+      throw new Error(`Failed to write binary file: ${error.message}`)
     }
   })
 

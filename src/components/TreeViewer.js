@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Card, Skeleton, Space, Tooltip, Tree, Typography } from 'antd';
 import {
   CodeOutlined,
+  DownloadOutlined,
   ExpandAltOutlined,
   FileTextOutlined,
   FolderOpenOutlined,
@@ -9,6 +10,7 @@ import {
   ShrinkOutlined
 } from '@ant-design/icons';
 import { useTheme } from '../theme';
+import { exportTreeToPNG } from '../utils/exportUtils';
 import './TreeViewer.css';
 
 const { Text, Title } = Typography;
@@ -259,7 +261,7 @@ const TreeViewer = ({ treeFilePath, treeContent, className = '', onJumpToCode, c
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currentFileKey, setCurrentFileKey] = useState(null);
-  const { isDarkMode } = useTheme();
+  const { isDarkMode, theme } = useTheme();
 
   // 生成localStorage的key
   const getStorageKey = useCallback((fileName) => {
@@ -410,6 +412,42 @@ const TreeViewer = ({ treeFilePath, treeContent, className = '', onJumpToCode, c
     saveExpandedState([], currentFileName);
   };
 
+  // PNG导出功能
+  const handleExportToPNG = async () => {
+    try {
+      // 确定文件名
+      const fileName = currentFileName ? 
+        currentFileName.replace(/\.(md|mgtree)$/, '') : 
+        'knowledge-tree';
+      
+      // 在导出前先展开所有节点
+      const allKeys = [];
+      const collectKeys = (nodes) => {
+        nodes.forEach(node => {
+          if (node.key) {
+            allKeys.push(node.key);
+          }
+          if (node.children && node.children.length > 0) {
+            collectKeys(node.children);
+          }
+        });
+      };
+      
+      if (treeData && treeData.length > 0) {
+        collectKeys(treeData);
+        setExpandedKeys(allKeys);
+        
+        // 等待DOM更新
+        await new Promise(resolve => setTimeout(resolve, 200));
+      }
+      
+      // 调用导出函数
+      await exportTreeToPNG('.tree-container', fileName, theme);
+    } catch (error) {
+      console.error('PNG导出失败:', error);
+    }
+  };
+
   if (loading) {
     return (
       <Card
@@ -471,6 +509,14 @@ const TreeViewer = ({ treeFilePath, treeContent, className = '', onJumpToCode, c
         <div className="tree-header">
           <Title level={4} style={{ margin: 0 }}>📊 知识点脉络</Title>
           <Space>
+            <Tooltip title="导出PNG">
+              <Button
+                onClick={handleExportToPNG}
+                size="small"
+                icon={<DownloadOutlined />}
+                type="text"
+              />
+            </Tooltip>
             <Tooltip title="全部展开">
               <Button
                 onClick={expandAll}
