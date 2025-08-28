@@ -1,379 +1,380 @@
 查看API
-  查看源码
-    Ctrl + 点击
-    Ctrl + Shift + T
-  查看API文档
+	查看源码
+		Ctrl + 点击
+		Ctrl + Shift + T
+	查看API文档
 Object
-  所有类的根类，所有的类继承Object
-  内存地址相关
-    ==
-      判断数值是否相等或内存地址是否相同
-    equals()
-      默认判断内存地址是否相同
-      重写此方法自定义相等判断
-    hashCode()
-      默认返回对象内存地址hash码
-      重写此方法自定义hash码返回
-      如果重写equals()，需重写hashCode()，实现二者业务逻辑相同
-  toString()
-    默认情况下打印内存地址的值
-    重写此方法实现对象的字符串版本
-  clone()
-    需要实现Cloneable接口
-  instanceof 操作
+	所有类的根类，所有的类继承Object
+	内存地址相关
+		==
+			判断数值是否相等或内存地址是否相同 >java[1]
+		equals()
+			默认判断内存地址是否相同 >java++
+			重写此方法自定义相等判断 >java  
+		hashCode()
+			默认返回对象内存地址hash码 >java++
+			重写此方法自定义hash码返回 >java
+			如果重写equals()，需重写hashCode()，实现二者业务逻辑相同
+	toString()
+		默认情况下打印内存地址的值 >java++
+		重写此方法实现对象的字符串版本 >java
+	clone()
+		需要实现Cloneable接口 >java++
+	instanceof 操作 >java++
 junit
-  第三方开源项目，用来实现java单元测试
-  常用版本：junit4，junit5
+	第三方开源项目，用来实现java单元测试 >java++
+	常用版本：junit4，junit5 >java
 包装类/封装类
-  概述
-    java有八大基本类型，功能有限，只能进行基本运算
-    java面向对象编程，扩展基本类型的功能，基本类型扩展为对象类型，称为`包装类`
-  包装类型
-    Number
-      byte
-        Byte
-      short
-        Short
-      int
-        Integer
-      long
-        Long
-      float
-        Float
-      double
-        Double
-    char
-      Character
-    boolean
-      Boolean
-  Number相关
-    构造函数
-      java9开始，包装类的构造函数过时
-    装箱和拆箱
-      装箱：基本类型转为包装类型
-      拆箱：包装类型转为基本类型
-      java8开始，支持自动装箱和拆箱，使用直接赋值形式
-      字符串相互转换
-        int/Integer -> String
-          String y = x + "";
-          String z = String.valueOf(x)
-        String -> int/Integer
-          Integer i = Integer.valueOf(z)
-          int j = Integer.parseInt(z)
+	概述
+		java有八大基本类型，功能有限，只能进行基本运算 
+		java面向对象编程，扩展基本类型的功能，基本类型扩展为对象类型，称为`包装类`
+	包装类型
+		Number
+			byte
+				Byte
+			short
+				Short
+			int
+				Integer
+			long
+				Long
+			float
+				Float
+			double
+				Double
+		char
+			Character
+		boolean
+			Boolean
+	Number相关
+		构造函数
+			java9开始，包装类的构造函数过时 >java++
+		装箱和拆箱
+			装箱：基本类型转为包装类型
+			拆箱：包装类型转为基本类型
+			java8开始，支持自动装箱和拆箱，使用直接赋值形式 >java++ 
+			字符串相互转换
+				int/Integer -> String
+					String y = x + ""; >java++
+					String z = String.valueOf(x) >java
+				String -> int/Integer
+					Integer i = Integer.valueOf(z) >java++
+					int j = Integer.parseInt(z) >java 
 BigDecimal/BigInteger
-  数据的精确度
-    double/long在处理数据时，数据比较大会精度丢失
-    对于精度要求高的操作，BigDecimal处理浮点数，BigInteger处理整数
-  构造器
-    父类：Number
-    BigDecimal bd = new BigDecimal("12323333.11111111111111111")
-  四则运算
-    add（加法）
-    subtract（减法）
-    multiply（乘法）
-    divide（除法）
-      当显示参数传递一个，除不尽会报错
-      可定义省略范围以及取舍规则
-      使用RoundingMode中的取舍常量
-  类型转换
-    String
-      String -> BigDecimal
-        BigDecimal bd = new BigDecimal("1.2")
-      BigDecimal -> String
-        String bd_str = bd.toString()
-    Double
-      String -> BigDecimal
-        BigDecimal bd = new BigDecimal(1.2D)
-      BigDecimal -> String
-        Double bd_db = bd.doubleValue()
+	数据的精确度
+		double/long在处理数据时，数据比较大会精度丢失 >java++
+		对于精度要求高的操作，BigDecimal处理浮点数，BigInteger处理整数 >java
+	构造器
+		父类：Number >java++
+		BigDecimal bd = new BigDecimal("12323333.11111111111111111") >java
+	四则运算
+		add（加法） >java++
+		subtract（减法） >java
+		multiply（乘法） >java
+		divide（除法）
+			当显示参数传递一个，除不尽会报错 >java
+			可定义省略范围以及取舍规则 >java
+			使用RoundingMode中的取舍常量 >java
+	类型转换
+		String
+			String -> BigDecimal
+				BigDecimal bd = new BigDecimal("1.2") >java++
+			BigDecimal -> String
+				String bd_str = bd.toString() >java
+		Double
+			String -> BigDecimal
+				BigDecimal bd = new BigDecimal(1.2D) >java++
+			BigDecimal -> String
+				Double bd_db = bd.doubleValue() >java
 Math
-  Math意思是`数学`，是算数和几何的工具类。
-  Math是一个final工具类，所有的内容都是静态的
-  常用的算数运算
-    取整
-      Math.ceil() 向上取整
-      Math.floor() 向下取整
-      Math.round() 四舍五入取整
-    Math.pow(a, n) 幂运算
-    Math.sqrt(a, n) 开方运算
-    Math.abs(a) 求绝对值
+	Math意思是`数学`，是算数和几何的工具类。
+	Math是一个final工具类，所有的内容都是静态的
+	常用的算数运算
+		取整
+			Math.ceil() 向上取整 >java++
+			Math.floor() 向下取整 >java
+			Math.round() 四舍五入取整 >java
+		Math.pow(a, n) 幂运算 >java++
+		Math.sqrt(a, n) 开方运算 >java
+		Math.abs(a) 求绝对值 >java
 Random
-  Random是随机数的工具类
-  随机数
-    Java的随机数是一种伪随机数
-    内部根据参数种子，很具算法，得到结果
-  构造方法
-    Random(long seed)
-      种子，长整数
-    Random()
-      内部使用系统时间+随机毫秒数作为种子
-  系统时间戳
-    距离1970-1-1 0:0:0的毫秒数
-    System.currentTimeMillis()
-  随机值
-    nextInt()
-      nextInt()：整数范围的随机数
-      nextInt(n)：[0, n)的随机整数
-      nextInt(n, m)：[n, m)的随机整数
-    nextLong()
-    nextFloat()
-    nextDouble()
-      nextDouble()：[0, 1)的随机双精度浮点数
+	Random是随机数的工具类
+	随机数
+		Java的随机数是一种伪随机数
+		内部根据参数种子，很具算法，得到结果
+	构造方法
+		Random(long seed)
+			种子，长整数 >java++
+		Random()
+			内部使用系统时间+随机毫秒数作为种子 >java
+	系统时间戳
+		距离1970-1-1 0:0:0的毫秒数 >java++
+		System.currentTimeMillis() >java
+	随机值
+		nextInt()
+			nextInt()：整数范围的随机数 >java++
+			nextInt(n)：[0, n)的随机整数 >java
+			nextInt(n, m)：[n, m)的随机整数 >java
+		nextLong() >java
+		nextFloat() >java
+		nextDouble()
+			nextDouble()：[0, 1)的随机双精度浮点数 >java
 UUID
-  获得一个唯一的识别码（id），是32位16进制的数字的字符串
+	获得一个唯一的识别码（id），是32位16进制的数字的字符串 >java++
 正则表达式RegExp
-  概述
-    用于对字符串进行模式匹配
-    用来判断字符串匹配的规则
-  Java API
-    Pattern namedPattern = Pattern.compile(".*");
-    Matcher namedMatcher = namedPattern.matcher("2023-12-25");
-  元字符
-    .
-      任意一个字符
-    \d
-      任意一个数字
-    \D
-      任意一个非数字
-    \s
-      任意一个空格
-    \S
-      任意一个非空格
-    \w
-      任意一个单词的字符（包含英文字母和数字）
-    \W
-      任意一个非单词字符
-  锚点符
-    ^
-    $
-  量词
-    *
-      任意个：0 - n
-    +
-      最少一个：1 - n
-    ?
-      最多一个：0 - 1
-    {n}
-      n个
-    {n,}
-      >= n
-    {n, m}
-      n - m
-  范围
-    [abc]、[1, 3, 5]
-      在abc、135范围之内的任意一个
-    [^abc]、[^1, 3, 5]
-      不在abc、135范围的任意一个
-    [a-z]、[3-9]
-      不在a-c、3-9范围的任意一个
+	概述
+		用于对字符串进行模式匹配
+		用来判断字符串匹配的规则
+	Java API
+		 Pattern namedPattern = Pattern.compile(".*"); >java++
+		Matcher namedMatcher = namedPattern.matcher("2023-12-25"); >java
+	元字符
+		.
+			任意一个字符 >java++
+		\d
+			任意一个数字 >java
+		\D
+			任意一个非数字 >java
+		\s
+			任意一个空格 >java
+		\S
+			任意一个非空格 >java
+		\w
+			任意一个单词的字符（包含英文字母和数字） >java
+		\W
+			任意一个非单词字符 >java
+	锚点符
+		^ >java++
+		$ >java
+	量词
+		*
+			任意个：0 - n >java++
+		+
+			最少一个：1 - n >java
+		?
+			最多一个：0 - 1 >java
+		{n}
+			n个 >java
+		{n,}
+			>= n >java
+		{n, m}
+			n - m >java
+	范围
+		[abc]、[1, 3, 5]
+			在abc、135范围之内的任意一个 >java++
+		[^abc]、[^1, 3, 5]
+			不在abc、135范围的任意一个 >java
+		[a-z]、[3-9]
+			不在a-c、3-9范围的任意一个 >java
 String相关
-  String
-    字符串创建
-      字符串字面量
-      字符串构造器
-    相等判断
-      s1.equals(s2)：内容相等
-      s1 == s2：内存地址相等
-    常用API
-      切片/切除
-        subString()
-          subString(int beginIndex)：从beginIndex开始，截取到尾部
-          subString(int beginIndex， int endIndex)：获得从beginIndex到endIndex的子字符串。包括参数本身字符。
-        trim()：把字符串中的首尾的空白字符去掉
-      转换
-        toLowerCase()：把字符串中的英文字符全部转换为小写字符
-        toUpperCase()：把字符串中的英文字符全部转换为大写字符
-      替换
-        replace()
-          replace(CharSequence target,  CharSequence replacement)：将所有匹配的 target 子串替换为 replacement，返回新字符串
-          replace(char oldChar, char newChar)：将所有 oldChar 字符替换成 newChar，返回新字符串
-        replaceAll(String regex, String replacement)：正则表达式（regex）匹配所有符合规则的子串，并替换为 replacement ，返回新字符串
-        replaceFirst(String regex, String replacement)：正则表达式（regex）匹配的第一个结果替换成 replacement ，返回新的字符串
-      拆分
-        split(String sign)： 返回一个字符串数组，该数组由目标字符串根据sign拆分得到
-        toCharArray()：将字符串拆分成字符数组
-        getBytes()：得到字符串的字节数组
-      比较/检查
-        equals(String target)：比较两个字符串内容相等
-        equalsIgnoreCase(String anotherString)：忽略大小写的字符串内容比较
-        startsWith(String value)  检查一个字符串是否以参数串开始
-        endsWith(String value) 检查一个字符串是否以参数个字符串结束
-      查询
-        length()：获取字符串长度
-        indexOf()
-          indexOf(char ch)：返回字符ch在字符串第一次出现处的索引，未出现返回 -1
-          indexOf(String str)：返回子字符串str在字符串第一次出现处的索引，未出现返回 -1
-        lastIndexOf()
-          lastIndexOf(char ch)：返回字符ch在字符串最后一次出现处的索引，未出现返回 -1
-          lastIndexOf(String str)：返回子字符串str在字符串最后一次出现处的索引，未出现返回 -1
-        charAt(int index)：从指定索引index处提取单个字符，索引中的值必须为非负
-          StringIndexOutOfBoundsException 字符串下标越界异常
-        contains(String str)：判断字符串是否包含参数的子串
-  字符串不可变性
-    对字符串拼接等变更操作，重新开辟内存保存新内容，原有内容会变成垃圾
-  StringBuffer
-    字符串缓冲
-      自动扩容
-    构造器
-      StringBuffer()
-        默认存储大小为16字符
-      StringBuffer(String str)
-        构建空的缓冲区，后放入此字符串
-    String ⇋ StringBuffer
-      String → StringBuffer
-        buffer.append(str)
-      StringBuffer → String
-        buffer.toString()
-    常用方法*
-      length()：获取存放内容的长度
-      insert(int offset, String str)：将字符串str插入此字符序列offset位置
-      setCharAt(int pos, char ch)：使用ch值修改在pos位置上的字符
-      reverse()：字符串的字符反转
-      delete(int start, int end)：删除从start - end 指定的索引位置的字符（不包括end）
-      deleteCharAt(int pos)：删除pos索引位置的字符
-      replace(int start, int end, String s)：使用字符串s替换从start开始到end结束位置的字符
-    StringBuffer是线程安全的
-  StringBuilder
-    String的构造器 用法和StringBuffer完全一致
-    StringBuilder是线程不安全的，但处理速度比StringBuffer快
-    单线程使用StringBuilder，多线程使用StringBuffer
+	String
+		字符串创建
+			字符串字面量
+			字符串构造器
+		相等判断
+			s1.equals(s2)：内容相等
+			s1 == s2：内存地址相等
+		常用API
+			切片/切除
+				subString()
+					 subString(int beginIndex)：从beginIndex开始，截取到尾部
+					subString(int beginIndex， int endIndex)：获得从beginIndex到endIndex的子字符串。包括参数本身字符。
+				trim()：把字符串中的首尾的空白字符去掉
+			转换
+				toLowerCase()：把字符串中的英文字符全部转换为小写字符
+				toUpperCase()：把字符串中的英文字符全部转换为大写字符
+			替换
+				replace()
+					replace(CharSequence target,  CharSequence replacement)：将所有匹配的 target 子串替换为 replacement，返回新字符串
+					replace(char oldChar, char newChar)：将所有 oldChar 字符替换成 newChar，返回新字符串
+				replaceAll(String regex, String replacement)：正则表达式（regex）匹配所有符合规则的子串，并替换为 replacement ，返回新字符串
+				replaceFirst(String regex, String replacement)：正则表达式（regex）匹配的第一个结果替换成 replacement ，返回新的字符串
+			拆分
+				split(String sign)： 返回一个字符串数组，该数组由目标字符串根据sign拆分得到
+				toCharArray()：将字符串拆分成字符数组
+				getBytes()：得到字符串的字节数组
+			比较/检查
+				equals(String target)：比较两个字符串内容相等
+				equalsIgnoreCase(String anotherString)：忽略大小写的字符串内容比较
+				startsWith(String value)  检查一个字符串是否以参数串开始
+				endsWith(String value) 检查一个字符串是否以参数个字符串结束
+			查询
+				length()：获取字符串长度
+				indexOf()
+					indexOf(char ch)：返回字符ch在字符串第一次出现处的索引，未出现返回 -1
+					indexOf(String str)：返回子字符串str在字符串第一次出现处的索引，未出现返回 -1
+				lastIndexOf()
+					lastIndexOf(char ch)：返回字符ch在字符串最后一次出现处的索引，未出现返回 -1
+					lastIndexOf(String str)：返回子字符串str在字符串最后一次出现处的索引，未出现返回 -1
+				charAt(int index)：从指定索引index处提取单个字符，索引中的值必须为非负
+					StringIndexOutOfBoundsException 字符串下标越界异常
+				contains(String str)：判断字符串是否包含参数的子串
+	字符串不可变性
+		对字符串拼接等变更操作，重新开辟内存保存新内容，原有内容会变成垃圾
+	StringBuffer
+		字符串缓冲
+			自动扩容
+		构造器
+			StringBuffer()
+				默认存储大小为16字符 >java+=2
+			StringBuffer(String str)
+				构建空的缓冲区，后放入此字符串 >java
+		String ⇋ StringBuffer
+			String → StringBuffer
+				buffer.append(str) >java++
+			StringBuffer → String
+				buffer.toString() >java
+		常用方法*
+			length()：获取存放内容的长度 >java++
+			insert(int offset, String str)：将字符串str插入此字符序列offset位置 >java
+			setCharAt(int pos, char ch)：使用ch值修改在pos位置上的字符 >java
+			reverse()：字符串的字符反转 >java
+			delete(int start, int end)：删除从start - end 指定的索引位置的字符（不包括end） >java
+			deleteCharAt(int pos)：删除pos索引位置的字符 >java
+			replace(int start, int end, String s)：使用字符串s替换从start开始到end结束位置的字符 >java
+		StringBuffer是线程安全的
+	StringBuilder
+		String的构造器 用法和StringBuffer完全一致 >java++
+		StringBuilder是线程不安全的，但处理速度比StringBuffer快 >java++
+		单线程使用StringBuilder，多线程使用StringBuffer >java
 日期时间
-  概述
-    格林威治时间 - 世界通用时间
-      起始时间：1970/1/1 00:00:00
-    CST（东八区）- 中国区系统时间
-      起始时间：1970/1/1 08:00:00
-    jdk8之前
-      Date 日期
-        包含日期（年月日）、时间（小时分钟秒）的信息
-        Date把时间作为整体处理，无法处理具体字段
-      SimpleDateFormat 日期格式化
-        将Date格式数据和字符串相互转换
-      Calendar 日历
-        处理具体字段
-      缺点
-        1.使用起来繁琐
-        2.采用时区的概念
-        3.月从0开始，星期日作为起始等于1
-    jdk8+
-      优点
-        1.LocalDateTime 等价于 Date + Calendar
-        2.摒弃了时区
-        3.月从1开始，星期改为枚举
-  Date
-    位于java.util.Date 工具类下
-    构造方法
-      无参构造 new Date()
-        指当前日期
-      有参构造 new Date()
-        距离计算机起始时间的毫秒数
-    Date.getTime()
-      得到计算机起始时间到现在的毫秒数
-  SimpleDateFormat
-    var format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
-    用于Date和String进行相互转化的工具类
-    String ⇋ Date
-      Date → String
-        format.format(Date date)
-      String → Date
-        format.parse(String date_str)
-        需要异常处理，报java.text.ParseException
-  Calendar
-    Calendar是一个抽象类，需要静态工厂方法getInstance使用返回子类对象
-    Calendar cal = calendar.getInstance()
-    cal.get(int field)
-      Calendar.STATE
-        Calendar.YEAR：年份（如 2025）
-        Calendar.MONTH：月份（0=一月，11=十二月）
-        Calendar.DATE：当月中的日期（1-31）
-        Calendar.DAY_OF_MONTH：等同于 DATE（当月中的日期）
-        Calendar.DAY_OF_YEAR：当年第几天（1-366）
-        Calendar.DAY_OF_WEEK：本周第几天（1=周日，7=周六）
-        Calendar.AM_PM：上下午标识（0=AM，1=PM）
-        Calendar.HOUR_OF_DAY：24小时制小时数（0-23）
-        Calendar.MINUTE：分钟数（0-59）
-        Calendar.SECOND：秒数（0-59）
-        Calendar.MILLISECOND：毫秒数（0-999）
-    cal.getTimeInMillis
-      获取系统时间戳
-    cal.set(int field)
-    cal.add(Calendar.STATE, 50)
-    Calendar ⇋ Date
-      Date → Calendar
-        cal.setTime(Date date)
-      Calendar  → Date
-        cal.getTime()
-  LocalDateTime
-    JDK8之后处理时间的类
-    创建
-      var now = LocalDateTime.now()
-    字符串转换
-      DateTimeFormatter
-        1. var formatter =DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
-      String ⇋ LocalDateTime
-        LocalDateTime → String
-          String formatStr = formatter.format(now)
-        String → LocalDateTime
-          LocalDateTime dateTime = LocalDateTime.parse(str, formatter)
-          注意
-            定义时和解析的时间字段位数必须一致
-            无法使用hh，因为不能确定字符串表示是24h还是12h
-    获取字段信息
-      int year = now.getYear()
-      int month = now.getMonth()
-      int day = now.getDayOfMonth()
-      int hour = now.getHour()
-      int  minute = now.getMinute()
-      int second = now.getSecond()
-      DayOfWeek week = now.getDayOfWeek()
-    设置字段信息
-      with相关方法返回LocalDateTime，故而支持链式调用来构造日期
-      now.withYear()
-      now.withMonth()
-      now.withDayOfMonth()
-        now.withHour()
-      now.withMinute()
-      now.withSecond()
-  LocalDate
-    只有日期字段，没有时间字段
-    LocalDate localDate = now.toLocalDate();
-    使用方式和LocalDateTime完全一致
-  LocalTime
-    只有时间字段，没有日期字段
-    LocalTime localTime = now.toLocalTime();
-    使用方式和LocalDateTime完全一致
+	概述
+		格林威治时间 - 世界通用时间
+			起始时间：1970/1/1 00:00:00
+		CST（东八区）- 中国区系统时间
+			起始时间：1970/1/1 08:00:00
+		jdk8之前
+			Date 日期
+				包含日期（年月日）、时间（小时分钟秒）的信息
+				Date把时间作为整体处理，无法处理具体字段
+			SimpleDateFormat 日期格式化
+				将Date格式数据和字符串相互转换
+			Calendar 日历
+				处理具体字段
+			缺点
+				1.使用起来繁琐
+				2.采用时区的概念
+				3.月从0开始，星期日作为起始等于1
+		jdk8+
+			优点
+				1.LocalDateTime 等价于 Date + Calendar
+				2.摒弃了时区
+				3.月从1开始，星期改为枚举
+	Date
+		位于java.util.Date 工具类下
+		构造方法
+			无参构造 new Date()
+				指当前日期 >java++
+			有参构造 new Date()
+				距离计算机起始时间的毫秒数 >java
+		Date.getTime()
+			得到计算机起始时间到现在的毫秒数 >java++
+	SimpleDateFormat
+		var format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss") >java++
+		用于Date和String进行相互转化的工具类
+		String ⇋ Date
+			Date → String
+				format.format(Date date) >java++
+			String → Date
+				format.parse(String date_str) >java
+				需要异常处理，报java.text.ParseException >java
+	Calendar
+		Calendar是一个抽象类，需要静态工厂方法getInstance使用返回子类对象
+		Calendar cal = calendar.getInstance() >java++
+		cal.get(int field)
+			Calendar.STATE
+				Calendar.YEAR：年份（如 2025） >java++
+				Calendar.MONTH：月份（0=一月，11=十二月） >java
+				Calendar.DATE：当月中的日期（1-31） >java
+				Calendar.DAY_OF_MONTH：等同于 DATE（当月中的日期） >java
+				Calendar.DAY_OF_YEAR：当年第几天（1-366） >java
+				Calendar.DAY_OF_WEEK：本周第几天（1=周日，7=周六） >java
+				Calendar.AM_PM：上下午标识（0=AM，1=PM） >java
+				Calendar.HOUR_OF_DAY：24小时制小时数（0-23） >java
+				Calendar.MINUTE：分钟数（0-59） >java
+				Calendar.SECOND：秒数（0-59） >java
+				Calendar.MILLISECOND：毫秒数（0-999） >java
+		cal.getTimeInMillis
+			获取系统时间戳 >java++
+		cal.set(int field) >java
+		cal.add(Calendar.STATE, 50) >java
+		Calendar ⇋ Date
+			Date → Calendar
+				cal.setTime(Date date) >java++
+			Calendar  → Date
+				cal.getTime() >java
+	LocalDateTime
+		JDK8之后处理时间的类
+		创建
+			var now = LocalDateTime.now() >java+=2
+		字符串转换
+			DateTimeFormatter
+				1. var formatter =DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss") >java++
+
+			String ⇋ LocalDateTime
+				LocalDateTime → String
+					String formatStr = formatter.format(now) >java
+				String → LocalDateTime
+					LocalDateTime dateTime = LocalDateTime.parse(str, formatter) >java
+					注意
+						定义时和解析的时间字段位数必须一致
+						无法使用hh，因为不能确定字符串表示是24h还是12h
+		获取字段信息
+			int year = now.getYear() >java++
+			int month = now.getMonth() >java
+			int day = now.getDayOfMonth() >java
+			int hour = now.getHour() >java
+			int  minute = now.getMinute() >java
+			int second = now.getSecond() >java
+			DayOfWeek week = now.getDayOfWeek() >java
+		设置字段信息
+			with相关方法返回LocalDateTime，故而支持链式调用来构造日期 >java++
+			now.withYear() >java
+			now.withMonth() >java
+			now.withDayOfMonth() >java
+			now.withHour() >java
+			now.withMinute() >java
+			now.withSecond() >java
+	LocalDate
+		只有日期字段，没有时间字段
+		LocalDate localDate = now.toLocalDate(); >java++
+		使用方式和LocalDateTime完全一致
+	LocalTime
+		只有时间字段，没有日期字段
+		LocalTime localTime = now.toLocalTime(); >java
+		使用方式和LocalDateTime完全一致
 Base64
-  概述：用来对字符串进行编解码
-    编码：将不规范的字符串转换为规范字符串
-    解码：将编码后的字符串还原回原始字符串
-  API
-    Java8之前，第三方开源库
-    Java8+，将Base64写入Java API
-  基本用法
-    编码
-      1. 获得编码器：Base64.Encoder encoder = Base64.getEncoder();
-      2.编码：String encoded = encoder.encodeToString(byte[] datas);
-    解码
-      1. 获得解码器：Base64.Decoder decoder = Base64.getDecoder();
-      2. 解码：byte[] datas = decoder.decode(encoded);
-      3. 转换回字符串：String str = new String(datas);
-  应用场景
-    规范字符串
-    数据加密
-  UrlEncoder / UrlDecoder
-    URL：统一资源定位符，用来表示唯一的网络资源地址
-  MimeEncoder/MimeDecoder
-    MIME：文件类型的统一标识，大类型/小类型
+	概述：用来对字符串进行编解码
+		编码：将不规范的字符串转换为规范字符串
+		解码：将编码后的字符串还原回原始字符串
+	API
+		Java8之前，第三方开源库
+		Java8+，将Base64写入Java API
+	基本用法
+		编码
+			1. 获得编码器：Base64.Encoder encoder = Base64.getEncoder(); >java++ 48
+			2.编码：String encoded = encoder.encodeToString(byte[] datas); >java
+		解码
+			1. 获得解码器：Base64.Decoder decoder = Base64.getDecoder(); >java
+			2. 解码：byte[] datas = decoder.decode(encoded); >java
+			3. 转换回字符串：String str = new String(datas); >java
+	应用场景
+		规范字符串
+		数据加密
+	UrlEncoder / UrlDecoder
+		URL：统一资源定位符，用来表示唯一的网络资源地址
+	MimeEncoder/MimeDecoder
+		MIME：文件类型的统一标识，大类型/小类型
 Optional
-  解决空指针异常
-  是一个容器，容纳任意对象的值（引用类型），包括null
-  创建
-    Optional.empty()：创建空容器
-    创建容器并放入对象
-      Optional.of(Object obj)：不允许放空值null
-      Optional.ofNullable(Object obj)：obj为null，创建空容器
-  判断Optional中是否存有数据
-    optional.isPresent()
-  取出数据
-    get()：如果数据不存在，报错
-    orElse(默认值)：如果数据不存在，返回默认值
+	解决空指针异常
+	是一个容器，容纳任意对象的值（引用类型），包括null
+	创建
+		Optional.empty()：创建空容器 >java[51]
+		创建容器并放入对象
+			Optional.of(Object obj)：不允许放空值null >java++
+			Optional.ofNullable(Object obj)：obj为null，创建空容器 >java++
+	判断Optional中是否存有数据
+		optional.isPresent() >java++
+	取出数据
+		get()：如果数据不存在，报错 >java++
+		orElse(默认值)：如果数据不存在，返回默认值 >java++

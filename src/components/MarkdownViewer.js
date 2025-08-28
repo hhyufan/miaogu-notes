@@ -273,7 +273,7 @@ const LANGUAGE_DISPLAY_MAP = {
   mermaid: 'Mermaid'
 };
 
-const MarkdownRenderer = React.memo(({ content, copyToClipboard, currentFileName }) => {
+const MarkdownRenderer = React.memo(({ content, copyToClipboard, currentFileName, currentFolder }) => {
 
   const containerRef = useRef(null);
   const { token } = useToken();
@@ -840,14 +840,22 @@ const MarkdownRenderer = React.memo(({ content, copyToClipboard, currentFileName
             td: ({ children }) => <td style={getTableCellStyle(token)}>{children}</td>,
             th: ({ children }) => <th style={getTableHeaderStyle(token)}>{children}</th>,
             img: ({ src, alt, ...props }) => {
-              // 处理图片路径，将相对路径转换为绝对路径
-              const imageSrc = src?.startsWith('images/') ? `/${src}` : src;
+              // 处理图片路径，基于当前md文件的路径
+              let imageSrc = src;
+              if (src && !src.startsWith('http') && !src.startsWith('/')) {
+                // 相对路径处理：基于当前md文件所在目录
+                const currentPath = currentFileName ? `/markdown-files/${currentFolder}/${src}` : src;
+                imageSrc = currentPath;
+              } else if (src?.startsWith('images/')) {
+                imageSrc = `/${src}`;
+              }
+              
               return (
                 <Image
                   src={imageSrc}
                   alt={alt}
+                  width="50%"
                   style={{
-                    maxWidth: '100%',
                     height: 'auto',
                     borderRadius: '4px',
                     boxShadow: token.boxShadow,
@@ -1346,7 +1354,7 @@ const MarkdownViewer = ({ fileName, onBack, currentFolder }) => {
           overflowY: 'auto',
           maxHeight: 'calc(100vh - 140px)'
         }}>
-        <MarkdownRenderer content={debouncedContent} copyToClipboard={copyToClipboard} currentFileName={fileName} />
+        <MarkdownRenderer content={debouncedContent} copyToClipboard={copyToClipboard} currentFileName={fileName} currentFolder={currentFolder} />
       </div>
 
       {/* 翻页按钮 */}

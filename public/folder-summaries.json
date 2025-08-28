@@ -22,5 +22,13 @@
     "color": "#ff5722",
     "order": 3,
     "path": "DesignPattern"
+  },
+  "MySQL": {
+    "title": "MySQL数据库",
+    "description": "MySQL数据库完整教程，包含数据库基础概念、环境搭建、SQL语法、数据库设计等核心内容",
+    "icon": "M",
+    "color": "#00758f",
+    "order": 4,
+    "path": "MySQL"
   }
 }
