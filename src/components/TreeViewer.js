@@ -254,7 +254,7 @@ const renderTreeNode = (node, onJumpToCode, isDarkMode, expandedKeys, onToggleEx
   };
 };
 
-const TreeViewer = ({ treeFilePath, treeContent, className = '', onJumpToCode, currentFileName }) => {
+const TreeViewer = ({ treeFilePath, treeContent, className = '', onJumpToCode, currentFileName, currentFolder }) => {
 
   const [treeData, setTreeData] = useState([]);
   const [expandedKeys, setExpandedKeys] = useState([]);
@@ -340,7 +340,7 @@ const TreeViewer = ({ treeFilePath, treeContent, className = '', onJumpToCode, c
         // 构建完整的文件路径
         const fullPath = treeFilePath.startsWith('http')
           ? treeFilePath
-          : `/markdown-files/JavaFundamentals/trees/${treeFilePath}`;
+          : `/markdown-files/${currentFolder || 'JavaFundamentals'}/trees/${treeFilePath}`;
 
         const response = await fetch(fullPath);
         if (!response.ok) {

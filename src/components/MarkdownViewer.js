@@ -17,7 +17,7 @@ import MermaidRenderer from './MermaidRenderer';
 import TreeViewer from './TreeViewer';
 
 // AutoTreeH1 组件：自动检测并渲染对应的 TreeViewer
-const AutoTreeH1 = ({ titleText, isDarkMode, containerRef, children, currentFileName }) => {
+const AutoTreeH1 = ({ titleText, isDarkMode, containerRef, children, currentFileName, currentFolder }) => {
   const [treeFilePath, setTreeFilePath] = useState(null);
   const [isCheckingFile, setIsCheckingFile] = useState(false);
 
@@ -35,7 +35,7 @@ const AutoTreeH1 = ({ titleText, isDarkMode, containerRef, children, currentFile
       // 快速检查是否存在对应的 mgtree 文件
       for (const path of possiblePaths) {
         try {
-          const response = await fetch(`/markdown-files/JavaFundamentals/${path}`);
+          const response = await fetch(`/markdown-files/${currentFolder || 'JavaFundamentals'}/${path}`);
           if (response.ok) {
             // 检查响应内容类型和实际内容
             const contentType = response.headers.get('content-type');
@@ -149,7 +149,7 @@ const AutoTreeH1 = ({ titleText, isDarkMode, containerRef, children, currentFile
       )}
       {!isCheckingFile && treeFilePath && treeFilePath !== null && treeFilePath !== '' && (
         <div style={{ marginBottom: '1.5rem' }}>
-          <TreeViewer treeFilePath={treeFilePath} onJumpToCode={handleJumpToCode} currentFileName={currentFileName} />
+          <TreeViewer treeFilePath={treeFilePath} onJumpToCode={handleJumpToCode} currentFileName={currentFileName} currentFolder={currentFolder} />
         </div>
       )}
     </div>
@@ -603,7 +603,7 @@ const MarkdownRenderer = React.memo(({ content, copyToClipboard, currentFileName
                         toast.error(`未找到${jumpLanguage}代码示例#${jumpIndex}`);
                       }
                     };
-                    return <TreeViewer treeFilePath={treeFilePath} onJumpToCode={handleJumpToCode} currentFileName={currentFileName} />;
+                    return <TreeViewer treeFilePath={treeFilePath} onJumpToCode={handleJumpToCode} currentFileName={currentFileName} currentFolder={currentFolder} />;
                   }
                 }
               }
@@ -648,7 +648,7 @@ const MarkdownRenderer = React.memo(({ content, copyToClipboard, currentFileName
                         toast.error(`未找到${jumpLanguage}代码示例#${jumpIndex}`);
                       }
                     };
-                    return <TreeViewer treeFilePath={treeFilePath} onJumpToCode={handleJumpToCode} currentFileName={currentFileName} />;
+                    return <TreeViewer treeFilePath={treeFilePath} onJumpToCode={handleJumpToCode} currentFileName={currentFileName} currentFolder={currentFolder} />;
                   }
                 }
               }
@@ -696,7 +696,7 @@ const MarkdownRenderer = React.memo(({ content, copyToClipboard, currentFileName
                         }
                       };
 
-                      return <TreeViewer treeFilePath={treeFilePath} onJumpToCode={handleJumpToCode} />;
+                      return <TreeViewer treeFilePath={treeFilePath} onJumpToCode={handleJumpToCode} currentFolder={currentFolder} />;
                     }
                   }
                 }
@@ -761,7 +761,7 @@ const MarkdownRenderer = React.memo(({ content, copyToClipboard, currentFileName
                       }
                     };
 
-                    return <TreeViewer treeFilePath={treeFilePath} onJumpToCode={handleJumpToCode} />;
+                    return <TreeViewer treeFilePath={treeFilePath} onJumpToCode={handleJumpToCode} currentFolder={currentFolder} />;
                   }
                 }
               }
@@ -773,7 +773,7 @@ const MarkdownRenderer = React.memo(({ content, copyToClipboard, currentFileName
                 Array.isArray(children) ? children.join('') :
                   children?.props?.children || '';
 
-              return <AutoTreeH1 titleText={titleText} isDarkMode={isDarkMode} containerRef={containerRef} currentFileName={currentFileName}>{children}</AutoTreeH1>;
+              return <AutoTreeH1 titleText={titleText} isDarkMode={isDarkMode} containerRef={containerRef} currentFileName={currentFileName} currentFolder={currentFolder}>{children}</AutoTreeH1>;
             },
             h2: ({ children }) => <h2 style={{ ...getHeadingStyle(token), fontSize: '1.8rem' }}>{children}</h2>,
             h3: ({ children }) => <h3 style={{ ...getHeadingStyle(token), fontSize: '1.6rem' }}>{children}</h3>,
@@ -828,7 +828,7 @@ const MarkdownRenderer = React.memo(({ content, copyToClipboard, currentFileName
                         toast.error(`未找到${jumpLanguage}代码示例#${jumpIndex}`);
                       }
                     };
-                    return <TreeViewer treeFilePath={treeFilePath} onJumpToCode={handleJumpToCode} />;
+                    return <TreeViewer treeFilePath={treeFilePath} onJumpToCode={handleJumpToCode} currentFolder={currentFolder} />;
                   }
                 }
               }
@@ -925,10 +925,10 @@ const MarkdownRenderer = React.memo(({ content, copyToClipboard, currentFileName
                   if (!refPath.includes('.')) {
                     refPath += '.mgtree';
                   }
-                  return <TreeViewer treeFilePath={refPath} onJumpToCode={handleJumpToCode} currentFileName={currentFileName} />;
+                  return <TreeViewer treeFilePath={refPath} onJumpToCode={handleJumpToCode} currentFileName={currentFileName} currentFolder={currentFolder} />;
                 } else {
                   // ```tree代码块只支持内容渲染
-                  return <TreeViewer treeContent={treeContent} onJumpToCode={handleJumpToCode} currentFileName={currentFileName} />;
+                  return <TreeViewer treeContent={treeContent} onJumpToCode={handleJumpToCode} currentFileName={currentFileName} currentFolder={currentFolder} />;
                 }
               }
 
