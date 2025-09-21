@@ -1,0 +1,72 @@
+概述
+  JDBC(Java Database Connectivity)，java和数据库连接的技术
+  JDBC，是Java和数据库操作的协议，在代码层面就是一个接口
+JDBC API
+  Connection 连接
+  Statement 句柄
+  ResultSet 结果集
+基本操作流程
+  1.导入数据库驱动
+    创建lib目录。
+  2.注册驱动
+    Class.forName("com.mysql.cj.jdbc.Driver")
+  3.创建连接
+    DriverManager.getConnection(url, username, password)
+  4. 创建句柄
+    Statement statement = connnection.createStatement();
+    statement.execute(sql)
+  5. 关闭资源
+    statement.close();
+PreparedStatement
+  statement问题
+    容易造成数据丢失
+    容易造成SQL注入攻击
+    SQL注入攻击
+      利用系统对输入数据的检查漏洞，注入SQL语句和命令，从而利用SQL引擎进行恶意行为
+  `PreparedStatement`用于执行预编译 SQL 语句
+  用 ? 作为参数占位符
+  自增主键处理
+    `PreparedStatement` 提供了专门的机制来获取自增主键
+    使用方法
+      1.conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) // 使用常量声明返回自增主键（常量值为1，默认为2）
+      2.pstmt.executeUpdate(); // 执行更新
+      3.ResultSet generatedKeys = pstmt.getGeneratedKeys(); // 获取主键
+      4.generatedKeys.getInt(1); // 通过索引取值（只能通过索引）
+  批处理
+    执行多条 SQL 语句的技术，通过减少与数据库的交互次数来提升性能
+    使用方法：
+      1.pstmt.executeBatch(); // 加入批处理队列
+      2.int[] affectedRows = pstmt.executeBatch(); // 执行批处理，返回各语句受影响的行数（-2表示成功但无计数）
+ResultSet
+  boolean next()：光标向下移动一行，判断是否存在数据
+  xxx getXxx(int index): 获取指定列数据，Xxx代表数据类型
+  xxx getXxx(String columnName): 根据字段名称获取指定列数据，Xxx代表数据类型
+数据类型处理
+  JDBC原生数据类型处理，后续Mybatis框架有其他处理方式
+  布尔类型：Java的布尔类型和MySQL整型自动转换
+  日期时间类型：使用Date的SQL实现版本：java.sql.Data
+    设置日期：
+      setTimestamp：设置时间戳，完整时间
+      setDate：设置日期，不包含时间
+      setTime：设置时间，不包含日期
+    读取日期：
+      getTimestamp：获取时间戳，完整时间
+      getDate：获取日期，不包含时间
+      getTime：获取时间，不包含日期
+事务处理
+  JDBC通过Connection对象处理事务，默认自动提交，需关闭
+  手动事务管理方式：
+    1.setAntoCommit(false) // 关闭自动事务处理
+    2.commit() // 事务结束后提交
+    3.rollback() // 回滚[可选]
+Model
+  MVC三层架构
+    软件工程中一种经典的架构模式，通过将应用程序分为三个核心部分（Model、View、Controller），实现关注点分离
+  Model层指的是业务模型，包括数据和业务处理的全部操作
+  Dao
+    数据访问对象，一般称为持久层，针对数据库进行增删改查操作
+  Service
+    业务层，调用Dao层实现具体业务处理
+  Dao / Service 都是接口，实现在其软件包下的impl包进行实现
+  JDBCUtils
+使用函数式封装优化JDBC

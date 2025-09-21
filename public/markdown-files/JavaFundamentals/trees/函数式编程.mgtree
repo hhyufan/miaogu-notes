@@ -72,6 +72,16 @@ Lambda表达式
 	是Java8新增的函数表示方式
 	根据语法称之为`箭头函数`，或者称为`闭包`
 	方法的表现方式，作为方法参数传递
+	Lambda基本写法>java++
+	方法引用
+    	引用已有的方法，实现特定的方法
+    	静态方法引用
+    		Integer::compare>java++
+    	对象的实例方法引用
+    		str::length>java
+    	类的实例方法引用
+    		String::compareToIgnoreCase>java
+    	构造方法引用>java
 Stream流
 	流操作，对数据生成元素序列，进行数据操作
 	创建
@@ -107,7 +117,7 @@ Stream流
 				配合其他流的中间操作，查询结果的第一条数据 >java[25]
 			findAny
 				结果上和findFirst一致，使用并行流，效率更高 >java
-			collect 
+			collect
 				收集，参数为Collector接口实现，从stream提取数据到Collection集合 >java[27]
 			average
 				计算平均数 >java
@@ -134,12 +144,3 @@ Stream流
 						Collectors.summingDouble(Employee::getSalary) >java[29]
 	转换成流
 		.chars()：将字符串转换成IntStream流
-方法引用
-	引用已有的方法，实现特定的方法
-	静态方法引用
-		Integer::compare
-	对象的实例方法引用
-		str::length
-	类的实例方法引用
-		String::compareToIgnoreCase
-	构造方法引用

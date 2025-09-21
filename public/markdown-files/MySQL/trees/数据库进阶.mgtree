@@ -1,0 +1,125 @@
+三大范式
+  表中的数据应该具有原子性
+  表中所有非主属性要和主键相关联
+  表之间如果存在关系，需要通过外键约束
+视图
+  子表的缺点
+    子表占据额外的数据存储空间，造成资源浪费
+    子表和主表的数据同步问题
+  视图是虚表，实际为某表的查询语句
+  视图的数据和主表数据同步。
+  视图的创建： CREATE VIEW  view_name AS (SELECT 语句)>sql[1]
+  视图的相关操作和表一致
+索引
+  索引index，对数据库多列进行排序结构，属于DDL语言
+  类似于字典的目录，提高数据查询效率
+  优缺点
+    优点：提高查询效率
+    缺点
+      额外的占用存储空间
+      添加、修改、删除耗时长
+  类型
+    主键索引
+    唯一性索引
+    普通索引
+    联合索引
+  索引的操作
+    1.创建
+      CREATE INDEX 索引名字 ON 表名(列名, 列名)>sql++
+    2.查询
+      SHOW INDEX FROM 表名>sql++
+    3.删除
+      drop index 索引名 on 表名>sql++
+  数据结构：B+树
+  MYSQL所有数据都存储在根节点中
+  聚簇索引、非聚簇索引
+    聚簇索引：称为主键索引
+      每个表聚簇索引只有一个，对应主键索引
+    非聚簇索引/辅助索引
+      非主键索引统称为辅助索引
+      通过非聚簇索引寻找主键索引，然后根据主键索引查询具体字段（回表查询）
+  哪些列加索引
+    WHERE
+    ORDER BY
+    GROUP BY
+    JOIN ..... ON
+事务
+  Transaction 事务，一组保持数据状态一致性的统一操作，或者统一成功，或失败
+  TCL（Transition Control Language）事务控制语言
+  四大特性
+    原子性（Atomicity）
+    一致性（Consistency）
+    隔离性（Isolation）
+    持久性（Durability）
+  事务操作
+    开启
+      START TRANSACTION | BEGIN>sql++
+      如果未开启事务，所有操作都是独立的，执行完毕自动提交#持久化保存下来
+    提交
+      Commit>sql++
+      如果提交，数据持久化保存，事务结束。
+    回滚
+      rollback>sql++
+      将数据状态回滚到上一次提交的状态
+  事务并发可能存在的问题
+    事务并发：多个客户端同时操作一组数据
+    脏读：A事务读取B事务尚未提交的数据
+    不可重复读：同一事物两次重复读取数据不同
+    幻读：同一事物两次执行同一条SELECT语句，第一次读取数据不存在，第二次插入数据失败，发现该数据存在
+  事务隔离级别
+    set global / session transaction isolation level read uncommitted / read committed / repeatable read / serializable
+    read uncommitted：读未提交
+    read committed：读已提交
+    repeatable read：可重复读
+    serializable：可序列化读
+    查看事务隔离级别：select @@SESSION|GLOBAL.transaction_isolcation;
+    底层原理是`锁`
+      全局锁
+        锁住数据库
+        flush tables with read lock;
+        unlock tables
+        应用场景：数据库的全库备份
+      表级锁
+        锁住的是表
+        实现方式
+          加锁：lock tables 表名 read | write
+          释放锁：unlock tables;
+      行级锁
+        锁住一行数据
+        分类
+          共享锁（S）：允许事务读一行，允许其他事务获得相同数据的共享锁，阻止其他事物获得相同数据集的排它锁
+            select * from 表名 where id = 1 lock in share mode;
+          排它锁（X）：允许获取排它锁的事务更新数据，阻止其他事务获得相同数据集的共享锁和排它锁
+            select * from 表名 where id = 1 for update;
+用户和权限
+  属于DCL（database control language）语言：包含用户和权限管理
+  用户
+    信息组成
+      '用户名'@'主机'
+      '用户名'@'localhost'
+      'root'@'192.168.100.50'
+      'root'@'%'
+    创建用户
+      CREATE USER '用户名'@'主机名' IDENTIFIED BY '密码'
+    修改密码
+      ALTER USER '用户名'@'主机名' IDENTIFIED WITH mysql_native_password BY '新密码'
+    删除用户
+      DROP USER '用户名'@'主机名'
+  权限
+    授权
+      GRANT 权限列表 ON 数据库名.表名 TO '用户名'@'主机'
+    回收权限
+      REVOKE 权限列表 ON 数据库名.表名 FROM  '用户名'@'主机'
+    查询权限
+      SHOW GRANTS FOR '用户名'@'主机'
+    权限列表
+      ALL | ALL PRIVILEGES
+      CREATE
+      ALTER
+      DROP
+      SELECT
+      INSERT
+      UPDATE
+      DELETE
+  创建用户并授权
+    GRANT 权限列表 ON 数据库名.表名 TO '用户名'@'主机' IDENTIFIED BY '密码'

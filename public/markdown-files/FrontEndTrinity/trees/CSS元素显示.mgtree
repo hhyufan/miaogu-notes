@@ -1,0 +1,45 @@
+显示分类
+  块级元素（block）
+    独占一行，可以设置宽高33312312312321
+    div、p、ul、ol、li、hn、form
+  行级元素（inline）
+    共享一行，无法设置宽高
+    span、a、strong、em、b、i、u
+  行内块级元素（inline-block）
+    共享一行，可以设置宽高，如img...
+设置显示方式
+  display: block/inline/inline-block
+
+隐藏
+  display: none 隐藏后原有的位置`不保留`
+  visibility: hidden 隐藏后原有的位置`保留`
+2d转换
+  方法1：样式名称：transform，样式值是转换函数
+  
+  方法2：样式名称：转换函数名，样式值：转换函数参数
+  转换函数
+    translate
+      translate(x, y)：沿`x`，`y`坐标位移
+      translateX(x)：沿`x`坐标水平方向位移
+      translateY(y)：沿`y`坐标垂直方向位移
+    rotate
+      rotate(deg)：以中心点顺时针旋转
+      rotateX(x)：沿着x方向旋转，宽度变小
+      rotateY(x)：沿着y方向旋转，高度变小
+    scale
+      始终以中心位置的缩放
+      scaleX(t)：沿着x轴缩放
+      scaleY(t)：沿着y轴缩放
+      scale(xt[, yt])：沿着`x`，`y`缩放#省略`yt`参数则`yt=xt`
+    skew
+      倾斜变形
+      skew(degX, degY)：同时沿 X 轴和 Y 轴倾斜
+      skewX(deg)：仅沿 X 轴倾斜
+      skewY(deg)：仅沿 Y 轴倾斜
+CSS3前缀
+  css3对于目前主流浏览器，兼容性非常好
+  主流浏览器`CSS3`的样式前缀
+    `chrome`：`-webkit-`
+    `firefox`：`-moz-`
+    `IE、Edge`：`-ms-`
+    `Opera`：`-o-`

@@ -1,0 +1,137 @@
+基本操作
+  概念
+    DML
+      数据操作语言，包含数据的插入、删除和修改
+    DQL
+      数据的查询语言，包含数据查询操作
+  插入
+    INSERT INTO table_name(column1, column2, .....) values (arg1, arg2, ...)>sql[1]
+    MySQL支持value
+    默认值使用default插入
+  更新
+    UPDATE table_name SET column1 = value1, column2 = value2 .... [WHERE]>sql++
+    更新操作如果没有WHERE条件，导致所有数据都会被更新
+  删除
+    drop table
+      删除数据、表空间、表结构、无法回滚
+    truncate table
+      删除数据、表空间、无法回滚
+    delete from
+      删除数据、可以回滚
+    物理删除和逻辑删除
+      物理删除：delete 真正删除数据，实际开发用不到
+      逻辑删除：增设字段，表示数据是否可用，开发中实际操作
+  查询
+    查询所有数据：SELECT * | column1，column2, .... FROM 表名
+    列别名：对字段取别名，`AS`关键字实现
+    去重查询：distinct
+    条件查询：where
+    模糊查询：like
+      `%`通配符：任意个任意字符
+运算
+  算数运算：+, -, *, /
+  比较运算：>, >=, <, <=, -, !=(<>)
+  逻辑运算符
+    &&、||、!
+    AND、OR、NOT
+    NOT > AND > OR
+  范围运算
+    BETWEEN min AND max
+    IN(collection)
+  空值判断
+    NULL，表示没有数据
+    NULL参与运算，结果为NULL
+    IS NULL：是否为空
+    IS NOT NULL：是否非空
+  赋值运算
+    SET @变量名 = 值;
+    使用`:=`在表达式内赋值运算
+函数
+  数值函数
+    ceil(数值)
+    floor(数值)
+    round(数值[，长度])
+    mod(数值， 除数)：求余
+    rand()：返回0-1的浮点随机数
+    abs()：绝对值
+  字符串函数
+    length (字符串): 长度
+    lower (字符串)：把字符串变成小写
+    upper (字符串)：把字符串变成大写
+    concat (字符串 1, 字符串 2 ...): 拼接字符串
+    replace (字符串，子字符串，新字符串)：字符串替换
+    substring/substr (字符串 from m for n)
+      下标从1开始，从m截取到n
+      从 m 开始截取，n 代表截取长度
+    lpad (字符串，长度，填充字符)：左侧补齐
+    rpad (字符串，长度，填充字符)：右侧补齐
+    trim (字符串)：去掉首尾空格
+  日期时间函数
+    curdate()：返回当前日期，返回类型（DATE）
+    curtime()：返回当前时间，返回类型（TIME）
+    now()：返回当前日期时间，返回类型为（DATETIME）
+    year(date)：返回指定日期的年份，返回类型(INT)
+    month(date)：返回指定日期的月份，返回类型（INT）
+    day(date)：返回指定日期的天，返回类型（INT）
+    DATE_ADD(date, INTERVAL 数值 type)：返回指定日期增加相应字段值后新的日期，返回类型为日期时间类型（DATETIME）（或匹配原日期的类型，如 DATE 等）
+    datediff(date1, date2)：返回两个日期相差的天数，返回类型（INT）
+    date_format(Now(),'%Y-%m-%d')
+  流程函数
+    if(条件,a,b) 条件成立 a 不成立 b
+    ifnull(value1,value2) 空值默认值
+聚合函数和分组查询
+  根据一组数据返回结果
+  常用聚合函数
+  空值不参与组函数运算
+  分组查询
+    group by 分组条件>sql++
+    查询内容或者分组条件中，或者在组函数中
+    group by 分组条件 having 分组过滤条件
+    where 和 having的区别
+      where在分组前执行
+      having在分组后执行
+复杂查询
+  排序查询
+    ORDER BY 排序表名1[, ...] [DESC]>sql++
+  分页查询
+    LIMIT [起始下标, ]查询数量>sql++
+      MySQL下标从0开始
+    思考：有100条数据，每页查询10条数据，n页如何查询
+      LIMIT (n - 1) * 10, 10
+  子查询
+    将查询结果作为二次操作的条件(数据集)
+    使用子查询，通常使用小括号括起来
+    应用场景
+      SELECT IN
+      创建表 CREATE [AS]
+  窗口函数
+    窗口：根据当前表创建的新数据集>sql++
+    常用窗口函数
+      ROW_NUMBER(): 始终生成唯一连续的序号，不考虑值是否相同
+      RANK(): 相同值排名相同，但后续排名会 “跳跃”
+      DENSE_RANK(): 相同值排名相同，后续排名连续
+  复杂查询SQL执行顺序
+    FROM：指定查询的基础表或数据源，是查询的起点
+    JOIN：根据连接条件关联其他表（如 INNER JOIN、LEFT JOIN 等）
+    WHERE：对原始数据进行筛选，只保留满足条件的行
+    GROUP BY：将数据按指定字段分组
+    HAVING：对 GROUP BY 后的分组结果进行筛选（与 WHERE 不同，HAVING 可使用聚合函数）
+    SELECT：选择需要返回的字段或计算结果（包括窗口函数、聚合函数等）
+    DISTINCT：对 SELECT 后的结果去重
+    ORDER BY：对查询结果按指定字段排序（升序 ASC 或降序 DESC）
+    LIMIT/OFFSET：限制返回结果的数量（分页查询）
+  复杂查询SQL书写顺序
+    SELECT [DISTINCT] 字段/表达式
+    FROM 表名
+    [JOIN 关联表 ON 连接条件]  -- 可选，可多个
+    [WHERE 筛选条件]  -- 可选
+    [GROUP BY 分组字段]  -- 可选
+    [HAVING 分组筛选条件]  -- 可选（需配合 GROUP BY）
+    [ORDER BY 排序字段 [ASC/DESC]]  -- 可选
+    [LIMIT 数量 [OFFSET 偏移量] ]  -- 可选（分页）
+多表查询
+  多表关系
+    1 -> 1: 主表的一条记录对应一条记录。
+    1 -> n: 主表的一条记录对应多条记录。
+    n -> 1: 从表的多条记录对应到主表的一条记录。
+    n -> n: 主表的多条数据对应从表的多条数据

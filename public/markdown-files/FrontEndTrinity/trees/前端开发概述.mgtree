@@ -1,0 +1,17 @@
+前端开发概述
+  HTML：实现页面内容
+  CSS：实现页面样式（内容的外观和布局位置）
+  JavaScript：实现页面交互（人和应用、前端和后端）
+HTML
+  HTML（Hypertext Markup Language）超文本标记语言 >html[1]
+  源文件后缀名 ：.html 或 .ht
+  HTML由浏览器直接运行
+  标准由万维网联盟(www)指定维护的
+  最新版本html5，简称h5
+主流浏览器
+  chrome（谷歌）
+  firefox（火狐）
+  edge（微软）
+主流开发工具
+  VS Code
+  WebStorm

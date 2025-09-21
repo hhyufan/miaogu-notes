@@ -1,0 +1,45 @@
+五大要素
+  高度`height`
+  宽度`width`
+  边框`border`
+  外边距`margin`
+  内边距`padding`
+宽度和高度
+  单位可以具体像素
+  单位可以是父容器宽高的百分比
+边框
+  边框宽度`border-width`
+  边框颜色`border-color`
+  边框样式`border-style`
+    solid 实线
+    dashed 虚线
+    dotted 圆点
+    none 没有
+  border 宽度 颜色 样式
+  方向边框：
+    top right bottom left
+    border-top
+    border-top-width/color/style
+  圆角边框
+    border-radius: 上 右 下 左
+  边框阴影
+    box shadow：水平偏移量 垂直偏移量 模糊度 阴影颜色
+轮廓`outline`
+ 设置方式和`border` `完全一致`
+边距
+  内边距 padding
+    定义：边框与内容间的空白。
+    单位：px、%、em 等。
+    简写：上 右 下 左（可省略为 3/2/1 个值，对应不同方向合并设置）。
+    方向属性：padding-top/right/bottom/left。
+    特点：增加元素实际占用空间（box-sizing: border-box除外）。
+  外边距 margin
+    定义：边框与相邻元素 / 父容器的空白。
+    单位：px、%、em 等，auto可用于水平居中。
+    简写：上 右 下 左（可省略为 3/2/1 个值，对应不同方向合并设置）。
+    方向属性：margin-top/right/bottom/left。
+    特殊：垂直方向相邻元素外边距会合并；不增加元素自身尺寸。
+溢出处理`overflow`
+  hidden 隐藏
+  scroll 滚动
+  auto 自动

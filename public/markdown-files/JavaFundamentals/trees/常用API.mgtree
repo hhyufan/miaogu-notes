@@ -6,11 +6,18 @@
 Object
 	所有类的根类，所有的类继承Object
 	内存地址相关
+
+
+
+
+
+
+
 		==
 			判断数值是否相等或内存地址是否相同 >java[1]
 		equals()
 			默认判断内存地址是否相同 >java++
-			重写此方法自定义相等判断 >java  
+			重写此方法自定义相等判断 >java
 		hashCode()
 			默认返回对象内存地址hash码 >java++
 			重写此方法自定义hash码返回 >java
@@ -26,7 +33,7 @@ junit
 	常用版本：junit4，junit5 >java
 包装类/封装类
 	概述
-		java有八大基本类型，功能有限，只能进行基本运算 
+		java有八大基本类型，功能有限，只能进行基本运算
 		java面向对象编程，扩展基本类型的功能，基本类型扩展为对象类型，称为`包装类`
 	包装类型
 		Number
@@ -52,14 +59,14 @@ junit
 		装箱和拆箱
 			装箱：基本类型转为包装类型
 			拆箱：包装类型转为基本类型
-			java8开始，支持自动装箱和拆箱，使用直接赋值形式 >java++ 
+			java8开始，支持自动装箱和拆箱，使用直接赋值形式 >java++
 			字符串相互转换
 				int/Integer -> String
 					String y = x + ""; >java++
 					String z = String.valueOf(x) >java
 				String -> int/Integer
 					Integer i = Integer.valueOf(z) >java++
-					int j = Integer.parseInt(z) >java 
+					int j = Integer.parseInt(z) >java
 BigDecimal/BigInteger
 	数据的精确度
 		double/long在处理数据时，数据比较大会精度丢失 >java++

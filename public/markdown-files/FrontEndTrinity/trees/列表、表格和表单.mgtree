@@ -1,0 +1,72 @@
+列表
+  有序列表: ol(ordered list) > li >html[1]
+  无序列表: ul(unordered list) > li >html+=2
+  列表选项为任意内容 >html+=2
+  快捷键：ul>li{data$}*4 >html++
+表格
+  外层标签：table
+    表名 ：caption >html++
+    表头：thead >html
+    表格：tbody >html
+    表行: tr >html
+    表数据：th/td >html
+  快捷键：table>caption{学生信息表}+thead>tr>th*4{表头$}+tbody>tr*4>td*4{属性$}
+  跨行/列：
+    rowspan="n"：规定单元格跨行的数量
+    colspan="n"：规定单元格跨列的数量
+表单
+  <form>表单标签</form> >html[12]
+  表单用来获取用户输入的数据，并通过提交按钮将数据发送到服务器。表单元素包括输入框、选择框、按钮等。
+  表单元素：input, textarea, select, button等
+  input
+    文本输入
+      type="text" placeholder="请输入用户名" name = "username" >html+=2
+      如果不书写username属性，则无法正确提交表单数据
+      type="password" placeholder="请输入密码" name = "password" >html++
+      type="submit": 为按钮，提交表单数据
+      常用属性
+        type: 输入类型 >html
+        placeholder: 输入框内提示文本 >html
+        name: 提交的表单数据的键名 >html
+        maxlength: 输入最大长度限制 >html
+        required: 必填项 >html
+      label: 标签，与输入框绑定
+        for: 关联input组件，使用name一致 >html
+    单选框和多选框: 用于选择单个或多个选项
+      组
+      type="radio": 单选按钮，name属性相同为一组 >html++
+      type="checkbox": 多选按钮，name属性相同为一组 >html
+      checked: 默认被选中 >html
+      使用value进行区分 >html
+    按钮
+      type="submit" value="按钮名称": 提交表单 >html+=2
+      type="reset" value="按钮名称": 重置表单 >html
+      type="button" value="按钮名称": 普通按钮 >html
+  下拉选择框: select > option
+    <select name="city">..</select>
+      <option value="beijing">北京</option>
+      <option value="shanghai">上海</option>
+    selected: 默认被选中 >html+=2
+  文本域: textarea
+    <textarea name="message" rows="4" cols="50"></textarea> >html+=3 23
+    属性:
+      rows: 宽度 >html
+      cols: 高度 >html
+  按钮: button
+    <button type="...">..</button>
+    和input按钮不同，属于对标签，value的值放在标签中
+    type属性
+      type="submit": 提交表单 >html[19]
+      type="reset": 重置表单 >html
+      type="button": 普通按钮 (默认) >html
+    onclick: button属性，绑定js函数 >html
+  表单属性
+    action: 指定表单提交的URL >html[13]
+    method: 指定HTTP方法（GET/POST） >html
+    enctype: 指定编码类型（如文件上传时需要multipart/form-data） >html
+  form子标签的布尔属性
+    checked: 选择框是否选中 >html[25]
+    selected: 下拉选择框是否选中 >html
+    hidden: 隐藏当前标签 >html
+    readonly: 只读组件，不允许修改 >html
+    disabled: 禁用 >html

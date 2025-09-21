@@ -1,0 +1,88 @@
+颜色:
+  color: 表示颜色（通常为字体颜色）
+  border-color：边框颜色
+  Background-color：背景颜色
+  表示方式:
+    纯英文
+    rgb
+      rgb(red, green, blue)
+      红（`Red`）、绿（`Green`）、蓝（`Blue`）
+    rgba：rgba(red, green, blue, alpha)：`alpha`范围是`0`~`1`
+    十六进制
+      组成：0~9a~f
+      使用`#`表示
+      6 位形式：`#RRGGBB`
+      3 位形式：`#RGB`
+字体
+  font-style
+    normal（常规）
+    italic（斜体）
+    oblique（倾斜）
+  font-weight
+    normal（常规）
+    bold（加粗）
+    bolder（比父元素更粗）
+    lighter（比父元素更细）
+    100-900（100最细，900最粗，常用 400/700 对应正常 / 加粗） 
+    百分比
+  font-size: 16px（字体大小）
+  line-height: 1.5（行高）
+  font-family: "Microsoft YaHei", sans-serif（字体族）
+  font：同时设置多个字体样式
+    font: [font-style] [font-variant] [font-weight] <font-size>[/<line-height>] <font-family>;
+文本
+  text-decoration：文本修饰（修饰线）
+    overline：上划线
+    underlne：下划线
+    line-through：穿越线
+    none：无修饰线
+  text-transform：文本转换（英文大小写转换）
+    uppercase：大写
+    lowercase：小写
+    capitalize：单词首字母大写
+  text-align：文本水平方向对齐方式
+    left：居左（默认）
+    center：居中
+    right：居右
+  text-indent：文本缩进
+    单位：具体像素、em（单词宽度）
+  text-shadow：文本阴影
+    textshadow: 水平偏移量 垂直偏移量 模糊度 阴影颜色
+背景
+  background-color
+  background-image:url('./images')
+    图片小，循环铺满区域
+  background-repeat
+    repeat循环，默认
+    repeat-x x轴循环
+    repeat-y y轴循环
+    no-repeat 不循环
+  background-position
+    值
+      水平位置，垂直位置
+    相对位置
+      水平
+        left
+        right
+        center
+      垂直
+        top
+        bottom
+        center
+  background-size 值
+    值
+      宽，高
+      具体像素
+    cover 自动拉伸
+      等比拉伸，填充满区域
+    contain 自动拉伸
+    等比拉伸，填满x/y
+  background
+    color/image/repeat/position无顺序
+  背景附着
+    bockground-attchment
+      scroll滚动
+      fixed固定
+  背景精灵：页面只显示图片的一部分
+  多重背景
+    background:url(img.png)no-repeat left top,url(img2.png)no-repeat right bottom

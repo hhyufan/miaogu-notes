@@ -30,5 +30,13 @@
     "color": "#00758f",
     "order": 4,
     "path": "MySQL"
+  },
+  "FrontEndTrinity": {
+    "title": "前端三剑客",
+    "description": "前端开发核心技术教程，包含HTML、CSS、JavaScript三大核心技术的基础知识和实践应用",
+    "icon": "F",
+    "color": "#61dafb",
+    "order": 5,
+    "path": "FrontEndTrinity"
   }
 }

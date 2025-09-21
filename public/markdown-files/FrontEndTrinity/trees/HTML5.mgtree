@@ -1,0 +1,59 @@
+概念
+  2014.10正式发布，主流浏览器兼容h5版本
+  摒弃过时标签，big，frame，frameset(使用iframe代替)
+  增加标签，比如语义化标签，多媒体标签，扩展表单的标签和属性
+  简化了html文档结构的写法
+    <!DOCTYPE html> >html[2]
+  新增画图功能，比如canvas
+布局标签
+  传统标签：span、div >html[5]
+  html5新增语义化标签
+    header >html++
+    footer >html
+    nav >html
+    aside >html
+    article >html
+    section >html
+多媒体标签
+  音频
+    <audio></audio> >html++
+    支持的格式
+      mp3、wav、ogg >html
+  视频
+    <video></video> >html+=3
+    支持的格式
+      mp4、webm、ogg >html
+    属性：
+      controls: 显示控制组件 >html++
+      loop: 循环播放 >html
+      autoplay: 自动播放 >html
+表单新增内容
+  新增标签
+    fieldset 字段集 >html+=2
+    legend 字段集标题 >html
+  新增Input的type类型
+    color: 设置颜色输入 >html++
+    email: 邮箱输入 >html++
+    url: 链接输入 >html++
+    number: 数字输入
+      min: 最小值 >html++
+      max: 最大值 >html
+      step: 步长值 >html
+    date: 日期选择器 >html++
+    time: 时间选择器 >html
+    range: 滑块选择器
+      min: 最小值 >html++
+      max: 最大值 >html
+      step: 步长值 >html
+    tel: 电话 >html++
+  新增input属性
+    placeholder: 输入提示 >html++
+    required: 必填项 >html++
+    autofocus: 自动聚焦 >html++
+    autocomplete: 自动提示 on | off >html++
+    list: 输入提示的数据源，使用绑定datalist标签 >html++
+    datalist: 使用option标签定义选项 >html
+    pattern: 正则验证 >html++
+  新增form表单提交方式
+    可使用form属性绑定表单外的输入控件到指定表单 >html++
+    使用formaction/formmethod属性来为不同的提交按钮指定不同的提交地址和请求方法 >html

@@ -1,0 +1,45 @@
+标题
+  h1 ~ h6：h1最大，h6最小 >html[1]
+  h1可被搜索引擎搜索到，建议使用1次 >html+=1
+  不存在的标签当做普通文字处理
+段落
+  p标签：用于定义段落，通常包含一个或多个句子 >html+=2
+水平线
+  属于单标签
+  hr标签：用于创建水平分隔线，通常用于内容分隔 >html+=2
+换行符
+  默认对空格和换行的处理
+    将所有空格和换行当做1空格处理 >html+=2
+  br标签：用于强制换行，不产生额外间距 >html+=1
+字符实体/转义字符
+  空格	&#32;	&nbsp;
+  大于号 `>`	&#62;	&gt;
+  小于号 `<`	&#60;	&lt;
+  双引号 `"`	&#34;	&quot;
+  单引号 `'`	&#39;	&apos;
+  人民币 `¥`	&#165;	&yen;
+  版权 `©`	&#169;	&copy;
+跑马灯
+  marquee >html+=2
+  相关属性
+    loop：循环次数，默认是-1
+    derection：滚动方向
+      left：默认 >html+=1
+      right >html
+      down >html
+      up >html
+    behavior
+      alternate：来回滚动 >html
+      scroll：持续滚动，默认 >html
+    scrollamount：滚动速度
+    scrolldelay：滚动延迟时间 
+其他文本
+  b，i，u
+    b粗体，i斜体，u下划线 >html+=2
+  strong，em
+    强调标签
+    strong：粗体 >html+=1
+    em：强调 html
+  sub，sup
+    sub：下标字 >html+=1
+    sup：上标字 >html+=1

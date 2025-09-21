@@ -1,0 +1,9 @@
+概述
+  Cascading Style Sheets 层叠样式表
+  样式包含外观和布局
+  注释：/* 多行注释 */
+CSS创建方式
+  行内样式/内联样式：只对当前行生效>html[1]
+  内部样式/嵌入样式：对`当前应用`有效。在`html`中通过`<style></style>`定义>html++
+  外部样式：对`外部样式`有效。通过`<link rel="stylesheet" href= "./xxx.css"> `引入 >html++
+  样式导入：CSS导入CSS使用`@import url('./xxx.css')`;

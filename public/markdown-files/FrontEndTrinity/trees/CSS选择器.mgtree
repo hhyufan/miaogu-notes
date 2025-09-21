@@ -1,0 +1,93 @@
+概述：从 HTML 文档的 `DOM（文档对象模型）`树中` “筛选” `目标元素，为其绑定`预设`的`样式规则`
+selector `{ key: value; ...}` >css[1]
+基本选择器
+  通用选择器 `*`: 适用页面所有标签
+    语法：*`{ key: value; ...}` >css++
+  标签选择器 `标签名`：适用于页面中特定的标签
+    语法：标签名 `{ key: value; ...}` >css++
+  类选择器：匹配所有带有`指定类名`的元素（一个类可作用于多个元素）
+    类名指定：html标签中指定`class`|`className`
+    语法：.类名 `{ key: value; ...}` >css++
+    一个标签可以指定多个类名 `class= "class1 class2"`
+  id选择器：匹配`唯一`带有`指定 ID` 的元素（HTML 中` ID 不可重复`）
+    语法：#id `{ key: value; ...}` >css++
+关系选择器
+  用于`限定` 两个选择器的`关系`
+  `E`, `F` -> 或：`E`和`F`都应用此选择器 >css++
+  `EF`-> 且：`E`和`F`都要符合才应用的选择器 >css++
+  `E` `F` -> 后代：`E`的所有后代`F`选择器 >css++
+  `E`>`F` -> 子代：`E`的直接子`F`选择器 >css++
+  `E`~`F` -> 同级：在`E`下方的同级的`F` >css++
+  `E`+`F` -> 比邻：在`E`下方的紧邻的`F` >css++
+属性选择器
+  `E[attr(=value)]`：限定`E`特定属性/特定属性值 >css++
+  `E[attr~=val]`：以`空格`分隔的，其中`一个值`为`val`的属性 >css++
+  `E[attr|=val]`：以连字符分隔的`-`，以`val-`开头的属性 >css
+  `E[attr^=val]`：以`val`开头的属性 >css
+  `E[attr$=val]`：以`val`结束的属性 >css
+  `E[attr*=val]`：包含`val`字符串的属性 >css
+伪类选择器
+  状态相关
+    `E:first-child`: 匹配第一个子元素 >css++
+    `E:first-child(n)`: 匹配第一个子元素开始计数的第n个 >css
+    `E:last-child`: 匹配最后一个子元素 >css
+    `E:last-child(n)`:匹配最后一个子元素开始计数的第n个 >css
+    `E:only-child`: 匹配唯一子元素 >css
+    `E:first-of-type`: 匹配同一类型的第一个子元素 >css
+    `E:last-of-type`: 匹配同一类型的最后一个子元素 >css
+    `E:nth-of-type(n)`：匹配同类型元素中的第 n 个 >css
+    `E:not(selector)`：匹配不是这个选择器的 >css
+    `E:empty`：匹配没有任何子元素的选择器 >css
+    `:target`：匹配当前锚点目标元素（URL 中 # 后面指定的元素） >css
+  可选中组件通用
+    `E:hover`：鼠标悬停式样式 >css++
+    `E:active`：鼠标按下后样式 >css
+    `E:focus`：获得焦点后样式 >css
+  超链接相关
+    `a:link`：正常样式 >css++
+    `a:visited`：已访问过链接样式 >css
+  按钮相关
+    `E:enabled`：激活状态 >css++
+    `E:disabled`: 禁用状态 >css
+  表单相关
+    `E:required`：匹配带有`required`属性的表单元素 >css
+    `E:optional`：匹配不带有`required`属性的表单元素 >css
+  选中状态相关
+    `E:checked`: 单选，多选的选中状态相关 >css
+伪元素选择器
+  允许开发者选中元素的`特定部分`或`创建虚拟元素`，而`无需修改 HTML `结构
+  必备属性：content
+    表示插入的内容，仅限`before`和`after`
+    即使不需要内容，也需设置 content: ""，否则伪元素不会显示
+  `E::before`：在目标元素的内容前面插入一个虚拟元素 >css++
+  `E::after`：在目标元素的内容后面插入一个虚拟元素 >css
+  常用伪元素（部分）：
+    `E::first-letter`：选中块级元素的第一个字符 >css
+    `E::first-line`：选中块级元素的首行字符 >css
+    `::selection`：鼠标选中的文本（火狐浏览器使用`::-moz-selection`） >css
+    `li::marker`：表示列表标记 >css
+  滚动条样式控制
+    不同浏览器支持不同的选择器
+    Webkit内核浏览器（Chrome、Safari、Edge）
+      `::-webkit-scrollbar`：滚动条整体样式 >css[23]
+      `::-webkit-scrollbar-track`：滚动条轨道 >css
+      `::-webkit-scrollbar-thumb`：滚动条滑块 >css
+      `::-webkit-scrollbar-thumb:hover`：滑块悬停状态 >css
+      `::-webkit-scrollbar-thumb:active`：滑块激活状态 >css
+      `::-webkit-scrollbar-corner`：滚动条角落 >css
+    Firefox浏览器
+      `scrollbar-width`：滚动条宽度（auto | thin | none） >css++
+      `scrollbar-color`：滚动条颜色（滑块颜色 轨道颜色） >css
+    跨浏览器兼容
+      隐藏滚动条：`scrollbar-width: none`（Firefox）+ `-ms-overflow-style: none`（IE/Edge）+ `::-webkit-scrollbar { display: none }`（Webkit） >css
+      自定义主题：结合类选择器实现暗色/亮色主题滚动条
+选择器特性
+  继承性
+    子元素继承父元素文字相关的样式
+  叠加性
+    多个样式叠加作用于同一元素
+  优先性
+    多个选择器作用于同一元素身上的优先级
+      `!important` > 行内 > id > class > 标签 > *
+  重要性
+    `!important`
